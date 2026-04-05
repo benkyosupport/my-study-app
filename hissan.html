@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ひっ算学習サポート - 繰り上がり分解版</title>
+    <style>
+        :root {
+            --cell-size: 80px;
+            --font-size: 50px;
+            --carry-color: #ff0000;
+        }
+
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f4f8;
+        }
+
+        .hissan-grid {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(3, var(--cell-size));
+            grid-template-rows: repeat(3, var(--cell-size));
+            gap: 0;
+            margin-bottom: 40px;
+        }
+
+        .cell {
+            width: var(--cell-size);
+            height: var(--cell-size);
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: var(--font-size);
+            background-color: #fff;
+            visibility: hidden;
+        }
+
+        .operator { border: none; visibility: hidden; }
+        .math-line {
+            grid-column: 1 / span 3;
+            height: 4px;
+            background-color: #333;
+            align-self: end;
+            z-index: 2;
+        }
+
+        /* 動く数字のスタイル */
+        .moving-digit {
+            position: absolute;
+            font-size: var(--font-size);
+            font-weight: bold;
+            color: var(--carry-color);
+            z-index: 10;
+            display: none;
+            transition: all 1.2s ease-in-out;
+        }
+
+        #main-btn {
+            padding: 15px 50px;
+            font-size: 24px;
+            cursor: pointer;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 10px;
+        }
+
+        #main-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+        .visible { visibility: visible; }
+    </style>
+</head>
+<body>
+
+    <div class="hissan-grid" id="grid">
+        <div id="move-tens" class="moving-digit">1</div>
+        <div id="move-ones" class="moving-digit">2</div>
+
+        <div class="cell"></div>
+        <div class="cell" id="n1-tens">1</div>
+        <div class="cell" id="n1-ones">5</div>
+
+        <div class="cell operator" id="op-plus">＋</div>
+        <div class="cell" style="border:none;"></div>
+        <div class="cell" id="n2-ones">7</div>
+
+        <div class="math-line" id="line"></div>
+
+        <div class="cell" style="border:none;"></div>
+        <div class="cell" id="ans-tens">2</div>
+        <div class="cell" id="ans-ones">2</div>
+    </div>
+
+    <button id="main-btn" onclick="nextStep()">問題をだす</button>
+
+<script>
+    let state = 0;
+    let n1, n2, ans;
+
+    function initProblem() {
+        n1 = Math.floor(Math.random() * 9) + 11;
+        n2 = Math.floor(Math.random() * 9) + 1;
+        ans = n1 + n2;
+
+        document.getElementById('n1-tens').innerText = Math.floor(n1 / 10);
+        document.getElementById('n1-ones').innerText = n1 % 10;
+        document.getElementById('n2-ones').innerText = n2;
+        document.getElementById('ans-tens').innerText = Math.floor(ans / 10);
+        document.getElementById('ans-ones').innerText = ans % 10;
+
+        // 非表示リセット
+        document.querySelectorAll('.cell, .operator, .math-line').forEach(el => el.classList.remove('visible'));
+        document.querySelectorAll('.moving-digit').forEach(el => {
+            el.style.display = 'none';
+            el.style.transition = 'none';
+        });
+
+        state = 0;
+        document.getElementById('main-btn').innerText = "上の数を表示";
+    }
+
+    async function nextStep() {
+        const btn = document.getElementById('main-btn');
+        const mTens = document.getElementById('move-tens');
+        const mOnes = document.getElementById('move-ones');
+
+        switch(state) {
+            case 0:
+                document.getElementById('n1-tens').classList.add('visible');
+                document.getElementById('n1-ones').classList.add('visible');
+                btn.innerText = "下の数を表示";
+                state = 1;
+                break;
+            case 1:
+                document.getElementById('op-plus').classList.add('visible');
+                document.getElementById('n2-ones').classList.add('visible');
+                document.getElementById('line').classList.add('visible');
+                btn.innerText = "一の位を計算";
+                state = 2;
+                break;
+            case 2:
+                btn.disabled = true;
+                const onesSum = (n1 % 10) + n2;
+                
+                // 一の位の合計を赤字で一時表示
+                mTens.innerText = Math.floor(onesSum / 10);
+                mOnes.innerText = onesSum % 10;
+                
+                // 初期位置：一の位の答えの場所に並べて表示
+                mTens.style.display = 'block';
+                mOnes.style.display = 'block';
+                mTens.style.top = '180px'; mTens.style.left = '185px'; // 少し左
+                mOnes.style.top = '180px'; mOnes.style.left = '215px'; // 少し右
+                
+                if (onesSum >= 10) {
+                    btn.innerText = "くり上がり！";
+                    await new Promise(r => setTimeout(r, 1000));
+                    
+                    // アニメーション開始
+                    mTens.style.transition = 'all 1.5s ease-in-out';
+                    mOnes.style.transition = 'all 1.0s ease-in-out';
+                    
+                    // 十の位は上へ、一の位はそのまま確定位置へ
+                    mTens.style.top = '-40px'; 
+                    mTens.style.left = '100px'; 
+                    
+                    mOnes.style.left = '200px'; // 枠の真ん中へ
+                } else {
+                    // 繰り上がりがない場合
+                    mTens.style.display = 'none';
+                    mOnes.style.transition = 'all 0.8s ease-in-out';
+                    mOnes.style.left = '200px';
+                }
+
+                await new Promise(r => setTimeout(r, 1500));
+                document.getElementById('ans-ones').classList.add('visible');
+                mOnes.style.display = 'none'; // 本物の文字が表示されたので隠す
+
+                btn.disabled = false;
+                btn.innerText = "十の位を計算";
+                state = 3;
+                break;
+            case 3:
+                document.getElementById('ans-tens').classList.add('visible');
+                mTens.style.display = 'none'; // 繰り上がり用赤文字を消す
+                btn.innerText = "つぎの問題";
+                state = 4;
+                break;
+            case 4:
+                initProblem();
+                break;
+        }
+    }
+
+    window.onload = initProblem;
+</script>
+</body>
+</html>
