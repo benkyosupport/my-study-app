@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>足し算ひっ算</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: #f5f5f0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+  #app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    min-width: 340px;
+  }
+  h1 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #222;
+    letter-spacing: 0.05em;
+  }
+
+  /* --- グリッド --- */
+  #grid-wrapper {
+    position: relative;
+    width: 280px;
+    height: 340px;
+  }
+  .cell {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: 600;
+    color: #222;
+    border: 1.5px solid #ddd;
+    border-radius: 10px;
+    background: #fff;
+  }
+  #plus-sign {
+    position: absolute;
+    left: 60px; top: 80px;
+    width: 60px; height: 80px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    color: #333;
+  }
+  #line {
+    position: absolute;
+    left: 0; width: 280px; height: 2.5px;
+    background: #333;
+    display: none;
+    top: 186px;
+    border-radius: 2px;
+  }
+
+  /* 赤い一時数値 */
+  #sum-temp {
+    position: absolute;
+    font-size: 40px;
+    font-weight: 600;
+    color: #cc0000;
+    display: none;
+    z-index: 9;
+  }
+  #tens-sum-temp {
+    position: absolute;
+    font-size: 40px;
+    font-weight: 600;
+    color: #cc0000;
+    display: none;
+    z-index: 9;
+  }
+
+  /* 分離移動する赤い数字 */
+  #carry-1 {
+    position: absolute;
+    font-size: 22px;
+    font-weight: 600;
+    color: #cc0000;
+    display: none;
+    transition: left 0.7s ease, top 0.7s ease, opacity 0.5s ease;
+    z-index: 10;
+  }
+  #carry-2 {
+    position: absolute;
+    font-size: 40px;
+    font-weight: 600;
+    color: #cc0000;
+    display: none;
+    transition: left 0.7s ease, top 0.7s ease, opacity 0.5s ease;
+    z-index: 10;
+  }
+  #carry-bubble {
+    position: absolute;
+    font-size: 22px;
+    font-weight: 600;
+    color: #cc0000;
+    display: none;
+    transition: left 0.7s ease, top 0.7s ease, opacity 0.6s ease;
+    z-index: 11;
+  }
+
+  /* 答え */
+  #ans-ones, #ans-tens {
+    position: absolute;
+    width: 80px; height: 80px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: 600;
+    color: #222;
+  }
+  #ans-ones { left: 200px; top: 240px; }
+  #ans-tens { left: 120px; top: 240px; }
+
+  /* --- ヒント --- */
+  #hint {
+    font-size: 15px;
+    color: #555;
+    min-height: 22px;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  /* --- ボタン --- */
+  .btn-row { display: flex; gap: 12px; align-items: center; }
+  button {
+    padding: 10px 26px;
+    font-size: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1.5px solid #bbb;
+    background: #fff;
+    color: #333;
+    transition: background 0.15s, opacity 0.15s;
+  }
+  button:hover { background: #f0f0f0; }
+  button:active { background: #e4e4e4; transform: scale(0.98); }
+  button:disabled { opacity: 0.35; cursor: default; background: #fff; }
+  #next-btn {
+    display: none;
+    border-color: #4a90e2;
+    color: #4a90e2;
+  }
+  #next-btn:hover { background: #e8f1fb; }
+</style>
+</head>
+<body>
+<div id="app">
+  <h1>足し算ひっ算</h1>
+
+  <div id="grid-wrapper">
+    <!-- 上段：被加数 -->
+    <div id="cell-t1" class="cell" style="left:120px;top:0px;"></div>
+    <div id="cell-o1" class="cell" style="left:200px;top:0px;"></div>
+
+    <!-- 下段：加数 -->
+    <div id="cell-t2" class="cell" style="left:120px;top:80px;display:none;"></div>
+    <div id="cell-o2" class="cell" style="left:200px;top:80px;display:none;"></div>
+    <div id="plus-sign">＋</div>
+    <div id="line"></div>
+
+    <!-- 計算過程（赤） -->
+    <div id="sum-temp"></div>
+    <div id="tens-sum-temp"></div>
+    <div id="carry-1"></div>
+    <div id="carry-2"></div>
+    <div id="carry-bubble"></div>
+
+    <!-- 答え段 -->
+    <div id="ans-ones"></div>
+    <div id="ans-tens"></div>
+  </div>
+
+  <div id="hint">ボタンを押して計算を進めよう！</div>
+
+  <div class="btn-row">
+    <button id="step-btn" onclick="nextStep()">つぎへ ▶</button>
+    <button id="next-btn" onclick="newProblem()">新しい問題 ↺</button>
+  </div>
+</div>
+
+<script>
+/* ===== 状態変数 ===== */
+let num1, num2, ones1, ones2, tens1, ones_sum, carry, step;
+
+/* ===== Web Audio API ===== */
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let actx = null;
+function getAC() { if (!actx) actx = new AudioCtx(); return actx; }
+
+function playPop() {
+  try {
+    const a = getAC(), o = a.createOscillator(), g = a.createGain();
+    o.connect(g); g.connect(a.destination);
+    o.frequency.setValueAtTime(520, a.currentTime);
+    o.frequency.exponentialRampToValueAtTime(300, a.currentTime + 0.09);
+    g.gain.setValueAtTime(0.2, a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + 0.13);
+    o.start(); o.stop(a.currentTime + 0.13);
+  } catch(e) {}
+}
+function playFloat() {
+  try {
+    const a = getAC(), o = a.createOscillator(), g = a.createGain();
+    o.type = 'sine';
+    o.connect(g); g.connect(a.destination);
+    o.frequency.setValueAtTime(440, a.currentTime);
+    o.frequency.linearRampToValueAtTime(700, a.currentTime + 0.35);
+    g.gain.setValueAtTime(0.14, a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + 0.55);
+    o.start(); o.stop(a.currentTime + 0.55);
+  } catch(e) {}
+}
+function playPucha() {
+  try {
+    const a = getAC(), o = a.createOscillator(), g = a.createGain();
+    o.type = 'triangle';
+    o.connect(g); g.connect(a.destination);
+    o.frequency.setValueAtTime(300, a.currentTime);
+    o.frequency.exponentialRampToValueAtTime(640, a.currentTime + 0.06);
+    o.frequency.exponentialRampToValueAtTime(200, a.currentTime + 0.22);
+    g.gain.setValueAtTime(0.22, a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + 0.28);
+    o.start(); o.stop(a.currentTime + 0.28);
+  } catch(e) {}
+}
+function playCalc() {
+  try {
+    const a = getAC(), o = a.createOscillator(), g = a.createGain();
+    o.type = 'square';
+    o.connect(g); g.connect(a.destination);
+    o.frequency.setValueAtTime(820, a.currentTime);
+    g.gain.setValueAtTime(0.07, a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + 0.11);
+    o.start(); o.stop(a.currentTime + 0.11);
+  } catch(e) {}
+}
+
+/* ===== Vibration ===== */
+function vibrate() { if (navigator.vibrate) navigator.vibrate(30); }
+
+/* ===== DOM ユーティリティ ===== */
+function el(id) { return document.getElementById(id); }
+function show(id, flex) { el(id).style.display = flex ? 'flex' : 'block'; }
+function hide(id) { el(id).style.display = 'none'; }
+function setText(id, t) { el(id).textContent = t; }
+function setPos(id, l, t) { el(id).style.left = l + 'px'; el(id).style.top = t + 'px'; }
+
+/* ===== 問題生成 ===== */
+function newProblem() {
+  num1 = Math.floor(Math.random() * 9) + 11;  // 11〜19
+  num2 = Math.floor(Math.random() * 9) + 1;   // 1〜9
+  ones1 = num1 % 10;
+  tens1 = Math.floor(num1 / 10);
+  ones2 = num2;
+  ones_sum = ones1 + ones2;
+  carry = ones_sum >= 10 ? 1 : 0;
+  step = 0;
+
+  /* リセット */
+  setText('cell-t1', tens1); setText('cell-o1', ones1);
+  setText('cell-t2', '');    setText('cell-o2', '');
+  el('cell-t2').style.display = 'none';
+  el('cell-o2').style.display = 'none';
+  el('plus-sign').style.display = 'none';
+  hide('line');
+  hide('sum-temp'); hide('tens-sum-temp');
+  hide('carry-1'); hide('carry-2'); hide('carry-bubble');
+  el('ans-ones').style.display = 'none';
+  el('ans-tens').style.display = 'none';
+  el('carry-1').style.opacity = '1';
+  el('carry-2').style.opacity = '1';
+  el('carry-bubble').style.opacity = '1';
+
+  el('next-btn').style.display = 'none';
+  el('step-btn').style.display = 'inline-block';
+  el('step-btn').disabled = false;
+
+  el('hint').textContent = num1 + ' ＋ ' + num2 + ' を計算しよう！';
+  playPop(); vibrate();
+}
+
+/* ===== ステップ進行 ===== */
+function nextStep() {
+  vibrate();
+  el('step-btn').disabled = true;
+
+  /* ── ステップ 0：下段・記号・横線を表示 ── */
+  if (step === 0) {
+    el('cell-t2').style.display = 'flex';
+    el('cell-o2').style.display = 'flex';
+    setText('cell-t2', '');
+    setText('cell-o2', ones2);
+    el('plus-sign').style.display = 'flex';
+    show('line');
+    playPop();
+    el('hint').textContent = '一の位どうしを足してみよう：' + ones1 + ' ＋ ' + ones2;
+    step = 1;
+    el('step-btn').disabled = false;
+
+  /* ── ステップ 1：一の位の合計を赤字で表示 ── */
+  } else if (step === 1) {
+    const s = el('sum-temp');
+    s.style.display = 'block';
+    s.style.left = '196px'; s.style.top = '168px';
+    s.textContent = ones_sum;
+    playCalc();
+    if (carry) {
+      el('hint').textContent = ones1 + ' ＋ ' + ones2 + ' ＝ ' + ones_sum + '（繰り上がりあり！）';
+      step = 2;
+    } else {
+      el('hint').textContent = ones1 + ' ＋ ' + ones2 + ' ＝ ' + ones_sum + '（そのまま答えへ）';
+      step = 'nocarry';
+    }
+    setTimeout(() => el('step-btn').disabled = false, 400);
+
+  /* ── 繰り上がりなし：合計をそのまま確定 ── */
+  } else if (step === 'nocarry') {
+    hide('sum-temp');
+    const ao = el('ans-ones');
+    ao.style.display = 'flex'; ao.textContent = ones_sum;
+    const at = el('ans-tens');
+    at.style.display = 'flex'; at.textContent = tens1;
+    playPucha();
+    el('hint').textContent = '答え：' + (num1 + num2) + '　　せいかい！🎉';
+    el('step-btn').style.display = 'none';
+    el('next-btn').style.display = 'inline-block';
+
+  /* ── ステップ 2：1と一の位の数に分離してアニメーション移動 ── */
+  } else if (step === 2) {
+    const c1 = el('carry-1'), c2 = el('carry-2');
+    /* 初期位置（sum-tempと同じ場所） */
+    c1.style.transition = 'none'; c2.style.transition = 'none';
+    c1.style.opacity = '1'; c2.style.opacity = '1';
+    c1.style.left = '196px'; c1.style.top = '168px';
+    c2.style.left = '220px'; c2.style.top = '168px';
+    c1.textContent = '1'; c2.textContent = ones_sum % 10;
+    c1.style.display = 'block'; c2.style.display = 'block';
+    hide('sum-temp');
+    playFloat();
+    el('hint').textContent = '「1」が十の位へ、「' + (ones_sum % 10) + '」が一の位の答えへ移動！';
+
+    /* トランジション有効にして移動 */
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        c1.style.transition = 'left 0.7s ease, top 0.7s ease, opacity 0.5s ease';
+        c2.style.transition = 'left 0.7s ease, top 0.7s ease, opacity 0.5s ease';
+        c1.style.left = '128px'; c1.style.top = '4px';   /* 十の位の上 */
+        c2.style.left = '208px'; c2.style.top = '242px'; /* 一の位の答え */
+      });
+    });
+    step = 3;
+    setTimeout(() => el('step-btn').disabled = false, 800);
+
+  /* ── ステップ 3：一の位の答えを黒字で確定、赤い2を消去 ── */
+  } else if (step === 3) {
+    const c2 = el('carry-2');
+    const ao = el('ans-ones');
+    ao.style.display = 'flex'; ao.textContent = ones_sum % 10;
+    c2.style.opacity = '0';
+    setTimeout(() => hide('carry-2'), 500);
+    playPop();
+    el('hint').textContent = '一の位の答えは「' + (ones_sum % 10) + '」に確定！';
+    step = 4;
+    setTimeout(() => el('step-btn').disabled = false, 500);
+
+  /* ── ステップ 4：十の位の合算（繰り上がりが吸い込まれる） ── */
+  } else if (step === 4) {
+    const ts = el('tens-sum-temp');
+    ts.style.display = 'block';
+    ts.style.left = '118px'; ts.style.top = '168px';
+    ts.textContent = tens1 + 1;
+
+    /* carry-bubble（十の位上にある「1」）を答え方向へ移動して消える演出 */
+    const cb = el('carry-bubble');
+    cb.style.transition = 'none';
+    cb.style.opacity = '1';
+    cb.style.left = '128px'; cb.style.top = '4px';
+    cb.textContent = '１';
+    cb.style.display = 'block';
+    playFloat();
+    el('hint').textContent = tens1 + ' ＋ 繰り上がりの1 ＝ ' + (tens1 + 1);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        cb.style.transition = 'left 0.6s ease, top 0.6s ease, opacity 0.6s ease';
+        cb.style.top = '168px';
+        cb.style.opacity = '0';
+      });
+    });
+    step = 5;
+    setTimeout(() => el('step-btn').disabled = false, 750);
+
+  /* ── ステップ 5：十の位の答えを確定・完了 ── */
+  } else if (step === 5) {
+    const at = el('ans-tens');
+    at.style.display = 'flex'; at.textContent = tens1 + 1;
+    hide('tens-sum-temp');
+    const c1 = el('carry-1');
+    c1.style.opacity = '0';
+    setTimeout(() => hide('carry-1'), 400);
+    playPucha();
+    el('hint').textContent = '答え：' + (num1 + num2) + '　　せいかい！🎉';
+    el('step-btn').style.display = 'none';
+    el('next-btn').style.display = 'inline-block';
+  }
+}
+
+/* ===== 初期化 ===== */
+newProblem();
+</script>
+</body>
+</html>
