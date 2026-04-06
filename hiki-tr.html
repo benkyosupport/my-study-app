@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>10の補数トレーニング</title>
+<style>
+body { margin:0; display:flex; justify-content:center; align-items:center; height:100vh; background:#fff; }
+#app { width:800px; height:600px; position:relative; transform-origin:top left; }
+#formula { position:absolute; top:40px; width:100%; text-align:center; font-size:48px; }
+#vibrationControl { position:absolute; top:10px; right:10px; font-size:16px; }
+#modeControl { position:absolute; top:10px; left:10px; font-size:16px; }
+#dots { position:absolute; top:200px; left:50%; transform:translateX(-50%); display:grid; grid-template-columns:repeat(5,32px); grid-auto-rows:32px; gap:16px; }
+.dot { width:32px; height:32px; border-radius:50%; background:#000; transition: background 0.12s linear; }
+.light { background:rgba(0,0,0,0.2); }
+.red { background:#e60000; }
+@keyframes blinkScale {
+  0%   { transform:scale(1);   background:rgba(0,0,0,0.2); }
+  25%  { transform:scale(1.2); background:#000; }
+  50%  { transform:scale(1);   background:rgba(0,0,0,0.2); }
+  75%  { transform:scale(1.2); background:#000; }
+  100% { transform:scale(1);   background:#e60000; }
+}
+.animate { animation:blinkScale 0.3s ease; }
+#button { position:absolute; bottom:20px; left:50%; transform:translateX(-50%); width:200px; height:60px; font-size:24px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="formula"></div>
+  <div id="modeControl">
+    モード：
+    <select id="modeSelect">
+      <option value="1">補数</option>
+      <option value="2">ひき算</option>
+    </select>
+  </div>
+  <div id="vibrationControl">
+    振動：
+    <select id="vibrationSelect">
+      <option value="0">OFF</option>
+      <option value="1">弱</option>
+      <option value="2" selected>中</option>
+      <option value="3">強</option>
+    </select>
+  </div>
+  <div id="dots"></div>
+  <button id="button">進む</button>
+</div>
+<script>
+let mode = 1;
+let step = 0;
+let a = 0;
+let b = 0;
+let animating = false;
+let prevA = null;
+let vibrationLevel = 2;
+
+let audioCtx = null;
+function playClickSound(){
+  if(!audioCtx){ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+  const ctx = audioCtx;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(600, ctx.currentTime);
+  gain.gain.setValueAtTime(0.2, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start();
+  osc.stop(ctx.currentTime + 0.08);
+}
+
+function vibrate(){
+  if(!navigator.vibrate) return;
+  switch(vibrationLevel){
+    case 1: navigator.vibrate(30); break;
+    case 2: navigator.vibrate(80); break;
+    case 3: navigator.vibrate([150,50,150]); break;
+  }
+}
+
+document.getElementById("vibrationSelect").onchange = (e)=>{
+  vibrationLevel = parseInt(e.target.value);
+};
+
+document.getElementById("modeSelect").onchange = (e)=>{
+  mode = parseInt(e.target.value);
+  step = 0;
+  generate();
+  render();
+};
+
+function generateComplement(){
+  do {
+    a = Math.floor(Math.random()*9)+1;
+  } while(a === prevA);
+  prevA = a;
+  b = 10 - a;
+}
+
+function generateSubtraction(){
+  do {
+    a = Math.floor(Math.random()*8) + 11;
+    b = Math.floor(Math.random()*8) + 2;
+  } while((a % 10) >= b);
+  prevA = a;
+}
+
+function generate(){
+  if(mode === 1){
+    generateComplement();
+  } else {
+    generateSubtraction();
+  }
+}
+
+function renderComplement(){
+  const formula = document.getElementById("formula");
+  const dots = document.getElementById("dots");
+  dots.innerHTML = "";
+  dots.style.display = "grid";
+  dots.style.gridTemplateColumns = "repeat(5,32px)";
+  dots.style.gridAutoRows = "32px";
+  dots.style.gap = "16px";
+
+  if(step === 0){
+    formula.innerText = `${a} + □ = 10`;
+  } else {
+    formula.innerText = `${a} + ${b} = 10`;
+  }
+
+  for(let i=0;i<10;i++){
+    const d = document.createElement("div");
+    d.className = "dot";
+    if(i >= a){
+      if(step === 0){
+        d.classList.add("light");
+      } else {
+        d.classList.add("light");
+        d.classList.add("animate");
+        d.addEventListener("animationend", ()=>{
+          d.classList.remove("light");
+          d.classList.remove("animate");
+          d.classList.add("red");
+        }, {once:true});
+      }
+    }
+    dots.appendChild(d);
+  }
+}
+
+function renderSubtraction(){
+  const formula = document.getElementById("formula");
+  const dots = document.getElementById("dots");
+  dots.innerHTML = "";
+
+  const answer = a - b;
+
+  if(step === 0){
+    formula.innerText = `${a} - ${b} = □`;
+  } else {
+    formula.innerText = `${a} - ${b} = ${answer}`;
+  }
+
+  const size = (a >= 16) ? 24 : 32;
+  const gap  = (a >= 16) ? 12 : 16;
+
+  dots.style.display = "flex";
+  dots.style.gridTemplateColumns = "";
+  dots.style.gridAutoRows = "";
+  dots.style.gap = gap + "px";
+  dots.style.flexWrap = "nowrap";
+  dots.style.alignItems = "center";
+
+  for(let i=0;i<a;i++){
+    const d = document.createElement("div");
+    d.className = "dot";
+    d.style.width  = size + "px";
+    d.style.height = size + "px";
+    d.style.flexShrink = "0";
+
+    if(step === 1 && i >= a - b){
+      d.style.background = "rgba(230,0,0,0.3)";
+    }
+
+    dots.appendChild(d);
+
+    if(i === 9){
+      const sep = document.createElement("div");
+      sep.style.width      = "2px";
+      sep.style.height     = size + "px";
+      sep.style.background = "rgba(0,0,0,0.2)";
+      sep.style.flexShrink = "0";
+      dots.appendChild(sep);
+    }
+  }
+}
+
+function render(){
+  if(mode === 1){
+    renderComplement();
+  } else {
+    renderSubtraction();
+  }
+}
+
+document.getElementById("button").onclick = () => {
+  if(animating) return;
+  playClickSound();
+  vibrate();
+  if(step === 0){
+    step = 1;
+    render();
+    animating = true;
+    setTimeout(()=>{ animating = false; }, 300);
+  } else {
+    step = 0;
+    generate();
+    render();
+  }
+};
+
+function resize(){
+  const scale = Math.min(
+    window.innerWidth  / 800,
+    window.innerHeight / 600
+  );
+  document.getElementById("app").style.transform = `scale(${scale})`;
+}
+window.addEventListener("resize", resize);
+
+generate();
+render();
+resize();
+</script>
+</body>
+</html>
