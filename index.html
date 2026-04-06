@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>算数トレーニング</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=DM+Mono:wght@500&display=swap');
+
+  :root {
+    --bg: #f5f3ee;
+    --ink: #1a1a1a;
+    --ink-muted: #888;
+    --accent: #e60000;
+    --card-bg: #ffffff;
+    --border: #e0ddd6;
+    --tag-bg: #1a1a1a;
+    --tag-fg: #f5f3ee;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+    padding: 0 24px 80px;
+  }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 48px 0 40px;
+    border-bottom: 1.5px solid var(--ink);
+    margin-bottom: 56px;
+  }
+
+  .site-title {
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(18px, 4vw, 26px);
+    letter-spacing: 0.04em;
+    color: var(--ink);
+  }
+
+  .site-title span {
+    color: var(--accent);
+  }
+
+  .header-sub {
+    font-size: 12px;
+    color: var(--ink-muted);
+    letter-spacing: 0.1em;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 32px 28px 28px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    transition: border-color 0.15s, transform 0.15s;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--accent);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.2s ease;
+  }
+
+  .card:hover {
+    border-color: var(--ink);
+    transform: translateY(-2px);
+  }
+
+  .card:hover::before {
+    transform: scaleY(1);
+  }
+
+  .card-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-muted);
+    letter-spacing: 0.12em;
+  }
+
+  .card-title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+
+  .card-desc {
+    font-size: 13px;
+    color: var(--ink-muted);
+    line-height: 1.7;
+    flex: 1;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .tag {
+    display: inline-block;
+    background: var(--tag-bg);
+    color: var(--tag-fg);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+
+  .arrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    color: var(--ink-muted);
+    transition: color 0.15s, transform 0.15s;
+  }
+
+  .card:hover .arrow {
+    color: var(--accent);
+    transform: translateX(4px);
+  }
+
+  .coming-soon {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  .coming-soon .tag {
+    background: var(--ink-muted);
+  }
+
+  footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-muted);
+    letter-spacing: 0.08em;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="site-title">算数<span>_</span>トレーニング</div>
+  <div class="header-sub">DRILL / AUTOMATE / MASTER</div>
+</header>
+
+<div class="section-label">コンテンツ一覧</div>
+
+<div class="grid">
+
+  <a class="card" href="hiki-tr.html">
+    <div class="card-number">No.01</div>
+    <div class="card-title">引き算自動化トレーニング</div>
+    <div class="card-desc">繰り下がりのある引き算を反射レベルで即答できるようになるための高速反復ドリル。10の補数モードも収録。</div>
+    <div class="card-footer">
+      <span class="tag">公開中</span>
+      <span class="arrow">→</span>
+    </div>
+  </a>
+
+  <div class="card coming-soon">
+    <div class="card-number">No.02</div>
+    <div class="card-title">準備中</div>
+    <div class="card-desc">次のトレーニングをここに追加予定。</div>
+    <div class="card-footer">
+      <span class="tag">coming soon</span>
+      <span class="arrow">→</span>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  &copy; 算数トレーニング
+</footer>
+
+</body>
+</html>
