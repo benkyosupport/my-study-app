@@ -3,432 +3,858 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>足し算ひっ算</title>
+<title>足し算トレーニング</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    background: #f5f5f0;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    padding: 2rem 1rem;
-  }
-  #app {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-    background: #fff;
-    border-radius: 16px;
-    padding: 2rem 1.5rem;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    min-width: 340px;
-  }
-  h1 {
-    font-size: 20px;
-    font-weight: 600;
-    color: #222;
-    letter-spacing: 0.05em;
-  }
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap');
 
-  /* --- グリッド --- */
-  #grid-wrapper {
-    position: relative;
-    width: 280px;
-    height: 340px;
-  }
-  .cell {
-    position: absolute;
-    width: 80px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 40px;
-    font-weight: 600;
-    color: #222;
-    border: 1.5px solid #ddd;
-    border-radius: 10px;
-    background: #fff;
-  }
-  #plus-sign {
-    position: absolute;
-    left: 60px; top: 80px;
-    width: 60px; height: 80px;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    font-size: 36px;
-    color: #333;
-  }
-  #line {
-    position: absolute;
-    left: 0; width: 280px; height: 2.5px;
-    background: #333;
-    display: none;
-    top: 186px;
-    border-radius: 2px;
-  }
+:root {
+  --bg:          #fdf6ee;
+  --surface:     #ffffff;
+  --border:      #e2d5c3;
+  --text:        #2a1f10;
+  --muted:       #9a8570;
+  --accent:      #d97c1a;
+  --accent-s:    #faebd7;
+  --green:       #2e8b4a;
+  --green-s:     #e6f5ec;
+  --blue:        #2a6bbf;
+  --blue-s:      #e8f0fb;
+  --red-c:       #c0392b;
+  --red-s:       #fcecea;
+  --coin1a:      #e0e0e0;
+  --coin1b:      #aaa;
+  --coin10a:     #e0a050;
+  --coin10b:     #7a4810;
+  --block-bg:    #fff9f2;
+  --block-bd:    #e8c99a;
+  --block-full:  #d97c1a;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'M PLUS Rounded 1c',sans-serif;
+  background:var(--bg);
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:1.2rem 1rem 3rem;
+  gap:0;
+}
 
-  /* 赤い一時数値 */
-  #sum-temp {
-    position: absolute;
-    font-size: 40px;
-    font-weight: 600;
-    color: #cc0000;
-    display: none;
-    z-index: 9;
-  }
-  #tens-sum-temp {
-    position: absolute;
-    font-size: 40px;
-    font-weight: 600;
-    color: #cc0000;
-    display: none;
-    z-index: 9;
-  }
+/* ══ タブ ══ */
+.tabs{
+  display:flex;width:100%;max-width:440px;gap:6px;
+  padding:0 0 0 0;
+}
+.tab-btn{
+  flex:1;height:48px;
+  border:2px solid var(--border);
+  border-bottom:none;
+  border-radius:12px 12px 0 0;
+  background:var(--surface);
+  color:var(--muted);
+  font-family:inherit;font-size:14px;font-weight:800;
+  cursor:pointer;transition:all .15s;
+  position:relative;bottom:-2px;
+}
+.tab-btn.active{
+  border-color:var(--accent);
+  border-bottom:2px solid var(--surface);
+  color:var(--accent);z-index:2;
+}
+.tab-btn:not(.active):hover{background:var(--accent-s);}
 
-  /* 分離移動する赤い数字 */
-  #carry-1 {
-    position: absolute;
-    font-size: 22px;
-    font-weight: 600;
-    color: #cc0000;
-    display: none;
-    transition: left 0.7s ease, top 0.7s ease, opacity 0.5s ease;
-    z-index: 10;
-  }
-  #carry-2 {
-    position: absolute;
-    font-size: 40px;
-    font-weight: 600;
-    color: #cc0000;
-    display: none;
-    transition: left 0.7s ease, top 0.7s ease, opacity 0.5s ease;
-    z-index: 10;
-  }
-  #carry-bubble {
-    position: absolute;
-    font-size: 22px;
-    font-weight: 600;
-    color: #cc0000;
-    display: none;
-    transition: left 0.7s ease, top 0.7s ease, opacity 0.6s ease;
-    z-index: 11;
-  }
+/* ══ カード ══ */
+#card{
+  width:100%;max-width:440px;
+  background:var(--surface);
+  border:2px solid var(--accent);
+  border-radius:0 0 20px 20px;
+  padding:1.4rem 1.2rem 1.5rem;
+  z-index:1;
+}
 
-  /* 答え */
-  #ans-ones, #ans-tens {
-    position: absolute;
-    width: 80px; height: 80px;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    font-size: 40px;
-    font-weight: 600;
-    color: #222;
-  }
-  #ans-ones { left: 200px; top: 240px; }
-  #ans-tens { left: 120px; top: 240px; }
+/* ══ 共通ボタン ══ */
+button{
+  font-family:inherit;font-size:15px;font-weight:800;
+  padding:11px 22px;border-radius:10px;cursor:pointer;
+  border:2px solid var(--border);background:var(--surface);color:var(--text);
+  transition:background .15s,transform .1s;
+}
+button:hover{background:var(--bg);}
+button:active{transform:scale(.97);}
+button:disabled{opacity:.35;cursor:default;transform:none;}
+.btn-row{display:flex;gap:8px;justify-content:center;margin-top:1.1rem;flex-wrap:wrap;}
 
-  /* --- ヒント --- */
-  #hint {
-    font-size: 15px;
-    color: #555;
-    min-height: 22px;
-    text-align: center;
-    line-height: 1.6;
-  }
+/* ══════════════════════════
+   ひっ算モード
+══════════════════════════ */
+#hissan-mode{display:block;}
 
-  /* --- ボタン --- */
-  .btn-row { display: flex; gap: 12px; align-items: center; }
-  button {
-    padding: 10px 26px;
-    font-size: 15px;
-    border-radius: 8px;
-    cursor: pointer;
-    border: 1.5px solid #bbb;
-    background: #fff;
-    color: #333;
-    transition: background 0.15s, opacity 0.15s;
-  }
-  button:hover { background: #f0f0f0; }
-  button:active { background: #e4e4e4; transform: scale(0.98); }
-  button:disabled { opacity: 0.35; cursor: default; background: #fff; }
-  #next-btn {
-    display: none;
-    border-color: #4a90e2;
-    color: #4a90e2;
-  }
-  #next-btn:hover { background: #e8f1fb; }
+#h-hint{
+  background:var(--accent-s);border-radius:12px;
+  padding:10px 14px;font-size:15px;font-weight:700;color:var(--text);
+  min-height:44px;display:flex;align-items:center;margin-bottom:1.1rem;
+}
+#grid-wrapper{
+  position:relative;width:280px;height:340px;margin:0 auto .4rem;
+}
+.cell{
+  position:absolute;width:80px;height:80px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:40px;font-weight:800;color:var(--text);
+  border:2px solid var(--border);border-radius:10px;background:var(--surface);
+}
+#h-plus{
+  position:absolute;left:60px;top:80px;
+  width:60px;height:80px;display:none;
+  align-items:center;justify-content:center;
+  font-size:36px;font-weight:800;color:var(--text);
+}
+#h-line{
+  position:absolute;left:0;top:186px;
+  width:280px;height:3px;background:var(--text);border-radius:2px;display:none;
+}
+#h-sum-temp,#h-tens-sum{
+  position:absolute;font-size:40px;font-weight:800;color:#cc2222;display:none;z-index:9;
+}
+#h-c1,#h-c2{
+  position:absolute;font-weight:800;color:#cc2222;display:none;
+  transition:left .7s ease,top .7s ease,opacity .5s ease;z-index:10;
+}
+#h-c1{font-size:22px;}#h-c2{font-size:40px;}
+#h-cbubble{
+  position:absolute;font-size:22px;font-weight:800;color:#cc2222;display:none;
+  transition:left .7s ease,top .7s ease,opacity .6s ease;z-index:11;
+}
+#h-ao,#h-at{
+  position:absolute;width:80px;height:80px;display:none;
+  align-items:center;justify-content:center;
+  font-size:40px;font-weight:800;color:var(--text);
+}
+#h-ao{left:200px;top:240px;}
+#h-at{left:120px;top:240px;}
+.h-next{border-color:var(--accent);color:var(--accent);}
+.h-next:hover{background:var(--accent-s);}
+.h-new{border-color:var(--green);color:var(--green);display:none;}
+.h-new:hover{background:var(--green-s);}
+
+/* ══════════════════════════
+   硬貨モード
+══════════════════════════ */
+#coin-mode{display:none;}
+
+/* 数式表示 */
+#c-formula{
+  text-align:center;
+  font-size:48px;font-weight:800;color:var(--text);
+  letter-spacing:.04em;
+  margin-bottom:1rem;
+  line-height:1.15;
+}
+#c-formula .q-mark{color:var(--accent);}
+
+/* コインフィールド */
+#c-field{
+  width:100%;
+  border:2px solid var(--border);border-radius:14px;
+  background:var(--block-bg);
+  padding:14px 12px;
+  min-height:80px;
+}
+
+/* ブロックラッパー */
+#c-blocks{
+  display:flex;flex-direction:column;gap:10px;
+  align-items:flex-start;
+}
+
+/*
+  コイン寸法：36px、gap：4px
+  5個横並び = 36×5 + 4×4 = 196px
+  padding 6px×2 = 12px → ブロック幅 208px
+*/
+.coin-size{ width:36px; height:36px; }
+
+/* 10枚ブロック枠 */
+.blk10{
+  border:2.5px solid var(--block-bd);
+  border-radius:10px;
+  background:#fff;
+  padding:6px;
+  display:grid;
+  grid-template-columns:repeat(5,36px);
+  gap:4px;
+  width:208px; /* 固定：ぴったり5列×2行 */
+  transition:border-color .3s,background .3s,box-shadow .3s;
+}
+.blk10.complete{
+  border-color:var(--block-full);
+  background:var(--accent-s);
+  box-shadow:0 0 0 4px rgba(217,124,26,.18);
+  animation:pulse .5s ease;
+}
+/* 端数（枠なし・同幅グリッド） */
+.blk-rest{
+  display:grid;
+  grid-template-columns:repeat(5,36px);
+  gap:4px;
+  width:208px;
+  padding:4px 6px;
+}
+
+/* 1円玉 */
+.c1{
+  width:36px;height:36px;border-radius:50%;
+  background:radial-gradient(circle at 36% 32%,#ebebeb,var(--coin1a));
+  border:2px solid var(--coin1b);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;color:#555;
+  flex-shrink:0;
+}
+.c1::after{content:'1';}
+/* 落下アニメ */
+.drop{animation:drop .3s cubic-bezier(.4,1.4,.6,1);}
+@keyframes drop{
+  from{transform:translateY(-50px);opacity:0;}
+  to{transform:translateY(0);opacity:1;}
+}
+
+/* 10円玉 */
+.c10{
+  width:58px;height:58px;border-radius:50%;
+  background:radial-gradient(circle at 36% 32%,#e8b060,var(--coin10a));
+  border:3px solid var(--coin10b);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;color:#3a1800;
+  animation:popIn .4s cubic-bezier(.34,1.56,.64,1);
+  flex-shrink:0;
+}
+
+/* 答え表示 */
+#c-answer{
+  text-align:center;font-size:52px;font-weight:800;
+  color:var(--green);margin-top:.6rem;
+  display:none;animation:fadeUp .4s ease;
+}
+
+/* ボタン群 */
+.c-add1{border-color:var(--accent);color:var(--accent);}
+.c-add1:hover{background:var(--accent-s);}
+.c-ryogae{border-color:var(--blue);color:var(--blue);display:none;}
+.c-ryogae:hover{background:var(--blue-s);}
+.c-retry{border-color:var(--red-c);color:var(--red-c);display:none;}
+.c-retry:hover{background:var(--red-s);}
+.c-new{border-color:var(--green);color:var(--green);display:none;}
+.c-new:hover{background:var(--green-s);}
+
+/* ══ レベル選択 ══ */
+.lv-row{display:flex;gap:8px;justify-content:center;margin-bottom:1rem;}
+.lv-btn{
+  flex:1;max-width:160px;height:40px;
+  border:2px solid var(--border);border-radius:8px;
+  background:var(--surface);color:var(--muted);
+  font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;
+  transition:all .15s;
+}
+.lv-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-s);}
+.lv-btn:not(.active):hover{background:var(--bg);}
+
+/* ══ レベル2 ══ */
+/* lv2-areas: 表示切替コンテナ */
+#lv2-areas{display:none;flex-direction:column;gap:10px;margin-bottom:.6rem;}
+#lv2-areas.show{display:flex;}
+
+/* 被加数行・加数行それぞれ横並び */
+.lv2-row{
+  display:flex;gap:10px;align-items:flex-start;
+  padding:10px 10px;
+  border:2px solid var(--border);border-radius:12px;
+  background:var(--block-bg);
+  transition:opacity .4s,transform .4s;
+}
+.lv2-row.addend{ border-color:var(--accent-s); }
+.lv2-row-label{
+  font-size:11px;font-weight:800;color:var(--muted);
+  letter-spacing:.06em;writing-mode:vertical-rl;
+  align-self:center;min-width:14px;
+}
+/* 各エリア（10円玉・1円玉） */
+.lv2-col{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.lv2-label{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.06em;}
+.lv2-slot{
+  min-width:72px;min-height:64px;
+  border:2px dashed var(--border);border-radius:10px;
+  background:#fff;
+  padding:6px;
+  display:flex;flex-wrap:wrap;gap:5px;
+  align-items:flex-start;align-content:flex-start;
+}
+.lv2-slot.hl{
+  border-color:var(--block-full);background:var(--accent-s);
+  animation:pulse .5s ease;
+}
+/* 合算後エリア */
+#lv2-merged{display:none;flex-direction:column;gap:8px;}
+#lv2-merged.show{display:flex;}
+
+/* ══ アニメーション共通 ══ */
+@keyframes pulse{
+  0%  {box-shadow:0 0 0 0 rgba(217,124,26,.6);}
+  70% {box-shadow:0 0 0 14px rgba(217,124,26,0);}
+  100%{box-shadow:0 0 0 0 rgba(217,124,26,0);}
+}
+@keyframes popIn{
+  from{transform:scale(.2) rotate(-15deg);opacity:0;}
+  to  {transform:scale(1)  rotate(0deg);  opacity:1;}
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(8px);}
+  to  {opacity:1;transform:translateY(0);}
+}
 </style>
 </head>
 <body>
-<div id="app">
-  <h1>足し算ひっ算</h1>
 
-  <div id="grid-wrapper">
-    <!-- 上段：被加数 -->
-    <div id="cell-t1" class="cell" style="left:120px;top:0px;"></div>
-    <div id="cell-o1" class="cell" style="left:200px;top:0px;"></div>
-
-    <!-- 下段：加数 -->
-    <div id="cell-t2" class="cell" style="left:120px;top:80px;display:none;"></div>
-    <div id="cell-o2" class="cell" style="left:200px;top:80px;display:none;"></div>
-    <div id="plus-sign">＋</div>
-    <div id="line"></div>
-
-    <!-- 計算過程（赤） -->
-    <div id="sum-temp"></div>
-    <div id="tens-sum-temp"></div>
-    <div id="carry-1"></div>
-    <div id="carry-2"></div>
-    <div id="carry-bubble"></div>
-
-    <!-- 答え段 -->
-    <div id="ans-ones"></div>
-    <div id="ans-tens"></div>
-  </div>
-
-  <div id="hint">ボタンを押して計算を進めよう！</div>
-
-  <div class="btn-row">
-    <button id="step-btn" onclick="nextStep()">つぎへ ▶</button>
-    <button id="next-btn" onclick="newProblem()">新しい問題 ↺</button>
-  </div>
+<!-- タブ -->
+<div class="tabs">
+  <button class="tab-btn" id="tab-coin"   onclick="switchTab('coin')">🪙 硬貨モード</button>
+  <button class="tab-btn active" id="tab-hissan" onclick="switchTab('hissan')">📝 ひっ算モード</button>
 </div>
 
+<div id="card">
+
+  <!-- ══ ひっ算モード ══ -->
+  <div id="hissan-mode">
+    <div id="h-hint">ボタンを押して計算を進めよう！</div>
+    <div id="grid-wrapper">
+      <div id="h-t1" class="cell" style="left:120px;top:0"></div>
+      <div id="h-o1" class="cell" style="left:200px;top:0"></div>
+      <div id="h-t2" class="cell" style="left:120px;top:80px;display:none"></div>
+      <div id="h-o2" class="cell" style="left:200px;top:80px;display:none"></div>
+      <div id="h-plus"></div>
+      <div id="h-line"></div>
+      <div id="h-sum-temp"></div>
+      <div id="h-tens-sum"></div>
+      <div id="h-c1"></div>
+      <div id="h-c2"></div>
+      <div id="h-cbubble"></div>
+      <div id="h-ao"></div>
+      <div id="h-at"></div>
+    </div>
+    <div class="btn-row">
+      <button class="h-next" id="h-step" onclick="hStep()">つぎへ ▶</button>
+      <button class="h-new"  id="h-new"  onclick="hNew()">新しい問題 ↺</button>
+    </div>
+  </div>
+
+  <!-- ══ 硬貨モード ══ -->
+  <div id="coin-mode">
+
+    <!-- レベル選択 -->
+    <div class="lv-row">
+      <button class="lv-btn active" id="lv1-btn" onclick="setLevel(1)">レベル1</button>
+      <button class="lv-btn"        id="lv2-btn" onclick="setLevel(2)">レベル2</button>
+    </div>
+
+    <!-- 数式 -->
+    <div id="c-formula">
+      <span id="cf-n1"></span> ＋ <span id="cf-n2"></span> ＝ <span class="q-mark">？</span>
+    </div>
+
+    <!-- レベル1：1円玉フィールド -->
+    <div id="c-field">
+      <div id="c-blocks"></div>
+    </div>
+
+    <!-- レベル2：段階表示エリア -->
+    <div id="lv2-areas">
+
+      <!-- 被加数行 -->
+      <div class="lv2-row" id="lv2-row1" style="display:none;">
+        <div class="lv2-row-label">①</div>
+        <div class="lv2-col">
+          <div class="lv2-label">10円玉</div>
+          <div class="lv2-slot" id="lv2-r1-ten"></div>
+        </div>
+        <div class="lv2-col">
+          <div class="lv2-label">1円玉</div>
+          <div class="lv2-slot" id="lv2-r1-one"></div>
+        </div>
+      </div>
+
+      <!-- 加数行 -->
+      <div class="lv2-row addend" id="lv2-row2" style="display:none;">
+        <div class="lv2-row-label">②</div>
+        <div class="lv2-col">
+          <div class="lv2-label">10円玉</div>
+          <div class="lv2-slot" id="lv2-r2-ten"></div>
+        </div>
+        <div class="lv2-col">
+          <div class="lv2-label">1円玉</div>
+          <div class="lv2-slot" id="lv2-r2-one"></div>
+        </div>
+      </div>
+
+      <!-- 「合わせる」ボタン -->
+      <div class="btn-row" id="lv2-merge-row" style="display:none;margin-top:.4rem;">
+        <button class="c-add1" id="c-merge" onclick="cMerge()">合わせる ▼</button>
+      </div>
+
+      <!-- 合算後エリア -->
+      <div id="lv2-merged">
+        <div class="lv2-row" id="lv2-merged-row">
+          <div class="lv2-row-label">合</div>
+          <div class="lv2-col">
+            <div class="lv2-label">10円玉</div>
+            <div class="lv2-slot" id="lv2-slot10"></div>
+          </div>
+          <div class="lv2-col">
+            <div class="lv2-label">1円玉</div>
+            <div class="lv2-slot" id="lv2-field">
+              <div id="lv2-blocks"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="btn-row">
+      <button class="c-add1"   id="c-add1"   onclick="cAdd()">1円玉を追加 ＋</button>
+      <button class="c-ryogae" id="c-ryogae" onclick="cRyogae()">両替する 🔄</button>
+      <button class="c-retry"  id="c-retry"  onclick="cRetry()">もう一度 ↺</button>
+      <button class="c-new"    id="c-new"    onclick="cNew()">つぎへ ▶▶</button>
+    </div>
+  </div>
+
+</div><!-- /card -->
+
 <script>
-/* ===== 状態変数 ===== */
-let num1, num2, ones1, ones2, tens1, ones_sum, carry, step;
+/* ══════════════ AUDIO ══════════════ */
+const AC=window.AudioContext||window.webkitAudioContext;
+let _ac=null;
+function getAC(){if(!_ac)_ac=new AC();return _ac;}
+function tone(f,t,d,v,f2){
+  try{
+    const a=getAC(),o=a.createOscillator(),g=a.createGain();
+    o.type=t||'sine';o.connect(g);g.connect(a.destination);
+    o.frequency.setValueAtTime(f,a.currentTime);
+    if(f2)o.frequency.exponentialRampToValueAtTime(f2,a.currentTime+d*.6);
+    g.gain.setValueAtTime(v||.15,a.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,a.currentTime+d);
+    o.start();o.stop(a.currentTime+d);
+  }catch(e){}
+}
+const sPop  =()=>tone(480,'sine',.12,.18,300);
+const sCoin =()=>tone(560,'sine',.13,.15,380);
+const sFloat=()=>tone(440,'sine',.5,.13,700);
+const sPucha=()=>tone(300,'triangle',.28,.22,200);
+const sCalc =()=>tone(820,'square',.11,.07);
+const sExch =()=>{tone(500,'sine',.1,.15);setTimeout(()=>tone(820,'sine',.2,.18),110);};
+const vib   =()=>{try{navigator.vibrate(28);}catch(e){}};
 
-/* ===== Web Audio API ===== */
-const AudioCtx = window.AudioContext || window.webkitAudioContext;
-let actx = null;
-function getAC() { if (!actx) actx = new AudioCtx(); return actx; }
-
-function playPop() {
-  try {
-    const a = getAC(), o = a.createOscillator(), g = a.createGain();
-    o.connect(g); g.connect(a.destination);
-    o.frequency.setValueAtTime(520, a.currentTime);
-    o.frequency.exponentialRampToValueAtTime(300, a.currentTime + 0.09);
-    g.gain.setValueAtTime(0.2, a.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + 0.13);
-    o.start(); o.stop(a.currentTime + 0.13);
-  } catch(e) {}
-}
-function playFloat() {
-  try {
-    const a = getAC(), o = a.createOscillator(), g = a.createGain();
-    o.type = 'sine';
-    o.connect(g); g.connect(a.destination);
-    o.frequency.setValueAtTime(440, a.currentTime);
-    o.frequency.linearRampToValueAtTime(700, a.currentTime + 0.35);
-    g.gain.setValueAtTime(0.14, a.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + 0.55);
-    o.start(); o.stop(a.currentTime + 0.55);
-  } catch(e) {}
-}
-function playPucha() {
-  try {
-    const a = getAC(), o = a.createOscillator(), g = a.createGain();
-    o.type = 'triangle';
-    o.connect(g); g.connect(a.destination);
-    o.frequency.setValueAtTime(300, a.currentTime);
-    o.frequency.exponentialRampToValueAtTime(640, a.currentTime + 0.06);
-    o.frequency.exponentialRampToValueAtTime(200, a.currentTime + 0.22);
-    g.gain.setValueAtTime(0.22, a.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + 0.28);
-    o.start(); o.stop(a.currentTime + 0.28);
-  } catch(e) {}
-}
-function playCalc() {
-  try {
-    const a = getAC(), o = a.createOscillator(), g = a.createGain();
-    o.type = 'square';
-    o.connect(g); g.connect(a.destination);
-    o.frequency.setValueAtTime(820, a.currentTime);
-    g.gain.setValueAtTime(0.07, a.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + 0.11);
-    o.start(); o.stop(a.currentTime + 0.11);
-  } catch(e) {}
+/* ══════════════ TAB ══════════════ */
+function switchTab(mode){
+  document.getElementById('tab-hissan').classList.toggle('active',mode==='hissan');
+  document.getElementById('tab-coin').classList.toggle('active',mode==='coin');
+  document.getElementById('hissan-mode').style.display=mode==='hissan'?'block':'none';
+  document.getElementById('coin-mode').style.display=mode==='coin'?'block':'none';
+  if(mode==='hissan') hNew();
+  else                cNew();
 }
 
-/* ===== Vibration ===== */
-function vibrate() { if (navigator.vibrate) navigator.vibrate(30); }
+/* ══════════════════════════════════
+   ひっ算モード
+══════════════════════════════════ */
+let hN1,hN2,hO1,hO2,hT1,hOS,hCa,hSt;
+const hEl=id=>document.getElementById(id);
+const hTx=(id,t)=>hEl(id).textContent=t;
+const hSh=(id,f)=>hEl(id).style.display=f?'flex':'block';
+const hHi=id=>hEl(id).style.display='none';
 
-/* ===== DOM ユーティリティ ===== */
-function el(id) { return document.getElementById(id); }
-function show(id, flex) { el(id).style.display = flex ? 'flex' : 'block'; }
-function hide(id) { el(id).style.display = 'none'; }
-function setText(id, t) { el(id).textContent = t; }
-function setPos(id, l, t) { el(id).style.left = l + 'px'; el(id).style.top = t + 'px'; }
-
-/* ===== 問題生成 ===== */
-function newProblem() {
-  num1 = Math.floor(Math.random() * 9) + 11;  // 11〜19
-  num2 = Math.floor(Math.random() * 9) + 1;   // 1〜9
-  ones1 = num1 % 10;
-  tens1 = Math.floor(num1 / 10);
-  ones2 = num2;
-  ones_sum = ones1 + ones2;
-  carry = ones_sum >= 10 ? 1 : 0;
-  step = 0;
-
-  /* リセット */
-  setText('cell-t1', tens1); setText('cell-o1', ones1);
-  setText('cell-t2', '');    setText('cell-o2', '');
-  el('cell-t2').style.display = 'none';
-  el('cell-o2').style.display = 'none';
-  el('plus-sign').style.display = 'none';
-  hide('line');
-  hide('sum-temp'); hide('tens-sum-temp');
-  hide('carry-1'); hide('carry-2'); hide('carry-bubble');
-  el('ans-ones').style.display = 'none';
-  el('ans-tens').style.display = 'none';
-  el('carry-1').style.opacity = '1';
-  el('carry-2').style.opacity = '1';
-  el('carry-bubble').style.opacity = '1';
-
-  el('next-btn').style.display = 'none';
-  el('step-btn').style.display = 'inline-block';
-  el('step-btn').disabled = false;
-
-  el('hint').textContent = num1 + ' ＋ ' + num2 + ' を計算しよう！';
-  playPop(); vibrate();
+function hNew(){
+  hN1=Math.floor(Math.random()*9)+11;
+  hN2=Math.floor(Math.random()*9)+1;
+  hO1=hN1%10;hT1=Math.floor(hN1/10);
+  hO2=hN2;hOS=hO1+hO2;hCa=hOS>=10?1:0;hSt=0;
+  hTx('h-t1',hT1);hTx('h-o1',hO1);
+  hTx('h-t2','');hTx('h-o2','');
+  ['h-t2','h-o2','h-plus','h-line','h-sum-temp','h-tens-sum',
+   'h-c1','h-c2','h-cbubble'].forEach(hHi);
+  hEl('h-ao').style.display='none';hEl('h-at').style.display='none';
+  ['h-c1','h-c2','h-cbubble'].forEach(id=>hEl(id).style.opacity='1');
+  hEl('h-new').style.display='none';
+  hEl('h-step').style.display='inline-block';
+  hEl('h-step').disabled=false;
+  hTx('h-hint',hN1+' ＋ '+hN2+' を計算しよう！');
+  sPop();vib();
 }
 
-/* ===== ステップ進行 ===== */
-function nextStep() {
-  vibrate();
-  el('step-btn').disabled = true;
-
-  /* ── ステップ 0：下段・記号・横線を表示 ── */
-  if (step === 0) {
-    el('cell-t2').style.display = 'flex';
-    el('cell-o2').style.display = 'flex';
-    setText('cell-t2', '');
-    setText('cell-o2', ones2);
-    el('plus-sign').style.display = 'flex';
-    show('line');
-    playPop();
-    el('hint').textContent = '一の位どうしを足してみよう：' + ones1 + ' ＋ ' + ones2;
-    step = 1;
-    el('step-btn').disabled = false;
-
-  /* ── ステップ 1：一の位の合計を赤字で表示 ── */
-  } else if (step === 1) {
-    const s = el('sum-temp');
-    s.style.display = 'block';
-    s.style.left = '196px'; s.style.top = '168px';
-    s.textContent = ones_sum;
-    playCalc();
-    if (carry) {
-      el('hint').textContent = ones1 + ' ＋ ' + ones2 + ' ＝ ' + ones_sum + '（繰り上がりあり！）';
-      step = 2;
-    } else {
-      el('hint').textContent = ones1 + ' ＋ ' + ones2 + ' ＝ ' + ones_sum + '（そのまま答えへ）';
-      step = 'nocarry';
+function hStep(){
+  vib();hEl('h-step').disabled=true;
+  if(hSt===0){
+    hEl('h-t2').style.display='flex';hEl('h-o2').style.display='flex';
+    hTx('h-t2','');hTx('h-o2',hO2);
+    hEl('h-plus').style.display='flex';hSh('h-line');
+    sPop();
+    hTx('h-hint','一の位どうしを足してみよう：'+hO1+' ＋ '+hO2);
+    hSt=1;hEl('h-step').disabled=false;
+  }else if(hSt===1){
+    const s=hEl('h-sum-temp');
+    s.style.display='block';s.style.left='196px';s.style.top='168px';
+    s.textContent=hOS;sCalc();
+    if(hCa){
+      hTx('h-hint',hO1+' ＋ '+hO2+' ＝ '+hOS+'（繰り上がりあり！）');hSt=2;
+    }else{
+      hTx('h-hint',hO1+' ＋ '+hO2+' ＝ '+hOS+'（そのまま答えへ）');hSt='nc';
     }
-    setTimeout(() => el('step-btn').disabled = false, 400);
-
-  /* ── 繰り上がりなし：合計をそのまま確定 ── */
-  } else if (step === 'nocarry') {
-    hide('sum-temp');
-    const ao = el('ans-ones');
-    ao.style.display = 'flex'; ao.textContent = ones_sum;
-    const at = el('ans-tens');
-    at.style.display = 'flex'; at.textContent = tens1;
-    playPucha();
-    el('hint').textContent = '答え：' + (num1 + num2) + '　　せいかい！🎉';
-    el('step-btn').style.display = 'none';
-    el('next-btn').style.display = 'inline-block';
-
-  /* ── ステップ 2：1と一の位の数に分離してアニメーション移動 ── */
-  } else if (step === 2) {
-    const c1 = el('carry-1'), c2 = el('carry-2');
-    /* 初期位置（sum-tempと同じ場所） */
-    c1.style.transition = 'none'; c2.style.transition = 'none';
-    c1.style.opacity = '1'; c2.style.opacity = '1';
-    c1.style.left = '196px'; c1.style.top = '168px';
-    c2.style.left = '220px'; c2.style.top = '168px';
-    c1.textContent = '1'; c2.textContent = ones_sum % 10;
-    c1.style.display = 'block'; c2.style.display = 'block';
-    hide('sum-temp');
-    playFloat();
-    el('hint').textContent = '「1」が十の位へ、「' + (ones_sum % 10) + '」が一の位の答えへ移動！';
-
-    /* トランジション有効にして移動 */
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        c1.style.transition = 'left 0.7s ease, top 0.7s ease, opacity 0.5s ease';
-        c2.style.transition = 'left 0.7s ease, top 0.7s ease, opacity 0.5s ease';
-        c1.style.left = '128px'; c1.style.top = '4px';   /* 十の位の上 */
-        c2.style.left = '208px'; c2.style.top = '242px'; /* 一の位の答え */
-      });
-    });
-    step = 3;
-    setTimeout(() => el('step-btn').disabled = false, 800);
-
-  /* ── ステップ 3：一の位の答えを黒字で確定、赤い2を消去 ── */
-  } else if (step === 3) {
-    const c2 = el('carry-2');
-    const ao = el('ans-ones');
-    ao.style.display = 'flex'; ao.textContent = ones_sum % 10;
-    c2.style.opacity = '0';
-    setTimeout(() => hide('carry-2'), 500);
-    playPop();
-    el('hint').textContent = '一の位の答えは「' + (ones_sum % 10) + '」に確定！';
-    step = 4;
-    setTimeout(() => el('step-btn').disabled = false, 500);
-
-  /* ── ステップ 4：十の位の合算（繰り上がりが吸い込まれる） ── */
-  } else if (step === 4) {
-    const ts = el('tens-sum-temp');
-    ts.style.display = 'block';
-    ts.style.left = '118px'; ts.style.top = '168px';
-    ts.textContent = tens1 + 1;
-
-    /* carry-bubble（十の位上にある「1」）を答え方向へ移動して消える演出 */
-    const cb = el('carry-bubble');
-    cb.style.transition = 'none';
-    cb.style.opacity = '1';
-    cb.style.left = '128px'; cb.style.top = '4px';
-    cb.textContent = '１';
-    cb.style.display = 'block';
-    playFloat();
-    el('hint').textContent = tens1 + ' ＋ 繰り上がりの1 ＝ ' + (tens1 + 1);
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        cb.style.transition = 'left 0.6s ease, top 0.6s ease, opacity 0.6s ease';
-        cb.style.top = '168px';
-        cb.style.opacity = '0';
-      });
-    });
-    step = 5;
-    setTimeout(() => el('step-btn').disabled = false, 750);
-
-  /* ── ステップ 5：十の位の答えを確定・完了 ── */
-  } else if (step === 5) {
-    const at = el('ans-tens');
-    at.style.display = 'flex'; at.textContent = tens1 + 1;
-    hide('tens-sum-temp');
-    const c1 = el('carry-1');
-    c1.style.opacity = '0';
-    setTimeout(() => hide('carry-1'), 400);
-    playPucha();
-    el('hint').textContent = '答え：' + (num1 + num2) + '　　せいかい！🎉';
-    el('step-btn').style.display = 'none';
-    el('next-btn').style.display = 'inline-block';
+    setTimeout(()=>hEl('h-step').disabled=false,400);
+  }else if(hSt==='nc'){
+    hHi('h-sum-temp');
+    hEl('h-ao').style.display='flex';hEl('h-ao').textContent=hOS;
+    hEl('h-at').style.display='flex';hEl('h-at').textContent=hT1;
+    sPucha();
+    hTx('h-hint','答え：'+(hN1+hN2)+'　せいかい！');
+    hEl('h-step').style.display='none';hEl('h-new').style.display='inline-block';
+  }else if(hSt===2){
+    const c1=hEl('h-c1'),c2=hEl('h-c2');
+    c1.style.transition='none';c2.style.transition='none';
+    c1.style.opacity='1';c2.style.opacity='1';
+    c1.style.left='196px';c1.style.top='168px';
+    c2.style.left='220px';c2.style.top='168px';
+    c1.textContent='1';c2.textContent=hOS%10;
+    c1.style.display='block';c2.style.display='block';
+    hHi('h-sum-temp');sFloat();
+    hTx('h-hint','「1」が十の位へ、「'+(hOS%10)+'」が一の位の答えへ！');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      c1.style.transition='left .7s ease,top .7s ease,opacity .5s ease';
+      c2.style.transition='left .7s ease,top .7s ease,opacity .5s ease';
+      c1.style.left='128px';c1.style.top='4px';
+      c2.style.left='208px';c2.style.top='242px';
+    }));
+    hSt=3;setTimeout(()=>hEl('h-step').disabled=false,820);
+  }else if(hSt===3){
+    hEl('h-ao').style.display='flex';hEl('h-ao').textContent=hOS%10;
+    hEl('h-c2').style.opacity='0';setTimeout(()=>hHi('h-c2'),500);
+    sPop();
+    hTx('h-hint','一の位の答えは「'+(hOS%10)+'」に確定！');
+    hSt=4;setTimeout(()=>hEl('h-step').disabled=false,500);
+  }else if(hSt===4){
+    const ts=hEl('h-tens-sum');
+    ts.style.display='block';ts.style.left='118px';ts.style.top='168px';
+    ts.textContent=hT1+1;
+    const cb=hEl('h-cbubble');
+    cb.style.transition='none';cb.style.opacity='1';
+    cb.style.left='128px';cb.style.top='4px';cb.textContent='１';cb.style.display='block';
+    sFloat();
+    hTx('h-hint',hT1+' ＋ 繰り上がりの1 ＝ '+(hT1+1));
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      cb.style.transition='top .6s ease,opacity .6s ease';
+      cb.style.top='168px';cb.style.opacity='0';
+    }));
+    hSt=5;setTimeout(()=>hEl('h-step').disabled=false,750);
+  }else if(hSt===5){
+    hEl('h-at').style.display='flex';hEl('h-at').textContent=hT1+1;
+    hHi('h-tens-sum');
+    hEl('h-c1').style.opacity='0';setTimeout(()=>hHi('h-c1'),400);
+    sPucha();
+    hTx('h-hint','答え：'+(hN1+hN2)+'　せいかい！🎉');
+    hEl('h-step').style.display='none';hEl('h-new').style.display='inline-block';
   }
 }
 
-/* ===== 初期化 ===== */
-newProblem();
+/* ══════════════════════════════════
+   硬貨モード（レベル共通）
+══════════════════════════════════ */
+let cN1,cN2,cO1,cO2,cPhase,cLevel=1;
+// phase: 'first'=被加数前, 'second'=加数前, 'done'=追加完了, 'exchanged'=両替済み
+
+/* ── レベル切替 ── */
+function setLevel(lv){
+  cLevel=lv;
+  document.getElementById('lv1-btn').classList.toggle('active',lv===1);
+  document.getElementById('lv2-btn').classList.toggle('active',lv===2);
+  document.getElementById('c-field').style.display   = lv===1?'block':'none';
+  const lv2areas=document.getElementById('lv2-areas');
+  if(lv===2) lv2areas.classList.add('show'); else lv2areas.classList.remove('show');
+  cNew();
+}
+
+/* ── 共通リセット ── */
+function cReset(){
+  // Lv1
+  document.getElementById('c-blocks').innerHTML='';
+  // Lv2 行を非表示・中身クリア
+  ['lv2-row1','lv2-row2','lv2-merge-row'].forEach(id=>{
+    document.getElementById(id).style.display='none';
+  });
+  ['lv2-r1-ten','lv2-r1-one','lv2-r2-ten','lv2-r2-one',
+   'lv2-blocks','lv2-slot10'].forEach(id=>{
+    document.getElementById(id).innerHTML='';
+  });
+  document.getElementById('lv2-slot10').classList.remove('hl');
+  document.getElementById('lv2-merged').classList.remove('show');
+  document.querySelector('#c-formula .q-mark').textContent='？';
+  document.querySelector('#c-formula .q-mark').style.color='var(--accent)';
+  const addBtn=document.getElementById('c-add1');
+  addBtn.style.display='inline-block';
+  addBtn.disabled=false;
+  addBtn.textContent='コインを追加 ＋';
+  document.getElementById('c-merge').style.cssText='';
+  document.getElementById('c-ryogae').style.display='none';
+  document.getElementById('c-retry').style.display='none';
+  document.getElementById('c-new').style.display='none';
+}
+
+/* ── 問題生成 ── */
+function cNew(){
+  if(cLevel===1){
+    // Lv1: 一の位どうしで繰り上がり確定
+    do{
+      cN1=Math.floor(Math.random()*9)+11;
+      cN2=Math.floor(Math.random()*9)+1;
+    }while((cN1%10)+cN2<10);
+    cO1=cN1%10; cO2=cN2;
+    document.getElementById('cf-n1').textContent=cO1;
+    document.getElementById('cf-n2').textContent=cO2;
+  }else{
+    // Lv2: 両方10以上、答えが必ず20超
+    do{
+      cN1=Math.floor(Math.random()*9)+11; // 11〜19
+      cN2=Math.floor(Math.random()*9)+11; // 11〜19
+    }while(cN1+cN2<=20);
+    cO1=cN1%10; cO2=cN2%10;
+    document.getElementById('cf-n1').textContent=cN1;
+    document.getElementById('cf-n2').textContent=cN2;
+  }
+  cPhase='first';
+  cReset();
+  sPop();vib();
+}
+
+function cRetry(){
+  cPhase='first';
+  cReset();
+  sPop();vib();
+}
+
+/* ── 追加ボタン ── */
+function cAdd(){
+  vib();
+  if(cLevel===1){
+    // Lv1 既存ロジック
+    if(cPhase==='first'){
+      cAddCoins(cO1, 'lv1');
+      cPhase='second';
+      document.getElementById('c-add1').textContent=cO2+'まい追加 ＋';
+      sCoin();
+    }else if(cPhase==='second'){
+      cAddCoins(cO2, 'lv1');
+      cPhase='done';
+      document.getElementById('c-add1').disabled=true;
+      const blk=document.querySelector('#c-blocks .blk10');
+      if(blk) blk.classList.add('complete');
+      sCoin();
+      setTimeout(()=>document.getElementById('c-ryogae').style.display='inline-block',400);
+    }
+  }else{
+    // Lv2
+    if(cPhase==='first'){
+      // ① 被加数行を表示（10円玉 + 1円玉）
+      lv2FillSlot('lv2-r1-ten', Math.floor(cN1/10), 'c10');
+      lv2FillSlot('lv2-r1-one', cO1, 'c1');
+      document.getElementById('lv2-row1').style.display='flex';
+      cPhase='second';
+      document.getElementById('c-add1').textContent=cN2+' を追加 ＋';
+      sCoin();
+    }else if(cPhase==='second'){
+      // ② 加数行を表示（10円玉 + 1円玉）
+      lv2FillSlot('lv2-r2-ten', Math.floor(cN2/10), 'c10');
+      lv2FillSlot('lv2-r2-one', cO2, 'c1');
+      document.getElementById('lv2-row2').style.display='flex';
+      // 「合わせる」ボタンを表示、追加ボタンを隠す
+      document.getElementById('c-add1').style.display='none';
+      document.getElementById('lv2-merge-row').style.display='flex';
+      cPhase='merge';
+      sCoin();
+    }
+  }
+}
+
+/* Lv2: スロットにコインを追加
+   slotId: 対象スロットID
+   count:  枚数
+   type:   'c10' or 'c1'
+*/
+function lv2FillSlot(slotId, count, type){
+  const slot=document.getElementById(slotId);
+  for(let i=0;i<count;i++){
+    const c=document.createElement('div');
+    if(type==='c10'){ c.className='c10 drop'; c.textContent='10'; }
+    else            { c.className='c1 drop'; }
+    slot.appendChild(c);
+  }
+}
+
+/* Lv2: 「合わせる」ボタン押下
+   2つの行をフェードアウト → 合算後エリアに再描画
+*/
+function cMerge(){
+  vib(); sCoin();
+  // 両行をフェードアウト
+  const row1=document.getElementById('lv2-row1');
+  const row2=document.getElementById('lv2-row2');
+  [row1,row2].forEach(r=>{
+    r.style.transition='opacity .35s,transform .35s';
+    r.style.opacity='0'; r.style.transform='translateY(6px)';
+  });
+  document.getElementById('lv2-merge-row').style.display='none';
+
+  setTimeout(()=>{
+    row1.style.display='none'; row2.style.display='none';
+
+    // 合算後の枚数を計算
+    const tens10 = Math.floor(cN1/10) + Math.floor(cN2/10);
+    const ones   = cO1 + cO2;
+
+    // 10円玉スロットに表示
+    const slot10=document.getElementById('lv2-slot10');
+    slot10.innerHTML='';
+    for(let i=0;i<tens10;i++){
+      const c=document.createElement('div');
+      c.className='c10 drop'; c.textContent='10'; slot10.appendChild(c);
+    }
+
+    // 1円玉をブロック構造で表示
+    const wrap=document.getElementById('lv2-blocks');
+    wrap.innerHTML='';
+    for(let i=0;i<ones;i++){
+      const total=wrap.querySelectorAll('.c1').length;
+      if(total%10===0){
+        const blk=document.createElement('div'); blk.className='blk-rest'; wrap.appendChild(blk);
+      }
+      const restBlk=wrap.querySelector('.blk-rest:last-child');
+      const c=document.createElement('div'); c.className='c1 drop'; restBlk.appendChild(c);
+      if(restBlk.querySelectorAll('.c1').length===10){
+        restBlk.classList.remove('blk-rest'); restBlk.classList.add('blk10');
+      }
+    }
+
+    // 合算後エリアを表示
+    document.getElementById('lv2-merged').classList.add('show');
+    sPop();
+
+    // 1円玉が10枚以上なら両替ボタン
+    if(ones>=10){
+      const blk=wrap.querySelector('.blk10');
+      if(blk) blk.classList.add('complete');
+      setTimeout(()=>document.getElementById('c-ryogae').style.display='inline-block',400);
+    }else{
+      lv2Finish();
+    }
+    cPhase='done';
+  },400);
+}
+
+/* Lv2: 両替完了後の仕上げ */
+function lv2Finish(){
+  const ans=cN1+cN2;
+  document.querySelector('#c-formula .q-mark').textContent=ans;
+  document.querySelector('#c-formula .q-mark').style.color='var(--green)';
+  document.getElementById('c-add1').style.display='none';
+  document.getElementById('c-ryogae').style.display='none';
+  document.getElementById('c-retry').style.display='inline-block';
+  document.getElementById('c-new').style.display='inline-block';
+  cPhase='exchanged';
+}
+
+/* 1円玉をグリッドブロック構造で追加
+   lv='lv1' → #c-blocks, lv='lv2' → #lv2-blocks
+*/
+function cAddCoins(count, lv){
+  const wrapId = (lv==='lv2') ? 'lv2-blocks' : 'c-blocks';
+  const wrap=document.getElementById(wrapId);
+
+  for(let i=0;i<count;i++){
+    const total=wrap.querySelectorAll('.c1').length;
+    const posInBlock=total%10;
+
+    if(posInBlock===0){
+      const blk=document.createElement('div');
+      blk.className='blk-rest';
+      wrap.appendChild(blk);
+    }
+
+    let restBlk=wrap.querySelector('.blk-rest:last-child');
+    const c=document.createElement('div');
+    c.className='c1 drop';
+    restBlk.appendChild(c);
+
+    if(restBlk.querySelectorAll('.c1').length===10){
+      restBlk.classList.remove('blk-rest');
+      restBlk.classList.add('blk10');
+    }
+  }
+}
+
+/* 両替（Lv1/Lv2共通） */
+function cRyogae(){
+  vib(); sExch();
+  if(cLevel===1){
+    const wrap=document.getElementById('c-blocks');
+    const blk10=wrap.querySelector('.blk10.complete,.blk10');
+    if(!blk10) return;
+    blk10.style.transition='opacity .35s';
+    blk10.style.opacity='0';
+    setTimeout(()=>{
+      blk10.remove();
+      const tenWrap=document.createElement('div');
+      tenWrap.style.cssText='display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;';
+      const c10=document.createElement('div');
+      c10.className='c10'; c10.textContent='10';
+      tenWrap.appendChild(c10);
+      wrap.insertBefore(tenWrap,wrap.firstChild);
+      sPucha();
+      const qm=document.querySelector('#c-formula .q-mark');
+      qm.textContent=cO1+cO2; qm.style.color='var(--green)';
+      document.getElementById('c-add1').style.display='none';
+      document.getElementById('c-ryogae').style.display='none';
+      document.getElementById('c-retry').style.display='inline-block';
+      document.getElementById('c-new').style.display='inline-block';
+      cPhase='exchanged';
+    },380);
+  }else{
+    // Lv2: lv2-blocks の blk10 を消して lv2-slot10 に10円玉追加
+    const wrap=document.getElementById('lv2-blocks');
+    const blk10=wrap.querySelector('.blk10.complete,.blk10');
+    if(!blk10) return;
+    blk10.style.transition='opacity .35s';
+    blk10.style.opacity='0';
+    setTimeout(()=>{
+      blk10.remove();
+      const slot10=document.getElementById('lv2-slot10');
+      const c10=document.createElement('div');
+      c10.className='c10 drop'; c10.textContent='10';
+      slot10.appendChild(c10);
+      slot10.classList.add('hl');
+      setTimeout(()=>slot10.classList.remove('hl'),600);
+      sPucha();
+      // 残り1円玉が10枚以上ならまだ両替できる
+      setTimeout(()=>{
+        const ones=wrap.querySelectorAll('.c1').length;
+        if(ones>=10){
+          const nxtBlk=wrap.querySelector('.blk10');
+          if(nxtBlk) nxtBlk.classList.add('complete');
+          document.getElementById('c-ryogae').style.display='inline-block';
+        }else{
+          lv2Finish();
+        }
+      },300);
+    },380);
+  }
+}
+
+/* ══ 起動 ══ */
+hNew();
 </script>
 </body>
 </html>
