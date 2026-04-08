@@ -583,10 +583,15 @@ function setLevel(lv){
 function cReset(){
   // Lv1
   document.getElementById('c-blocks').innerHTML='';
-  // Lv2 行を非表示・中身クリア
-  ['lv2-row1','lv2-row2','lv2-merge-row'].forEach(id=>{
-    document.getElementById(id).style.display='none';
+  // Lv2 行を非表示・中身クリア（opacity/transformも必ずリセット）
+  ['lv2-row1','lv2-row2'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.style.display='none';
+    el.style.opacity='1';
+    el.style.transform='none';
+    el.style.transition='none';
   });
+  document.getElementById('lv2-merge-row').style.display='none';
   ['lv2-r1-ten','lv2-r1-one','lv2-r2-ten','lv2-r2-one',
    'lv2-blocks','lv2-slot10'].forEach(id=>{
     document.getElementById(id).innerHTML='';
@@ -607,6 +612,8 @@ function cReset(){
 
 /* ── 問題生成 ── */
 function cNew(){
+  cReset();
+  cPhase='first';
   if(cLevel===1){
     // Lv1: 一の位どうしで繰り上がり確定
     do{
@@ -619,21 +626,19 @@ function cNew(){
   }else{
     // Lv2: 両方10以上、答えが必ず20超
     do{
-      cN1=Math.floor(Math.random()*9)+11; // 11〜19
-      cN2=Math.floor(Math.random()*9)+11; // 11〜19
+      cN1=Math.floor(Math.random()*9)+11;
+      cN2=Math.floor(Math.random()*9)+11;
     }while(cN1+cN2<=20);
     cO1=cN1%10; cO2=cN2%10;
     document.getElementById('cf-n1').textContent=cN1;
     document.getElementById('cf-n2').textContent=cN2;
   }
-  cPhase='first';
-  cReset();
   sPop();vib();
 }
 
 function cRetry(){
-  cPhase='first';
   cReset();
+  cPhase='first';
   sPop();vib();
 }
 
