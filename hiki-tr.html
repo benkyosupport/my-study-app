@@ -2,234 +2,586 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>10の補数トレーニング</title>
 <style>
-body { margin:0; display:flex; justify-content:center; align-items:center; height:100vh; background:#fff; }
-#app { width:800px; height:600px; position:relative; transform-origin:top left; }
-#formula { position:absolute; top:40px; width:100%; text-align:center; font-size:48px; }
-#vibrationControl { position:absolute; top:10px; right:10px; font-size:16px; }
-#modeControl { position:absolute; top:10px; left:10px; font-size:16px; }
-#dots { position:absolute; top:200px; left:50%; transform:translateX(-50%); display:grid; grid-template-columns:repeat(5,32px); grid-auto-rows:32px; gap:16px; }
-.dot { width:32px; height:32px; border-radius:50%; background:#000; transition: background 0.12s linear; }
-.light { background:rgba(0,0,0,0.2); }
-.red { background:#e60000; }
-@keyframes blinkScale {
-  0%   { transform:scale(1);   background:rgba(0,0,0,0.2); }
-  25%  { transform:scale(1.2); background:#000; }
-  50%  { transform:scale(1);   background:rgba(0,0,0,0.2); }
-  75%  { transform:scale(1.2); background:#000; }
-  100% { transform:scale(1);   background:#e60000; }
-}
-.animate { animation:blinkScale 0.3s ease; }
-#button { position:absolute; bottom:20px; left:50%; transform:translateX(-50%); width:200px; height:60px; font-size:24px; }
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap');
+
+  :root {
+    --blue:   #1a6fc4;
+    --blue-light: #d6eaff;
+    --red:    #e63030;
+    --red-light: #ffe0e0;
+    --gray:   #bfc8d6;
+    --gray-light: #f0f3f7;
+    --bg:     #f5f7fa;
+    --text:   #1a2233;
+    --frame-border: #c8d4e4;
+    --frame-bg: #eef2f8;
+    --white:  #ffffff;
+    --shadow: 0 4px 24px rgba(26,111,196,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  #app {
+    width: 800px;
+    height: 560px;
+    position: relative;
+    transform-origin: top left;
+    background: var(--white);
+    border-radius: 28px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 32px 20px;
+    gap: 0;
+  }
+
+  /* ── トップバー ── */
+  #topbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #6b7a99;
+  }
+
+  .control-group select {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+    background: var(--gray-light);
+    border: 2px solid var(--frame-border);
+    border-radius: 10px;
+    padding: 4px 10px;
+    cursor: pointer;
+    outline: none;
+  }
+
+  /* ── 式エリア ── */
+  #formula-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: 8px 0 18px;
+  }
+
+  .formula-part {
+    font-size: 64px;
+    font-weight: 900;
+    color: var(--text);
+    line-height: 1;
+    transition: color 0.2s;
+  }
+
+  .formula-part.answer {
+    color: var(--red);
+  }
+
+  .formula-part.blank {
+    color: var(--gray);
+  }
+
+  /* ── テンフレームエリア ── */
+  #tenframe-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 補数モード: 1つのテンフレーム */
+  #tenframe {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 10px;
+    background: var(--frame-bg);
+    border: 3px solid var(--frame-border);
+    border-radius: 18px;
+    padding: 14px;
+  }
+
+  .cell {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    background: var(--frame-bg);
+    border: 2.5px dashed var(--frame-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dot {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    position: absolute;
+  }
+
+  .dot.blue {
+    background: var(--blue);
+    box-shadow: 0 3px 8px rgba(26,111,196,0.30);
+  }
+
+  .dot.red {
+    background: var(--red);
+    box-shadow: 0 3px 8px rgba(230,48,48,0.30);
+  }
+
+  .dot.empty { display: none; }
+
+  /* ひき算 step1: 引く対象を薄い赤で示す */
+  .dot.red-hint {
+    background: rgba(230, 48, 48, 0.28);
+    box-shadow: none;
+  }
+
+  /* 補数アニメ: 上から落ちてくる */
+  @keyframes dropIn {
+    0%   { transform: translateY(-60px) scale(0.6); opacity: 0; }
+    60%  { transform: translateY(6px) scale(1.08); opacity: 1; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+  }
+
+  .dot.animate-drop {
+    animation: dropIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+
+  /* ひき算アニメ: 縮んで消える */
+  @keyframes shrinkOut {
+    0%   { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0); opacity: 0; }
+  }
+
+  .dot.animate-shrink {
+    animation: shrinkOut 0.3s ease-in forwards;
+  }
+
+  /* ── ひき算用テンフレーム（2フレーム並び） ── */
+  #sub-frames {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .sub-frame {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 8px;
+    background: var(--frame-bg);
+    border: 3px solid var(--frame-border);
+    border-radius: 18px;
+    padding: 10px;
+  }
+
+  .sub-frame .cell {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+  }
+
+  .sub-frame .dot {
+    width: 34px;
+    height: 34px;
+  }
+
+  /* ── ボタン ── */
+  #btn {
+    margin-top: 18px;
+    width: 280px;
+    height: 72px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 30px;
+    font-weight: 900;
+    color: white;
+    background: var(--blue);
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #1255a0, 0 8px 16px rgba(26,111,196,0.25);
+    transition: transform 0.08s, box-shadow 0.08s;
+    letter-spacing: 0.02em;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #1255a0, 0 4px 8px rgba(26,111,196,0.20);
+  }
+
+  #btn.next {
+    background: #27ae60;
+    box-shadow: 0 6px 0 #1a8048, 0 8px 16px rgba(39,174,96,0.25);
+  }
+
+  #btn.next:active {
+    box-shadow: 0 2px 0 #1a8048, 0 4px 8px rgba(39,174,96,0.20);
+  }
 </style>
 </head>
 <body>
 <div id="app">
-  <div id="formula"></div>
-  <div id="modeControl">
-    モード：
-    <select id="modeSelect">
-      <option value="1">補数</option>
-      <option value="2">ひき算</option>
-    </select>
-  </div>
-  <div id="vibrationControl">
-    振動：
-    <select id="vibrationSelect">
-      <option value="0">OFF</option>
-      <option value="1">弱</option>
-      <option value="2" selected>中</option>
-      <option value="3">強</option>
-    </select>
-  </div>
-  <div id="dots"></div>
-  <button id="button">進む</button>
-</div>
-<script>
-let mode = 1;
-let step = 0;
-let a = 0;
-let b = 0;
-let animating = false;
-let prevA = null;
-let vibrationLevel = 2;
 
+  <!-- トップバー -->
+  <div id="topbar">
+    <div class="control-group">
+      モード
+      <select id="modeSelect">
+        <option value="1">補数</option>
+        <option value="2">ひき算</option>
+      </select>
+    </div>
+    <div class="control-group">
+      振動
+      <select id="vibrationSelect">
+        <option value="0">OFF</option>
+        <option value="1">弱</option>
+        <option value="2" selected>中</option>
+        <option value="3">強</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 式エリア（JS で生成） -->
+  <div id="formula-area"></div>
+
+  <!-- テンフレームエリア（JS で切り替え） -->
+  <div id="tenframe-area"></div>
+
+  <!-- ボタン -->
+  <button id="btn">こたえは？</button>
+
+</div>
+
+<script>
+// ── 状態 ──────────────────────────────
+let mode = 1;        // 1=補数, 2=ひき算
+let step = 0;        // 0=問題, 1=解答
+let a = 0, b = 0;
+let prevA = null;
+let animating = false;
+let vibrationLevel = 2;
 let audioCtx = null;
-function playClickSound(){
-  if(!audioCtx){ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+
+// ── セレクタ ──────────────────────────
+const modeSelect      = document.getElementById('modeSelect');
+const vibrationSelect = document.getElementById('vibrationSelect');
+const formulaArea     = document.getElementById('formula-area');
+const tenframeArea    = document.getElementById('tenframe-area');
+const btn             = document.getElementById('btn');
+
+// ── Audio ─────────────────────────────
+function playSound(type) {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   const ctx = audioCtx;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
-  osc.type = "sine";
-  osc.frequency.setValueAtTime(600, ctx.currentTime);
-  gain.gain.setValueAtTime(0.2, ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start();
-  osc.stop(ctx.currentTime + 0.08);
+  if (type === 'tap') {
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(520, ctx.currentTime);
+    gain.gain.setValueAtTime(0.18, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + 0.08);
+  } else if (type === 'reveal') {
+    // 明るい2音
+    [0, 0.07].forEach((t, i) => {
+      const o2 = ctx.createOscillator();
+      const g2 = ctx.createGain();
+      o2.type = 'triangle';
+      o2.frequency.setValueAtTime(i === 0 ? 660 : 880, ctx.currentTime + t);
+      g2.gain.setValueAtTime(0.15, ctx.currentTime + t);
+      g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.12);
+      o2.connect(g2); g2.connect(ctx.destination);
+      o2.start(ctx.currentTime + t);
+      o2.stop(ctx.currentTime + t + 0.12);
+    });
+  }
 }
 
-function vibrate(){
-  if(!navigator.vibrate) return;
-  switch(vibrationLevel){
+function vibrate() {
+  if (!navigator.vibrate) return;
+  switch (vibrationLevel) {
     case 1: navigator.vibrate(30); break;
     case 2: navigator.vibrate(80); break;
-    case 3: navigator.vibrate([150,50,150]); break;
+    case 3: navigator.vibrate([150, 50, 150]); break;
   }
 }
 
-document.getElementById("vibrationSelect").onchange = (e)=>{
-  vibrationLevel = parseInt(e.target.value);
-};
-
-document.getElementById("modeSelect").onchange = (e)=>{
-  mode = parseInt(e.target.value);
-  step = 0;
-  generate();
-  render();
-};
-
-function generateComplement(){
-  do {
-    a = Math.floor(Math.random()*9)+1;
-  } while(a === prevA);
-  prevA = a;
-  b = 10 - a;
-}
-
-function generateSubtraction(){
-  do {
-    a = Math.floor(Math.random()*8) + 11;
-    b = Math.floor(Math.random()*8) + 2;
-  } while((a % 10) >= b);
-  prevA = a;
-}
-
-function generate(){
-  if(mode === 1){
-    generateComplement();
+// ── 問題生成 ──────────────────────────
+function generate() {
+  if (mode === 1) {
+    do { a = Math.floor(Math.random() * 9) + 1; } while (a === prevA);
+    prevA = a;
+    b = 10 - a;
   } else {
-    generateSubtraction();
+    // ひき算: a=11〜18, b=2〜9, (a%10) < b (繰り下がりあり)
+    let tries = 0;
+    do {
+      a = Math.floor(Math.random() * 8) + 11;
+      b = Math.floor(Math.random() * 8) + 2;
+      tries++;
+    } while ((a % 10) >= b && tries < 100);
   }
 }
 
-function renderComplement(){
-  const formula = document.getElementById("formula");
-  const dots = document.getElementById("dots");
-  dots.innerHTML = "";
-  dots.style.display = "grid";
-  dots.style.gridTemplateColumns = "repeat(5,32px)";
-  dots.style.gridAutoRows = "32px";
-  dots.style.gap = "16px";
+// ── 式の描画 ──────────────────────────
+function renderFormula() {
+  formulaArea.innerHTML = '';
+  const make = (text, cls) => {
+    const span = document.createElement('span');
+    span.className = 'formula-part' + (cls ? ' ' + cls : '');
+    span.textContent = text;
+    return span;
+  };
 
-  if(step === 0){
-    formula.innerText = `${a} + □ = 10`;
+  if (mode === 1) {
+    formulaArea.appendChild(make(a));
+    formulaArea.appendChild(make(' ＋ '));
+    if (step === 0) {
+      formulaArea.appendChild(make('□', 'blank'));
+    } else {
+      formulaArea.appendChild(make(b, 'answer'));
+    }
+    formulaArea.appendChild(make(' ＝ '));
+    formulaArea.appendChild(make('10'));
   } else {
-    formula.innerText = `${a} + ${b} = 10`;
+    const ans = a - b;
+    formulaArea.appendChild(make(a));
+    formulaArea.appendChild(make(' － '));
+    formulaArea.appendChild(make(b));
+    formulaArea.appendChild(make(' ＝ '));
+    if (step === 0) {
+      formulaArea.appendChild(make('□', 'blank'));
+    } else {
+      formulaArea.appendChild(make(ans, 'answer'));
+    }
   }
+}
 
-  for(let i=0;i<10;i++){
-    const d = document.createElement("div");
-    d.className = "dot";
-    if(i >= a){
-      if(step === 0){
-        d.classList.add("light");
+// ── テンフレーム描画（補数モード）──────
+function buildCell(colorClass, animClass) {
+  const cell = document.createElement('div');
+  cell.className = 'cell';
+  const dot = document.createElement('div');
+  dot.className = 'dot ' + colorClass + (animClass ? ' ' + animClass : '');
+  cell.appendChild(dot);
+  return cell;
+}
+
+function renderComplement() {
+  tenframeArea.innerHTML = '';
+  const frame = document.createElement('div');
+  frame.id = 'tenframe';
+
+  for (let i = 0; i < 10; i++) {
+    let colorClass, animClass = '';
+    if (i < a) {
+      colorClass = 'blue';
+    } else {
+      if (step === 0) {
+        colorClass = 'empty';
       } else {
-        d.classList.add("light");
-        d.classList.add("animate");
-        d.addEventListener("animationend", ()=>{
-          d.classList.remove("light");
-          d.classList.remove("animate");
-          d.classList.add("red");
-        }, {once:true});
+        colorClass = 'red';
+        // 各セルに遅延をつけて順番に落ちてくる
+        animClass = 'animate-drop';
       }
     }
-    dots.appendChild(d);
+    const cell = buildCell(colorClass, animClass);
+    if (step === 1 && i >= a) {
+      const dot = cell.querySelector('.dot');
+      dot.style.animationDelay = ((i - a) * 0.06) + 's';
+    }
+    frame.appendChild(cell);
   }
+  tenframeArea.appendChild(frame);
 }
 
-function renderSubtraction(){
-  const formula = document.getElementById("formula");
-  const dots = document.getElementById("dots");
-  dots.innerHTML = "";
+// ── テンフレーム描画（ひき算モード）──────
+function renderSubtraction() {
+  tenframeArea.innerHTML = '';
+  const wrapper = document.createElement('div');
+  wrapper.id = 'sub-frames';
 
-  const answer = a - b;
+  const ans = a - b;
 
-  if(step === 0){
-    formula.innerText = `${a} - ${b} = □`;
-  } else {
-    formula.innerText = `${a} - ${b} = ${answer}`;
+  for (let f = 0; f < 2; f++) {
+    const frame = document.createElement('div');
+    frame.className = 'sub-frame';
+
+    for (let i = 0; i < 10; i++) {
+      const globalIdx = f * 10 + i;
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      const dot = document.createElement('div');
+
+      if (globalIdx < a) {
+        const isTarget = globalIdx >= ans;
+        if (step === 0) {
+          dot.className = 'dot blue';
+        } else if (step === 1) {
+          dot.className = isTarget ? 'dot red-hint' : 'dot blue';
+        } else {
+          // step === 2: 引く対象が縮んで消える
+          dot.className = isTarget ? 'dot blue animate-shrink' : 'dot blue';
+          if (isTarget) {
+            dot.style.animationDelay = ((globalIdx - ans) * 0.04) + 's';
+          }
+        }
+      } else {
+        dot.className = 'dot empty';
+      }
+
+      cell.appendChild(dot);
+      frame.appendChild(cell);
+    }
+    wrapper.appendChild(frame);
   }
 
-  const size = (a >= 16) ? 24 : 32;
-  const gap  = (a >= 16) ? 12 : 16;
-
-  dots.style.display = "flex";
-  dots.style.gridTemplateColumns = "";
-  dots.style.gridAutoRows = "";
-  dots.style.gap = gap + "px";
-  dots.style.flexWrap = "nowrap";
-  dots.style.alignItems = "center";
-
-  for(let i=0;i<a;i++){
-    const d = document.createElement("div");
-    d.className = "dot";
-    d.style.width  = size + "px";
-    d.style.height = size + "px";
-    d.style.flexShrink = "0";
-
-    if(step === 1 && i >= a - b){
-      d.style.background = "rgba(230,0,0,0.3)";
-    }
-
-    dots.appendChild(d);
-
-    if(i === 9){
-      const sep = document.createElement("div");
-      sep.style.width      = "2px";
-      sep.style.height     = size + "px";
-      sep.style.background = "rgba(0,0,0,0.2)";
-      sep.style.flexShrink = "0";
-      dots.appendChild(sep);
-    }
-  }
+  tenframeArea.appendChild(wrapper);
 }
 
-function render(){
-  if(mode === 1){
+// ── メインレンダー ────────────────────
+function render() {
+  renderFormula();
+  if (mode === 1) {
     renderComplement();
   } else {
     renderSubtraction();
   }
+  // ボタン
+  if (mode === 1) {
+    // 補数モード: step 0/1
+    if (step === 0) {
+      btn.textContent = 'こたえは？';
+      btn.classList.remove('next');
+    } else {
+      btn.textContent = 'つぎへ →';
+      btn.classList.add('next');
+    }
+  } else {
+    // ひき算モード: step 0/1/2
+    if (step === 0) {
+      btn.textContent = b + ' 引くと？';
+      btn.classList.remove('next');
+    } else if (step === 1) {
+      btn.textContent = 'こたえは？';
+      btn.classList.remove('next');
+    } else {
+      btn.textContent = 'つぎへ →';
+      btn.classList.add('next');
+    }
+  }
 }
 
-document.getElementById("button").onclick = () => {
-  if(animating) return;
-  playClickSound();
-  vibrate();
-  if(step === 0){
-    step = 1;
-    render();
-    animating = true;
-    setTimeout(()=>{ animating = false; }, 300);
-  } else {
-    step = 0;
-    generate();
-    render();
-  }
-};
+// ── ボタン ────────────────────────────
+btn.addEventListener('click', () => {
+  if (animating) return;
+  playSound('tap');
 
-function resize(){
+  if (mode === 1) {
+    // 補数モード: 0→1→次問題
+    if (step === 0) {
+      step = 1;
+      animating = true;
+      render();
+      const maxDelay = b * 0.06 + 0.35;
+      setTimeout(() => {
+        animating = false;
+        playSound('reveal');
+        vibrate();
+      }, maxDelay * 1000);
+    } else {
+      step = 0;
+      generate();
+      render();
+    }
+  } else {
+    // ひき算モード: 0→1→2→次問題
+    if (step === 0) {
+      // ヒント表示（薄い赤）: アニメなし
+      step = 1;
+      render();
+    } else if (step === 1) {
+      // 消えるアニメ → 答え表示
+      step = 2;
+      animating = true;
+      render();
+      const maxDelay = b * 0.04 + 0.30;
+      setTimeout(() => {
+        animating = false;
+        playSound('reveal');
+        vibrate();
+      }, maxDelay * 1000);
+    } else {
+      step = 0;
+      generate();
+      render();
+    }
+  }
+});
+
+// ── セレクト変更 ──────────────────────
+modeSelect.addEventListener('change', (e) => {
+  mode = parseInt(e.target.value);
+  step = 0;
+  prevA = null;
+  generate();
+  render();
+});
+
+vibrationSelect.addEventListener('change', (e) => {
+  vibrationLevel = parseInt(e.target.value);
+});
+
+// ── リサイズ ──────────────────────────
+function resize() {
   const scale = Math.min(
     window.innerWidth  / 800,
-    window.innerHeight / 600
+    window.innerHeight / 560
   );
-  document.getElementById("app").style.transform = `scale(${scale})`;
+  const app = document.getElementById('app');
+  app.style.transform = `scale(${scale})`;
+  // スケール後のセンタリング
+  const w = 800 * scale;
+  const h = 560 * scale;
+  app.style.position = 'fixed';
+  app.style.left = ((window.innerWidth  - w) / 2) + 'px';
+  app.style.top  = ((window.innerHeight - h) / 2) + 'px';
 }
-window.addEventListener("resize", resize);
+window.addEventListener('resize', resize);
 
+// ── 初期化 ────────────────────────────
 generate();
 render();
 resize();
