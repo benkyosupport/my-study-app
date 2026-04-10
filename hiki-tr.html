@@ -8,18 +8,19 @@
   @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap');
 
   :root {
-    --blue:   #1a6fc4;
-    --blue-light: #d6eaff;
-    --red:    #e63030;
-    --red-light: #ffe0e0;
-    --gray:   #bfc8d6;
-    --gray-light: #f0f3f7;
-    --bg:     #f5f7fa;
-    --text:   #1a2233;
-    --frame-border: #c8d4e4;
-    --frame-bg: #eef2f8;
-    --white:  #ffffff;
-    --shadow: 0 4px 24px rgba(26,111,196,0.10);
+    --blue:        #1a6fc4;
+    --blue-dark:   #1255a0;
+    --red:         #e63030;
+    --green:       #27ae60;
+    --green-dark:  #1a8048;
+    --gray:        #bfc8d6;
+    --gray-light:  #f0f3f7;
+    --bg:          #f5f7fa;
+    --text:        #1a2233;
+    --frame-border:#c8d4e4;
+    --frame-bg:    #eef2f8;
+    --white:       #ffffff;
+    --shadow:      0 4px 24px rgba(26,111,196,0.10);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -45,8 +46,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 24px 32px 20px;
-    gap: 0;
+    padding: 20px 32px 16px;
   }
 
   /* ── トップバー ── */
@@ -55,7 +55,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .control-group {
@@ -85,8 +85,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 16px;
-    margin: 8px 0 18px;
+    gap: 12px;
+    margin: 4px 0 12px;
+    min-height: 72px;
   }
 
   .formula-part {
@@ -97,12 +98,15 @@
     transition: color 0.2s;
   }
 
-  .formula-part.answer {
-    color: var(--red);
-  }
+  .formula-part.answer { color: var(--red); }
+  .formula-part.blank  { color: var(--gray); }
 
-  .formula-part.blank {
-    color: var(--gray);
+  /* 入力中の数字（カーソル点滅） */
+  .formula-part.inputting {
+    color: var(--blue);
+    border-bottom: 4px solid var(--blue);
+    min-width: 48px;
+    text-align: center;
   }
 
   /* ── テンフレームエリア ── */
@@ -112,6 +116,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 100%;
   }
 
   /* 補数モード: 1つのテンフレーム */
@@ -146,119 +151,187 @@
     position: absolute;
   }
 
-  .dot.blue {
-    background: var(--blue);
-    box-shadow: 0 3px 8px rgba(26,111,196,0.30);
-  }
-
-  .dot.red {
-    background: var(--red);
-    box-shadow: 0 3px 8px rgba(230,48,48,0.30);
-  }
-
+  .dot.blue  { background: var(--blue); box-shadow: 0 3px 8px rgba(26,111,196,0.30); }
+  .dot.red   { background: var(--red);  box-shadow: 0 3px 8px rgba(230,48,48,0.30); }
   .dot.empty { display: none; }
+  .dot.red-hint { background: rgba(230,48,48,0.28); box-shadow: none; }
 
-  /* ひき算 step1: 引く対象を薄い赤で示す */
-  .dot.red-hint {
-    background: rgba(230, 48, 48, 0.28);
-    box-shadow: none;
-  }
-
-  /* 補数アニメ: 上から落ちてくる */
   @keyframes dropIn {
     0%   { transform: translateY(-60px) scale(0.6); opacity: 0; }
     60%  { transform: translateY(6px) scale(1.08); opacity: 1; }
     100% { transform: translateY(0) scale(1); opacity: 1; }
   }
+  .dot.animate-drop { animation: dropIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards; }
 
-  .dot.animate-drop {
-    animation: dropIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;
-  }
-
-  /* ひき算アニメ: 縮んで消える */
   @keyframes shrinkOut {
     0%   { transform: scale(1); opacity: 1; }
     100% { transform: scale(0); opacity: 0; }
   }
+  .dot.animate-shrink { animation: shrinkOut 0.3s ease-in forwards; }
 
-  .dot.animate-shrink {
-    animation: shrinkOut 0.3s ease-in forwards;
-  }
-
-  /* ── ひき算用テンフレーム（2フレーム並び） ── */
+  /* ひき算・入力モード用テンフレーム群 */
   #sub-frames {
     display: flex;
     gap: 10px;
-    align-items: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .sub-frame {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(2, 1fr);
-    gap: 8px;
     background: var(--frame-bg);
     border: 3px solid var(--frame-border);
     border-radius: 18px;
-    padding: 10px;
   }
 
-  .sub-frame .cell {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
+  /* ── エラー表示 ── */
+  #error-msg {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--red);
+    text-align: center;
+    padding: 12px;
+    display: none;
   }
 
-  .sub-frame .dot {
-    width: 34px;
-    height: 34px;
+  /* ── ボタンエリア ── */
+  #bottom-area {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
   }
 
-  /* ── ボタン ── */
-  #btn {
-    margin-top: 18px;
-    width: 280px;
-    height: 72px;
+  /* テンキー */
+  #numpad {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .numpad-btn {
     font-family: 'Nunito', sans-serif;
-    font-size: 30px;
+    font-size: 24px;
+    font-weight: 900;
+    height: 56px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    background: var(--gray-light);
+    color: var(--text);
+    border-bottom: 4px solid var(--frame-border);
+    transition: transform 0.07s, border-bottom 0.07s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .numpad-btn:active {
+    transform: translateY(3px);
+    border-bottom: 1px solid var(--frame-border);
+  }
+
+  .numpad-btn.del        { background: #fde8e8; color: var(--red); border-bottom-color: #f5b8b8; }
+  .numpad-btn.next-phase { background: #e8f4fd; color: var(--blue); border-bottom-color: #b8d8f5; font-size: 18px; }
+  .numpad-btn.next-phase:disabled { opacity: 0.35; }
+  .numpad-btn.calc       { background: var(--blue); color: white; border-bottom-color: var(--blue-dark); grid-column: span 4; font-size: 22px; }
+  .numpad-btn.calc:active { border-bottom: 1px solid var(--blue-dark); }
+
+  /* メインボタン（補数・ひき算モード） */
+  #btn {
+    width: 280px;
+    height: 68px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 28px;
     font-weight: 900;
     color: white;
     background: var(--blue);
     border: none;
     border-radius: 20px;
     cursor: pointer;
-    box-shadow: 0 6px 0 #1255a0, 0 8px 16px rgba(26,111,196,0.25);
+    box-shadow: 0 6px 0 var(--blue-dark), 0 8px 16px rgba(26,111,196,0.25);
     transition: transform 0.08s, box-shadow 0.08s;
-    letter-spacing: 0.02em;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    display: block;
   }
 
   #btn:active {
     transform: translateY(4px);
-    box-shadow: 0 2px 0 #1255a0, 0 4px 8px rgba(26,111,196,0.20);
+    box-shadow: 0 2px 0 var(--blue-dark), 0 4px 8px rgba(26,111,196,0.20);
   }
 
   #btn.next {
-    background: #27ae60;
-    box-shadow: 0 6px 0 #1a8048, 0 8px 16px rgba(39,174,96,0.25);
+    background: var(--green);
+    box-shadow: 0 6px 0 var(--green-dark), 0 8px 16px rgba(39,174,96,0.25);
   }
 
   #btn.next:active {
-    box-shadow: 0 2px 0 #1a8048, 0 4px 8px rgba(39,174,96,0.20);
+    box-shadow: 0 2px 0 var(--green-dark), 0 4px 8px rgba(39,174,96,0.20);
+  }
+
+  /* もどるボタン（入力モードの計算後） */
+  #back-btn {
+    font-family: 'Nunito', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #6b7a99;
+    background: var(--gray-light);
+    border: 2px solid var(--frame-border);
+    border-radius: 14px;
+    padding: 8px 24px;
+    cursor: pointer;
+    display: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ひき算ステップのボタン（入力モードで計算後に使う） */
+  #step-btn {
+    width: 280px;
+    height: 68px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: white;
+    background: var(--blue);
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 6px 0 var(--blue-dark), 0 8px 16px rgba(26,111,196,0.25);
+    transition: transform 0.08s, box-shadow 0.08s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    display: none;
+  }
+
+  #step-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 var(--blue-dark), 0 4px 8px rgba(26,111,196,0.20);
+  }
+
+  #step-btn.next {
+    background: var(--green);
+    box-shadow: 0 6px 0 var(--green-dark), 0 8px 16px rgba(39,174,96,0.25);
   }
 </style>
 </head>
 <body>
 <div id="app">
 
-  <!-- トップバー -->
   <div id="topbar">
     <div class="control-group">
       モード
       <select id="modeSelect">
         <option value="1">補数</option>
         <option value="2">ひき算</option>
+        <option value="3">入力</option>
       </select>
     </div>
     <div class="control-group">
@@ -272,46 +345,80 @@
     </div>
   </div>
 
-  <!-- 式エリア（JS で生成） -->
   <div id="formula-area"></div>
+  <div id="tenframe-area">
+    <div id="error-msg"></div>
+  </div>
 
-  <!-- テンフレームエリア（JS で切り替え） -->
-  <div id="tenframe-area"></div>
+  <div id="bottom-area">
+    <!-- 補数・ひき算モード用ボタン -->
+    <button id="btn">こたえは？</button>
 
-  <!-- ボタン -->
-  <button id="btn">こたえは？</button>
+    <!-- 入力モード: テンキー -->
+    <div id="numpad" style="display:none">
+      <button class="numpad-btn" data-n="7">7</button>
+      <button class="numpad-btn" data-n="8">8</button>
+      <button class="numpad-btn" data-n="9">9</button>
+      <button class="numpad-btn next-phase" data-n="next">つぎへ</button>
+      <button class="numpad-btn" data-n="4">4</button>
+      <button class="numpad-btn" data-n="5">5</button>
+      <button class="numpad-btn" data-n="6">6</button>
+      <button class="numpad-btn del" data-n="del">⌫</button>
+      <button class="numpad-btn" data-n="1">1</button>
+      <button class="numpad-btn" data-n="2">2</button>
+      <button class="numpad-btn" data-n="3">3</button>
+      <button class="numpad-btn" data-n="0">0</button>
+      <button class="numpad-btn calc" data-n="calc">けいさん</button>
+    </div>
+
+    <!-- 入力モード: 計算後のステップボタン -->
+    <button id="step-btn"></button>
+    <button id="back-btn">← もどる</button>
+  </div>
 
 </div>
 
 <script>
-// ── 状態 ──────────────────────────────
-let mode = 1;        // 1=補数, 2=ひき算
-let step = 0;        // 0=問題, 1=解答
+// ══════════════════════════════════════
+//  状態
+// ══════════════════════════════════════
+let mode = 1;          // 1=補数, 2=ひき算, 3=入力
+let step = 0;          // 0=問題, 1=ヒント, 2=答え
 let a = 0, b = 0;
 let prevA = null;
 let animating = false;
 let vibrationLevel = 2;
 let audioCtx = null;
 
-// ── セレクタ ──────────────────────────
+// 入力モード専用
+let inputPhase = 'a';  // 'a' | 'b' | 'result'
+let inputA = '';
+let inputB = '';
+
+// ══════════════════════════════════════
+//  DOM
+// ══════════════════════════════════════
 const modeSelect      = document.getElementById('modeSelect');
 const vibrationSelect = document.getElementById('vibrationSelect');
 const formulaArea     = document.getElementById('formula-area');
 const tenframeArea    = document.getElementById('tenframe-area');
+const errorMsg        = document.getElementById('error-msg');
 const btn             = document.getElementById('btn');
+const numpad          = document.getElementById('numpad');
+const stepBtn         = document.getElementById('step-btn');
+const backBtn         = document.getElementById('back-btn');
 
-// ── Audio ─────────────────────────────
-// 補数: ド～シの音階（C4〜B4）、ひき算はその逆順
+// ══════════════════════════════════════
+//  Audio
+// ══════════════════════════════════════
 const SCALE_HZ = [261.6, 293.7, 329.6, 349.2, 392.0, 440.0, 493.9, 523.3, 587.3, 659.3];
-// index 0=低い, 9=高い
 
 function playSound(type, pitchIndex) {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   const ctx = audioCtx;
 
   if (type === 'tap') {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
     osc.type = 'sine';
     osc.frequency.setValueAtTime(520, ctx.currentTime);
     gain.gain.setValueAtTime(0.18, ctx.currentTime);
@@ -321,61 +428,54 @@ function playSound(type, pitchIndex) {
 
   } else if (type === 'reveal') {
     [0, 0.07].forEach((t, i) => {
-      const o2 = ctx.createOscillator();
-      const g2 = ctx.createGain();
-      o2.type = 'triangle';
-      o2.frequency.setValueAtTime(i === 0 ? 660 : 880, ctx.currentTime + t);
-      g2.gain.setValueAtTime(0.15, ctx.currentTime + t);
-      g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.12);
-      o2.connect(g2); g2.connect(ctx.destination);
-      o2.start(ctx.currentTime + t);
-      o2.stop(ctx.currentTime + t + 0.12);
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(i === 0 ? 660 : 880, ctx.currentTime + t);
+      g.gain.setValueAtTime(0.15, ctx.currentTime + t);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.12);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + 0.12);
     });
 
   } else if (type === 'pitch') {
-    // ドット1個に対応する短い音（マリンバ風）
     const idx = Math.max(0, Math.min(9, pitchIndex));
-    const hz = SCALE_HZ[idx];
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
     osc.type = 'triangle';
-    osc.frequency.setValueAtTime(hz, ctx.currentTime);
+    osc.frequency.setValueAtTime(SCALE_HZ[idx], ctx.currentTime);
     gain.gain.setValueAtTime(0.13, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
     osc.connect(gain); gain.connect(ctx.destination);
     osc.start(); osc.stop(ctx.currentTime + 0.18);
+
+  } else if (type === 'error') {
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(180, ctx.currentTime);
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + 0.2);
   }
 }
 
 function vibrate() {
   if (!navigator.vibrate) return;
-  switch (vibrationLevel) {
-    case 1: navigator.vibrate(30); break;
-    case 2: navigator.vibrate(80); break;
-    case 3: navigator.vibrate([150, 50, 150]); break;
-  }
+  if (vibrationLevel === 1) navigator.vibrate(30);
+  else if (vibrationLevel === 2) navigator.vibrate(80);
+  else if (vibrationLevel === 3) navigator.vibrate([150,50,150]);
 }
 
-// ドット1個ぶんの単発振動（レベルに応じて強さを変える）
 function vibratePulse() {
   if (!navigator.vibrate || vibrationLevel === 0) return;
-  switch (vibrationLevel) {
-    case 1: navigator.vibrate(15); break;
-    case 2: navigator.vibrate(30); break;
-    case 3: navigator.vibrate(50); break;
-  }
+  if (vibrationLevel === 1) navigator.vibrate(15);
+  else if (vibrationLevel === 2) navigator.vibrate(30);
+  else if (vibrationLevel === 3) navigator.vibrate(50);
 }
 
-// b個分のピッチ音＋リズム振動をdotのdelayと同期してスケジュール
-// mode=1(補数): 音が上がる, mode=2(ひき算): 音が下がる
-// dotDelayFn(i): i番目のdotのdelaySecを返す関数
 function scheduleModalFeedback(count, dotDelayFn, direction) {
-  // direction: 'up'=補数(音が上がる), 'down'=ひき算(音が下がる)
   for (let i = 0; i < count; i++) {
     const delaySec = dotDelayFn(i);
-    const pitchIdx = direction === 'up'
-      ? i                        // 0→1→2…と上がる
-      : (count - 1 - i);        // count-1→count-2…と下がる
+    const pitchIdx = direction === 'up' ? i : (count - 1 - i);
     setTimeout(() => {
       playSound('pitch', pitchIdx);
       vibratePulse();
@@ -383,14 +483,15 @@ function scheduleModalFeedback(count, dotDelayFn, direction) {
   }
 }
 
-// ── 問題生成 ──────────────────────────
+// ══════════════════════════════════════
+//  問題生成（補数・ひき算のみ）
+// ══════════════════════════════════════
 function generate() {
   if (mode === 1) {
     do { a = Math.floor(Math.random() * 9) + 1; } while (a === prevA);
     prevA = a;
     b = 10 - a;
-  } else {
-    // ひき算: a=11〜18, b=2〜9, (a%10) < b (繰り下がりあり)
+  } else if (mode === 2) {
     let tries = 0;
     do {
       a = Math.floor(Math.random() * 8) + 11;
@@ -400,41 +501,63 @@ function generate() {
   }
 }
 
-// ── 式の描画 ──────────────────────────
-function renderFormula() {
-  formulaArea.innerHTML = '';
-  const make = (text, cls) => {
-    const span = document.createElement('span');
-    span.className = 'formula-part' + (cls ? ' ' + cls : '');
-    span.textContent = text;
-    return span;
-  };
+// ══════════════════════════════════════
+//  テンフレーム共通ビルダー
+// ══════════════════════════════════════
 
-  if (mode === 1) {
-    formulaArea.appendChild(make(a));
-    formulaArea.appendChild(make(' ＋ '));
-    if (step === 0) {
-      formulaArea.appendChild(make('□', 'blank'));
-    } else {
-      formulaArea.appendChild(make(b, 'answer'));
-    }
-    formulaArea.appendChild(make(' ＝ '));
-    formulaArea.appendChild(make('10'));
-  } else {
-    const ans = a - b;
-    formulaArea.appendChild(make(a));
-    formulaArea.appendChild(make(' － '));
-    formulaArea.appendChild(make(b));
-    formulaArea.appendChild(make(' ＝ '));
-    if (step === 0) {
-      formulaArea.appendChild(make('□', 'blank'));
-    } else {
-      formulaArea.appendChild(make(ans, 'answer'));
-    }
-  }
+// aの値に応じたフレーム設定を返す
+function getFrameConfig(total) {
+  if (total <= 10) return { frames: 1, cellSize: 60, dotSize: 46, gap: 10, padding: 14, radius: 18 };
+  if (total <= 20) return { frames: 2, cellSize: 44, dotSize: 34, gap: 8,  padding: 10, radius: 16 };
+  if (total <= 30) return { frames: 3, cellSize: 36, dotSize: 27, gap: 6,  padding: 8,  radius: 14 };
+  if (total <= 40) return { frames: 4, cellSize: 30, dotSize: 22, gap: 5,  padding: 7,  radius: 12 };
+                   return { frames: 5, cellSize: 26, dotSize: 19, gap: 4,  padding: 6,  radius: 10 };
 }
 
-// ── テンフレーム描画（補数モード）──────
+// フレームラッパーを生成して返す
+// dots: [{colorClass, animClass, animDelay}] の配列（長さ = totalDots）
+function buildFrames(totalDots, cfg, dots) {
+  const wrapper = document.createElement('div');
+  wrapper.id = 'sub-frames';
+
+  for (let f = 0; f < cfg.frames; f++) {
+    const frame = document.createElement('div');
+    frame.className = 'sub-frame';
+    frame.style.gap     = cfg.gap + 'px';
+    frame.style.padding = cfg.padding + 'px';
+    frame.style.borderRadius = cfg.radius + 'px';
+
+    for (let i = 0; i < 10; i++) {
+      const globalIdx = f * 10 + i;
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.style.width        = cfg.cellSize + 'px';
+      cell.style.height       = cfg.cellSize + 'px';
+      cell.style.borderRadius = Math.round(cfg.cellSize * 0.22) + 'px';
+
+      const dot = document.createElement('div');
+      if (globalIdx < totalDots && dots[globalIdx]) {
+        const d = dots[globalIdx];
+        dot.className = 'dot ' + d.colorClass + (d.animClass ? ' ' + d.animClass : '');
+        dot.style.width  = cfg.dotSize + 'px';
+        dot.style.height = cfg.dotSize + 'px';
+        if (d.animDelay !== undefined) {
+          dot.style.animationDelay = d.animDelay + 's';
+        }
+      } else {
+        dot.className = 'dot empty';
+      }
+      cell.appendChild(dot);
+      frame.appendChild(cell);
+    }
+    wrapper.appendChild(frame);
+  }
+  return wrapper;
+}
+
+// ══════════════════════════════════════
+//  描画: 補数モード（FIX・変更なし）
+// ══════════════════════════════════════
 function buildCell(colorClass, animClass) {
   const cell = document.createElement('div');
   cell.className = 'cell';
@@ -454,79 +577,149 @@ function renderComplement() {
     if (i < a) {
       colorClass = 'blue';
     } else {
-      if (step === 0) {
-        colorClass = 'empty';
-      } else {
-        colorClass = 'red';
-        // 各セルに遅延をつけて順番に落ちてくる
-        animClass = 'animate-drop';
-      }
+      colorClass = step === 0 ? 'empty' : 'red';
+      if (step === 1) animClass = 'animate-drop';
     }
     const cell = buildCell(colorClass, animClass);
     if (step === 1 && i >= a) {
-      const dot = cell.querySelector('.dot');
-      dot.style.animationDelay = ((i - a) * 0.06) + 's';
+      cell.querySelector('.dot').style.animationDelay = ((i - a) * 0.06) + 's';
     }
     frame.appendChild(cell);
   }
   tenframeArea.appendChild(frame);
 }
 
-// ── テンフレーム描画（ひき算モード）──────
+// ══════════════════════════════════════
+//  描画: ひき算モード（FIX・変更なし）
+// ══════════════════════════════════════
 function renderSubtraction() {
   tenframeArea.innerHTML = '';
-  const wrapper = document.createElement('div');
-  wrapper.id = 'sub-frames';
-
   const ans = a - b;
+  const cfg = getFrameConfig(a);
+  const dots = [];
 
-  for (let f = 0; f < 2; f++) {
-    const frame = document.createElement('div');
-    frame.className = 'sub-frame';
-
-    for (let i = 0; i < 10; i++) {
-      const globalIdx = f * 10 + i;
-      const cell = document.createElement('div');
-      cell.className = 'cell';
-      const dot = document.createElement('div');
-
-      if (globalIdx < a) {
-        const isTarget = globalIdx >= ans;
-        if (step === 0) {
-          dot.className = 'dot blue';
-        } else if (step === 1) {
-          dot.className = isTarget ? 'dot red-hint' : 'dot blue';
-        } else {
-          // step === 2: 引く対象が縮んで消える
-          dot.className = isTarget ? 'dot blue animate-shrink' : 'dot blue';
-          if (isTarget) {
-            dot.style.animationDelay = ((globalIdx - ans) * 0.04) + 's';
-          }
-        }
-      } else {
-        dot.className = 'dot empty';
-      }
-
-      cell.appendChild(dot);
-      frame.appendChild(cell);
+  for (let i = 0; i < a; i++) {
+    const isTarget = i >= ans;
+    let colorClass = 'blue', animClass = '', animDelay;
+    if (step === 1 && isTarget) {
+      colorClass = 'red-hint';
+    } else if (step === 2 && isTarget) {
+      animClass  = 'animate-shrink';
+      animDelay  = (i - ans) * 0.04;
     }
-    wrapper.appendChild(frame);
+    dots.push({ colorClass, animClass, animDelay });
   }
 
-  tenframeArea.appendChild(wrapper);
+  tenframeArea.appendChild(buildFrames(a, cfg, dots));
 }
 
-// ── メインレンダー ────────────────────
-function render() {
-  renderFormula();
-  if (mode === 1) {
-    renderComplement();
+// ══════════════════════════════════════
+//  描画: 入力モード
+// ══════════════════════════════════════
+function renderInputFormula() {
+  formulaArea.innerHTML = '';
+  const make = (text, cls) => {
+    const span = document.createElement('span');
+    span.className = 'formula-part' + (cls ? ' ' + cls : '');
+    span.textContent = text;
+    return span;
+  };
+
+  if (inputPhase === 'a') {
+    // aを入力中
+    formulaArea.appendChild(make(inputA || '□', inputA ? 'inputting' : 'blank'));
+    formulaArea.appendChild(make(' － '));
+    formulaArea.appendChild(make('□', 'blank'));
+    formulaArea.appendChild(make(' ＝ '));
+    formulaArea.appendChild(make('□', 'blank'));
+  } else if (inputPhase === 'b') {
+    // bを入力中
+    formulaArea.appendChild(make(inputA));
+    formulaArea.appendChild(make(' － '));
+    formulaArea.appendChild(make(inputB || '□', inputB ? 'inputting' : 'blank'));
+    formulaArea.appendChild(make(' ＝ '));
+    formulaArea.appendChild(make('□', 'blank'));
   } else {
-    renderSubtraction();
+    // result: ひき算モードと同様
+    const av = parseInt(inputA), bv = parseInt(inputB);
+    const ans = av - bv;
+    formulaArea.appendChild(make(av));
+    formulaArea.appendChild(make(' － '));
+    formulaArea.appendChild(make(bv));
+    formulaArea.appendChild(make(' ＝ '));
+    if (step === 0) {
+      formulaArea.appendChild(make('□', 'blank'));
+    } else {
+      formulaArea.appendChild(make(ans, 'answer'));
+    }
   }
-  // ボタン
+}
+
+function renderInputFrames() {
+  tenframeArea.innerHTML = '';
+  errorMsg.style.display = 'none';
+
+  if (inputPhase !== 'result') return; // 入力中はテンフレーム不要
+
+  const av = parseInt(inputA);
+  const bv = parseInt(inputB);
+
+  // バリデーション
+  if (av > 50) {
+    showError('50より大きい数は表示できません');
+    return;
+  }
+  if (bv > av) {
+    showError('引く数が大きすぎます');
+    return;
+  }
+  if (bv < 0 || av < 0) {
+    showError('0以上の数を入力してください');
+    return;
+  }
+
+  a = av; b = bv;
+  const ans = a - b;
+  const cfg = getFrameConfig(a);
+  const dots = [];
+
+  for (let i = 0; i < a; i++) {
+    const isTarget = i >= ans;
+    let colorClass = 'blue', animClass = '', animDelay;
+    if (step === 1 && isTarget) {
+      colorClass = 'red-hint';
+    } else if (step === 2 && isTarget) {
+      animClass = 'animate-shrink';
+      animDelay = (i - ans) * 0.04;
+    }
+    dots.push({ colorClass, animClass, animDelay });
+  }
+
+  tenframeArea.appendChild(buildFrames(a, cfg, dots));
+}
+
+function showError(msg) {
+  tenframeArea.innerHTML = '';
+  const err = document.createElement('div');
+  err.id = 'error-msg';
+  err.style.cssText = 'font-size:22px;font-weight:800;color:#e63030;text-align:center;padding:20px;';
+  err.textContent = msg;
+  tenframeArea.appendChild(err);
+  playSound('error');
+}
+
+// ══════════════════════════════════════
+//  メインレンダー
+// ══════════════════════════════════════
+function render() {
   if (mode === 1) {
-    // 補数モード: step 0/1
+    // 補数モード
+    renderFormulaComplement();
+    renderComplement();
+    numpad.style.display = 'none';
+    btn.style.display    = 'block';
+    stepBtn.style.display = 'none';
+    backBtn.style.display = 'none';
     if (step === 0) {
       btn.textContent = 'こたえは？';
       btn.classList.remove('next');
@@ -534,8 +727,15 @@ function render() {
       btn.textContent = 'つぎへ →';
       btn.classList.add('next');
     }
-  } else {
-    // ひき算モード: step 0/1/2
+
+  } else if (mode === 2) {
+    // ひき算モード
+    renderFormulaSubtraction();
+    renderSubtraction();
+    numpad.style.display  = 'none';
+    btn.style.display     = 'block';
+    stepBtn.style.display = 'none';
+    backBtn.style.display = 'none';
     if (step === 0) {
       btn.textContent = b + ' 引くと？';
       btn.classList.remove('next');
@@ -546,21 +746,113 @@ function render() {
       btn.textContent = 'つぎへ →';
       btn.classList.add('next');
     }
+
+  } else {
+    // 入力モード
+    renderInputFormula();
+    if (inputPhase !== 'result') {
+      // テンキー表示
+      tenframeArea.innerHTML = '';
+      numpad.style.display  = 'grid';
+      btn.style.display     = 'none';
+      stepBtn.style.display = 'none';
+      backBtn.style.display = 'none';
+      // つぎへボタン: aフェーズで1文字以上入力済みのとき有効
+      const nextPhaseBtn = numpad.querySelector('.next-phase');
+      const canNext = inputPhase === 'a' && inputA.length > 0;
+      nextPhaseBtn.disabled = !canNext;
+      nextPhaseBtn.style.opacity = canNext ? '1' : '0.35';
+      // けいさんボタンの有効/無効
+      const calcBtn = numpad.querySelector('.calc');
+      const canCalc = inputPhase === 'b' && inputB.length > 0;
+      calcBtn.disabled = !canCalc;
+      calcBtn.style.opacity = canCalc ? '1' : '0.4';
+    } else {
+      // 計算後: テンフレーム + ステップボタン + もどるボタン
+      renderInputFrames();
+      numpad.style.display  = 'none';
+      btn.style.display     = 'none';
+      stepBtn.style.display = 'block';
+      backBtn.style.display = 'block';
+      if (step === 0) {
+        stepBtn.textContent = b + ' 引くと？';
+        stepBtn.classList.remove('next');
+      } else if (step === 1) {
+        stepBtn.textContent = 'こたえは？';
+        stepBtn.classList.remove('next');
+      } else {
+        stepBtn.textContent = 'もう一度';
+        stepBtn.classList.add('next');
+      }
+    }
   }
 }
 
-// ── ボタン ────────────────────────────
+// 補数・ひき算の式描画（既存と同じ）
+function renderFormulaComplement() {
+  formulaArea.innerHTML = '';
+  const make = (text, cls) => {
+    const span = document.createElement('span');
+    span.className = 'formula-part' + (cls ? ' ' + cls : '');
+    span.textContent = text;
+    return span;
+  };
+  formulaArea.appendChild(make(a));
+  formulaArea.appendChild(make(' ＋ '));
+  formulaArea.appendChild(step === 0 ? make('□', 'blank') : make(b, 'answer'));
+  formulaArea.appendChild(make(' ＝ '));
+  formulaArea.appendChild(make('10'));
+}
+
+function renderFormulaSubtraction() {
+  formulaArea.innerHTML = '';
+  const make = (text, cls) => {
+    const span = document.createElement('span');
+    span.className = 'formula-part' + (cls ? ' ' + cls : '');
+    span.textContent = text;
+    return span;
+  };
+  const ans = a - b;
+  formulaArea.appendChild(make(a));
+  formulaArea.appendChild(make(' － '));
+  formulaArea.appendChild(make(b));
+  formulaArea.appendChild(make(' ＝ '));
+  formulaArea.appendChild(step === 0 ? make('□', 'blank') : make(ans, 'answer'));
+}
+
+// ══════════════════════════════════════
+//  ひき算ステップ共通処理
+// ══════════════════════════════════════
+function doSubStep() {
+  if (step === 0) {
+    step = 1;
+    render();
+  } else if (step === 1) {
+    step = 2;
+    animating = true;
+    render();
+    scheduleModalFeedback(b, i => i * 0.04, 'down');
+    const maxDelay = b * 0.04 + 0.30;
+    setTimeout(() => {
+      animating = false;
+      playSound('reveal');
+      vibrate();
+    }, maxDelay * 1000);
+  }
+}
+
+// ══════════════════════════════════════
+//  ボタンイベント: 補数・ひき算
+// ══════════════════════════════════════
 btn.addEventListener('click', () => {
   if (animating) return;
   playSound('tap');
 
   if (mode === 1) {
-    // 補数モード: 0→1→次問題
     if (step === 0) {
       step = 1;
       animating = true;
       render();
-      // ドットのdelay: i番目のdotは i*0.06s 後に落ちてくる
       scheduleModalFeedback(b, i => i * 0.06, 'up');
       const maxDelay = b * 0.06 + 0.35;
       setTimeout(() => {
@@ -573,64 +865,144 @@ btn.addEventListener('click', () => {
       generate();
       render();
     }
-  } else {
-    // ひき算モード: 0→1→2→次問題
-    if (step === 0) {
-      // ヒント表示（薄い赤）: アニメなし
-      step = 1;
-      render();
-    } else if (step === 1) {
-      // 消えるアニメ → 答え表示
-      step = 2;
-      animating = true;
-      render();
-      // ドットのdelay: i番目のdotは i*0.04s 後に縮む
-      scheduleModalFeedback(b, i => i * 0.04, 'down');
-      const maxDelay = b * 0.04 + 0.30;
-      setTimeout(() => {
-        animating = false;
-        playSound('reveal');
-        vibrate();
-      }, maxDelay * 1000);
-    } else {
+  } else if (mode === 2) {
+    if (step === 2) {
       step = 0;
       generate();
       render();
+    } else {
+      doSubStep();
     }
   }
 });
 
-// ── セレクト変更 ──────────────────────
-modeSelect.addEventListener('change', (e) => {
+// ══════════════════════════════════════
+//  ボタンイベント: 入力モード ステップ
+// ══════════════════════════════════════
+stepBtn.addEventListener('click', () => {
+  if (animating) return;
+  playSound('tap');
+  if (step === 2) {
+    // もう一度 → 入力に戻る
+    resetInput();
+  } else {
+    doSubStep();
+  }
+});
+
+// もどるボタン
+backBtn.addEventListener('click', () => {
+  playSound('tap');
+  resetInput();
+});
+
+// ══════════════════════════════════════
+//  テンキー処理
+// ══════════════════════════════════════
+numpad.addEventListener('click', e => {
+  const btn_n = e.target.closest('.numpad-btn');
+  if (!btn_n) return;
+  const n = btn_n.dataset.n;
+
+  playSound('tap');
+
+  if (n === 'del') {
+    if (inputPhase === 'a') {
+      inputA = inputA.slice(0, -1);
+    } else {
+      // bの入力中。bが空になったらaに戻る
+      if (inputB.length > 0) {
+        inputB = inputB.slice(0, -1);
+      } else {
+        inputPhase = 'a';
+      }
+    }
+    render();
+    return;
+  }
+
+  if (n === 'next') {
+    // aフェーズ→bフェーズへ明示的に移動
+    if (inputPhase === 'a' && inputA.length > 0) {
+      inputPhase = 'b';
+      render();
+    }
+    return;
+  }
+
+  if (n === 'calc') {
+    if (inputPhase === 'b' && inputB.length > 0) {
+      inputPhase = 'result';
+      step = 0;
+      render();
+    }
+    return;
+  }
+
+  // 数字入力
+  if (inputPhase === 'a') {
+    const next = inputA + n;
+    if (parseInt(next) > 99) return;
+    inputA = next;
+    render();
+  } else if (inputPhase === 'b') {
+    const next = inputB + n;
+    if (parseInt(next) > 99) return;
+    inputB = next;
+    render();
+  }
+});
+
+function resetInput() {
+  inputPhase = 'a';
+  inputA = '';
+  inputB = '';
+  step = 0;
+  a = 0; b = 0;
+  render();
+}
+
+// ══════════════════════════════════════
+//  モード・振動セレクト
+// ══════════════════════════════════════
+modeSelect.addEventListener('change', e => {
   mode = parseInt(e.target.value);
   step = 0;
   prevA = null;
-  generate();
-  render();
+  if (mode === 3) {
+    resetInput();
+  } else {
+    generate();
+    render();
+  }
 });
 
-vibrationSelect.addEventListener('change', (e) => {
+vibrationSelect.addEventListener('change', e => {
   vibrationLevel = parseInt(e.target.value);
 });
 
-// ── リサイズ ──────────────────────────
+// ══════════════════════════════════════
+//  リサイズ
+// ══════════════════════════════════════
 function resize() {
-  const scale = Math.min(
-    window.innerWidth  / 800,
-    window.innerHeight / 560
-  );
+  const scale = Math.min(window.innerWidth / 800, window.innerHeight / 560);
   const app = document.getElementById('app');
   app.style.transform = `scale(${scale})`;
-  // スケール後のセンタリング
-  const w = 800 * scale;
-  const h = 560 * scale;
+  const w = 800 * scale, h = 560 * scale;
   app.style.position = 'fixed';
   app.style.left = ((window.innerWidth  - w) / 2) + 'px';
   app.style.top  = ((window.innerHeight - h) / 2) + 'px';
 }
 window.addEventListener('resize', resize);
 
-// ── 初期化 ────────────────────────────
+// ══════════════════════════════════════
+//  初期化
+// ══════════════════════════════════════
+
+// 入力モード: aが1文字入力された時点でbフェーズに自動遷移するが
+// バックスペースでaに戻れる。aが2桁確定はそのままbへ。
+// → 実際にはnumpadのclickで inputPhase='b' に切り替え済み。
+
 generate();
 render();
 resize();
