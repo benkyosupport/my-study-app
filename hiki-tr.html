@@ -301,20 +301,25 @@ const tenframeArea    = document.getElementById('tenframe-area');
 const btn             = document.getElementById('btn');
 
 // ── Audio ─────────────────────────────
-function playSound(type) {
+// 補数: ド～シの音階（C4〜B4）、ひき算はその逆順
+const SCALE_HZ = [261.6, 293.7, 329.6, 349.2, 392.0, 440.0, 493.9, 523.3, 587.3, 659.3];
+// index 0=低い, 9=高い
+
+function playSound(type, pitchIndex) {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   const ctx = audioCtx;
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
+
   if (type === 'tap') {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
     osc.type = 'sine';
     osc.frequency.setValueAtTime(520, ctx.currentTime);
     gain.gain.setValueAtTime(0.18, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
     osc.connect(gain); gain.connect(ctx.destination);
     osc.start(); osc.stop(ctx.currentTime + 0.08);
+
   } else if (type === 'reveal') {
-    // 明るい2音
     [0, 0.07].forEach((t, i) => {
       const o2 = ctx.createOscillator();
       const g2 = ctx.createGain();
@@ -326,6 +331,19 @@ function playSound(type) {
       o2.start(ctx.currentTime + t);
       o2.stop(ctx.currentTime + t + 0.12);
     });
+
+  } else if (type === 'pitch') {
+    // ドット1個に対応する短い音（マリンバ風）
+    const idx = Math.max(0, Math.min(9, pitchIndex));
+    const hz = SCALE_HZ[idx];
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(hz, ctx.currentTime);
+    gain.gain.setValueAtTime(0.13, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + 0.18);
   }
 }
 
@@ -335,6 +353,33 @@ function vibrate() {
     case 1: navigator.vibrate(30); break;
     case 2: navigator.vibrate(80); break;
     case 3: navigator.vibrate([150, 50, 150]); break;
+  }
+}
+
+// ドット1個ぶんの単発振動（レベルに応じて強さを変える）
+function vibratePulse() {
+  if (!navigator.vibrate || vibrationLevel === 0) return;
+  switch (vibrationLevel) {
+    case 1: navigator.vibrate(15); break;
+    case 2: navigator.vibrate(30); break;
+    case 3: navigator.vibrate(50); break;
+  }
+}
+
+// b個分のピッチ音＋リズム振動をdotのdelayと同期してスケジュール
+// mode=1(補数): 音が上がる, mode=2(ひき算): 音が下がる
+// dotDelayFn(i): i番目のdotのdelaySecを返す関数
+function scheduleModalFeedback(count, dotDelayFn, direction) {
+  // direction: 'up'=補数(音が上がる), 'down'=ひき算(音が下がる)
+  for (let i = 0; i < count; i++) {
+    const delaySec = dotDelayFn(i);
+    const pitchIdx = direction === 'up'
+      ? i                        // 0→1→2…と上がる
+      : (count - 1 - i);        // count-1→count-2…と下がる
+    setTimeout(() => {
+      playSound('pitch', pitchIdx);
+      vibratePulse();
+    }, delaySec * 1000);
   }
 }
 
@@ -515,6 +560,8 @@ btn.addEventListener('click', () => {
       step = 1;
       animating = true;
       render();
+      // ドットのdelay: i番目のdotは i*0.06s 後に落ちてくる
+      scheduleModalFeedback(b, i => i * 0.06, 'up');
       const maxDelay = b * 0.06 + 0.35;
       setTimeout(() => {
         animating = false;
@@ -537,6 +584,8 @@ btn.addEventListener('click', () => {
       step = 2;
       animating = true;
       render();
+      // ドットのdelay: i番目のdotは i*0.04s 後に縮む
+      scheduleModalFeedback(b, i => i * 0.04, 'down');
       const maxDelay = b * 0.04 + 0.30;
       setTimeout(() => {
         animating = false;
