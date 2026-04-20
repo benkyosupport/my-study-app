@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ことばのきおく トレーナー</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=M+PLUS+Rounded+1c:wght@400;700&display=swap');
+
+:root {
+  --bg: #fdf8f0;
+  --surface: #ffffff;
+  --surface2: #f5efe3;
+  --accent: #e8813a;
+  --accent2: #5ba4a4;
+  --accent3: #c25d8a;
+  --text: #2d2417;
+  --text2: #7a6a55;
+  --border: #e0d4c0;
+  --radius: 20px;
+  --shadow: 0 4px 24px rgba(45,36,23,0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Zen Maru Gothic', 'M PLUS Rounded 1c', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 16px 16px 48px;
+}
+
+header { text-align: center; margin-bottom: 16px; }
+header h1 { font-size: 22px; font-weight: 700; color: var(--accent); }
+header p { font-size: 13px; color: var(--text2); margin-top: 4px; }
+
+/* ─── タブ ─── */
+.tab-bar {
+  display: flex;
+  max-width: 520px;
+  margin: 0 auto 16px;
+  background: var(--surface2);
+  border-radius: 14px;
+  padding: 4px;
+  gap: 4px;
+}
+.tab-btn {
+  flex: 1;
+  padding: 10px 8px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.tab-btn.active {
+  background: var(--surface);
+  color: var(--accent);
+  box-shadow: var(--shadow);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ─── カード ─── */
+.card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text2);
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+}
+
+/* ─── 難易度ボタン ─── */
+.diff-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.diff-btn {
+  flex: 1;
+  min-width: 60px;
+  padding: 10px 8px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface2);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.diff-btn:hover { border-color: var(--accent); color: var(--accent); }
+.diff-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(232,129,58,0.35);
+}
+
+/* ─── 統計 ─── */
+.stats-row {
+  display: flex;
+  gap: 10px;
+  max-width: 520px;
+  margin: 0 auto 12px;
+}
+.stat-box {
+  flex: 1;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 8px;
+  text-align: center;
+}
+.stat-num { font-size: 22px; font-weight: 700; color: var(--text); }
+.stat-lbl { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+/* ─── プログレス ─── */
+.progress-area {
+  max-width: 520px;
+  margin: 0 auto 12px;
+}
+.progress-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 6px;
+}
+.progress-track {
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+/* ─── 音声アニメ ─── */
+#m-speaking-anim, #t-speaking-anim {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 0;
+}
+#m-speaking-anim.visible, #t-speaking-anim.visible { display: flex; }
+
+.sound-waves { display: flex; align-items: flex-end; gap: 5px; height: 44px; }
+.wave-bar {
+  width: 7px; border-radius: 4px; background: var(--accent);
+  animation: wave 0.8s ease-in-out infinite;
+}
+.wave-bar:nth-child(1){animation-delay:0s;height:20px}
+.wave-bar:nth-child(2){animation-delay:0.1s;height:36px}
+.wave-bar:nth-child(3){animation-delay:0.2s;height:28px}
+.wave-bar:nth-child(4){animation-delay:0.3s;height:44px}
+.wave-bar:nth-child(5){animation-delay:0.2s;height:28px}
+.wave-bar:nth-child(6){animation-delay:0.1s;height:36px}
+.wave-bar:nth-child(7){animation-delay:0s;height:20px}
+@keyframes wave {
+  0%,100%{transform:scaleY(0.5);opacity:0.6}
+  50%{transform:scaleY(1);opacity:1}
+}
+.speaking-label { font-size: 14px; color: var(--accent); font-weight: 700; }
+
+/* ─── 待機エリア ─── */
+.wait-area {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0;
+}
+.wait-area.visible { display: flex; }
+.wait-icon { font-size: 42px; animation: pulse 1.8s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
+.wait-label { font-size: 16px; font-weight: 700; color: var(--accent2); text-align:center; }
+.wait-hint { font-size: 12px; color: var(--text2); }
+
+/* ─── テキスト表示（アシスト）─── */
+.text-display {
+  display: none;
+  padding: 16px 12px;
+  background: var(--surface2);
+  border-radius: 14px;
+  border: 1.5px dashed var(--border);
+  font-size: 20px;
+  line-height: 2.2;
+  text-align: center;
+  color: var(--text);
+  word-break: break-all;
+}
+.text-display.visible { display: block; }
+.text-display ruby rt { font-size: 11px; color: var(--text2); }
+
+/* ─── こたえ表示（きおくモード）─── */
+#m-answer-area {
+  display: none;
+  margin-top: 16px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #f0faf6, #e8f5f5);
+  border-radius: 14px;
+  border: 1.5px solid #b8e0d4;
+}
+#m-answer-area.visible { display: block; }
+.ans-label { font-size: 12px; color: var(--accent2); font-weight: 700; margin-bottom: 8px; }
+.ans-words { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.ans-word {
+  background: #fff;
+  border: 2px solid var(--accent2);
+  border-radius: 12px;
+  padding: 8px 18px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent2);
+}
+.ans-tag { font-size: 11px; color: var(--text2); text-align: center; margin-top: 4px; }
+
+/* ─── ボタン ─── */
+.btn-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 16px;
+}
+.btn {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 12px 18px;
+  border-radius: 14px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:active { transform: scale(0.96); }
+.btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 14px rgba(232,129,58,0.35); }
+.btn-primary:hover { background: #d4722e; }
+.btn-secondary { background: var(--surface2); color: var(--text); border-color: var(--border); }
+.btn-secondary:hover { border-color: var(--accent2); color: var(--accent2); }
+.btn-teal { background: var(--accent2); color: #fff; box-shadow: 0 4px 14px rgba(91,164,164,0.3); }
+.btn-teal:hover { background: #4a9191; }
+.btn-correct { background: #4caf7d; color: #fff; box-shadow: 0 4px 14px rgba(76,175,125,0.35); }
+.btn-correct:hover { background: #3d9e6d; }
+.btn:disabled { opacity: 0.38; cursor: not-allowed; transform: none; box-shadow: none; }
+.q-num { font-size: 12px; color: var(--text2); margin-bottom: 12px; text-align:center; }
+
+/* ─── 時間モード：選択肢 ─── */
+.choices-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+.choice-btn {
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 16px 10px;
+  border-radius: 14px;
+  border: 2px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  line-height: 1.4;
+}
+.choice-btn:hover { border-color: var(--accent2); background: #e8f5f5; }
+.choice-btn.correct { background: #e8f7ee; border-color: #4caf7d; color: #2d7a52; }
+.choice-btn.wrong { background: #fde8e8; border-color: #e24b4a; color: #a32d2d; }
+.choice-btn:disabled { cursor: not-allowed; }
+
+.t-question-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent2);
+  text-align: center;
+  margin-bottom: 4px;
+}
+.t-sentence-display {
+  font-size: 16px;
+  line-height: 2;
+  text-align: center;
+  padding: 8px 0;
+  color: var(--text2);
+  font-style: italic;
+}
+.t-feedback {
+  min-height: 28px;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  padding: 6px 0;
+}
+.t-feedback.good { color: #2d7a52; }
+.t-feedback.bad { color: #a32d2d; }
+
+/* ─── フラワー ─── */
+#feedback-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+#feedback-overlay.active { display: block; }
+.hanmaru {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  font-size: 130px;
+  animation: hanaPop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  opacity: 0;
+}
+@keyframes hanaPop {
+  0%{transform:translate(-50%,-55%) scale(0.3);opacity:0}
+  60%{opacity:1}
+  100%{transform:translate(-50%,-55%) scale(1);opacity:1}
+}
+.confetti {
+  position: absolute;
+  border-radius: 2px;
+  animation: fall linear forwards;
+}
+@keyframes fall {
+  0%{transform:translateY(-20px) rotate(0deg);opacity:1}
+  100%{transform:translateY(100vh) rotate(720deg);opacity:0}
+}
+
+/* ─── トースト ─── */
+#replay-toast {
+  display: none;
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: #fff;
+  font-size: 14px;
+  padding: 10px 22px;
+  border-radius: 50px;
+  z-index: 200;
+}
+#replay-toast.visible { display: block; }
+
+/* ─── 設定モーダル ─── */
+#settings-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--accent2);
+  color: #fff;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(91,164,164,0.45);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s;
+}
+#settings-fab:active { transform: scale(0.9); }
+
+#settings-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(45,36,23,0.45);
+  z-index: 400;
+  align-items: flex-end;
+  justify-content: center;
+}
+#settings-overlay.open { display: flex; }
+
+#settings-sheet {
+  background: var(--surface);
+  border-radius: 24px 24px 0 0;
+  width: 100%;
+  max-width: 520px;
+  padding: 24px 24px 40px;
+  box-shadow: 0 -8px 40px rgba(45,36,23,0.18);
+  animation: slideUp 0.22s ease;
+}
+@keyframes slideUp {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.settings-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.settings-close {
+  margin-left: auto;
+  background: var(--surface2);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text2);
+}
+.settings-desc {
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 10px;
+  line-height: 1.7;
+}
+.api-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+#api-key-input {
+  flex: 1;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface2);
+  color: var(--text);
+  outline: none;
+}
+#api-key-input:focus { border-color: var(--accent2); }
+#api-save-btn {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 12px;
+  background: var(--accent2);
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+#api-save-btn:active { opacity: 0.8; }
+#api-status {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  min-height: 18px;
+}
+.status-ok  { color: #4caf7d; }
+.status-err { color: #e24b4a; }
+.status-none{ color: var(--text2); }
+#api-clear-btn {
+  margin-top: 10px;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--text2);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+</style>
+</head>
+<body>
+
+<div id="feedback-overlay"></div>
+<div id="replay-toast">もう一度読み上げます</div>
+
+<!-- 設定ボタン（右下固定） -->
+<button id="settings-fab" onclick="openSettings()" title="音声設定">⚙️</button>
+
+<!-- 設定モーダル -->
+<div id="settings-overlay" onclick="closeSettingsIfBg(event)">
+  <div id="settings-sheet">
+    <div class="settings-title">
+      🎙️ 音声設定
+      <button class="settings-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="settings-desc">
+      Google Cloud Text-to-Speech の APIキーを入力すると、より自然な日本語音声に切り替わります。<br>
+      未設定の場合はブラウザの標準音声を使用します。
+    </div>
+    <div class="api-input-row">
+      <input id="api-key-input" type="password" placeholder="AIza... （APIキーを貼り付け）" autocomplete="off" />
+      <button id="api-save-btn" onclick="saveApiKey()">保存</button>
+    </div>
+    <div id="api-status" class="status-none">─</div>
+    <button id="api-clear-btn" onclick="clearApiKey()">APIキーを削除する</button>
+  </div>
+</div>
+
+<header>
+  <h1>ことばのきおく トレーナー</h1>
+  <p>きおく力を　きたえよう</p>
+</header>
+
+<!-- タブ -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('memory')">きおくモード</button>
+  <button class="tab-btn" onclick="switchTab('time')">時間モード</button>
+</div>
+
+<!-- ═══════════════════════════════════
+     きおくモード
+═══════════════════════════════════ -->
+<div class="tab-content active" id="tab-memory">
+
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-num" id="m-st-total">0</div><div class="stat-lbl">もんだい数</div></div>
+    <div class="stat-box"><div class="stat-num" id="m-st-correct" style="color:var(--accent)">0</div><div class="stat-lbl">せいかい</div></div>
+    <div class="stat-box"><div class="stat-num" id="m-st-streak">0</div><div class="stat-lbl">れんぞく</div></div>
+  </div>
+
+  <div class="progress-area">
+    <div class="progress-row">
+      <span id="m-prog-label">セット 0 / 10</span>
+      <span id="m-prog-pct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="m-prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="section-label">むずかしさ（たんご数）</div>
+    <div class="diff-btns">
+      <div class="diff-btn active" data-words="4" onclick="mSetDiff(4)">4語<br><span style="font-size:11px;font-weight:400">やさしい</span></div>
+      <div class="diff-btn" data-words="5" onclick="mSetDiff(5)">5語<br><span style="font-size:11px;font-weight:400">ふつう</span></div>
+      <div class="diff-btn" data-words="6" onclick="mSetDiff(6)">6語<br><span style="font-size:11px;font-weight:400">むずかしい</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="m-play-card">
+    <div class="q-num" id="m-q-num">もんだいを はじめよう</div>
+
+    <div id="m-speech-area">
+      <div id="m-speaking-anim">
+        <div class="sound-waves">
+          <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+          <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+        </div>
+        <div class="speaking-label">よみあげています…</div>
+      </div>
+
+      <div class="wait-area" id="m-wait-area">
+        <div class="wait-icon">🤔</div>
+        <div class="wait-label">最初と最後は　なんだった？</div>
+        <div class="wait-hint">おぼえていたら おやさんに こたえてね</div>
+      </div>
+
+      <div class="text-display" id="m-text-display"></div>
+    </div>
+
+    <div id="m-answer-area">
+      <div class="ans-label">こたえ</div>
+      <div id="m-ans-fulltext" style="font-size:18px;line-height:2.2;text-align:center;padding:4px 0 10px;word-break:break-all;"></div>
+      <div class="ans-words">
+        <div><div class="ans-word" id="m-ans-first">—</div><div class="ans-tag">さいしょ</div></div>
+        <div style="display:flex;align-items:center;font-size:22px;color:var(--border)">・・・</div>
+        <div><div class="ans-word" id="m-ans-last">—</div><div class="ans-tag">さいご</div></div>
+      </div>
+    </div>
+
+    <div class="btn-row" id="m-btns-start">
+      <button class="btn btn-primary" onclick="mStartQ()">▶ はじめる</button>
+    </div>
+    <div class="btn-row" id="m-btns-playing" style="display:none">
+      <button class="btn btn-secondary" onclick="mReplay()" id="m-replay-btn" disabled>🔄 もう一度</button>
+      <button class="btn btn-secondary" onclick="mToggleAssist()" id="m-assist-btn" disabled>📄 アシスト</button>
+    </div>
+    <div class="btn-row" id="m-btns-judge" style="display:none">
+      <button class="btn btn-secondary" onclick="mReplay()">🔄 もう一度</button>
+      <button class="btn btn-secondary" onclick="mToggleAssist()">📄 アシスト</button>
+      <button class="btn btn-teal" onclick="mShowAnswer()">💡 こたえを見る</button>
+      <button class="btn btn-correct" onclick="mMarkCorrect()">⭕ せいかい！</button>
+    </div>
+    <div class="btn-row" id="m-btns-next" style="display:none">
+      <button class="btn btn-primary" onclick="mNextQ()">つぎへ ▶</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     時間モード
+═══════════════════════════════════ -->
+<div class="tab-content" id="tab-time">
+
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-num" id="t-st-total">0</div><div class="stat-lbl">もんだい数</div></div>
+    <div class="stat-box"><div class="stat-num" id="t-st-correct" style="color:var(--accent)">0</div><div class="stat-lbl">せいかい</div></div>
+    <div class="stat-box"><div class="stat-num" id="t-st-streak">0</div><div class="stat-lbl">れんぞく</div></div>
+  </div>
+
+  <div class="progress-area">
+    <div class="progress-row">
+      <span id="t-prog-label">セット 0 / 10</span>
+      <span id="t-prog-pct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="t-prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="section-label">むずかしさ</div>
+    <div class="diff-btns">
+      <div class="diff-btn active" data-tlevel="easy" onclick="tSetLevel('easy')">イージー<br><span style="font-size:11px;font-weight:400">なにをした？</span></div>
+      <div class="diff-btn" data-tlevel="middle" onclick="tSetLevel('middle')">ミドル<br><span style="font-size:11px;font-weight:400">なんじ＋なにを</span></div>
+      <div class="diff-btn" data-tlevel="hard" onclick="tSetLevel('hard')">ハード<br><span style="font-size:11px;font-weight:400">なんがつ＋なんじ＋なにを</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="t-play-card">
+    <div class="q-num" id="t-q-num">もんだいを はじめよう</div>
+
+    <div id="t-speaking-anim">
+      <div class="sound-waves">
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+      </div>
+      <div class="speaking-label">よみあげています…</div>
+    </div>
+
+    <div class="wait-area" id="t-wait-area">
+      <div class="wait-icon">🕐</div>
+      <div class="wait-label" id="t-wait-label">こたえてね</div>
+    </div>
+
+    <div id="t-question-block" style="display:none">
+      <div class="t-question-label" id="t-q-label"></div>
+      <div class="choices-grid" id="t-choices"></div>
+      <div class="t-feedback" id="t-feedback"></div>
+    </div>
+
+    <div class="btn-row" id="t-btns-start">
+      <button class="btn btn-primary" onclick="tStartQ()">▶ はじめる</button>
+    </div>
+    <div class="btn-row" id="t-btns-playing" style="display:none">
+      <button class="btn btn-secondary" onclick="tReplay()" id="t-replay-btn" disabled>🔄 もう一度</button>
+    </div>
+    <div class="btn-row" id="t-btns-next" style="display:none">
+      <button class="btn btn-primary" onclick="tNextQ()">つぎへ ▶</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   きおくモード 問題データ（4語・5語・6語）
+═══════════════════════════════════════════════════════ */
+const M_SENTENCES = {
+  4: [
+    {w:['おかあさんが','ごはんを','つくって','おいしい'],r:{おかあさん:'お母さん'}},
+    {w:['こうえんで','こどもが','あそんで','たのしい'],r:{こうえん:'公園',こども:'子ども'}},
+    {w:['あおい','そらに','とりが','とんだ'],r:{そら:'空',とり:'鳥'}},
+    {w:['あさに','はを','みがいて','すっきり'],r:{は:'歯'}},
+    {w:['おじいさんが','えほんを','よんで','ねむった'],r:{えほん:'絵本'}},
+    {w:['あかい','はなが','にわに','さいた'],r:{はな:'花',にわ:'庭'}},
+    {w:['ともだちと','うみへ','いって','たのしかった'],r:{ともだち:'友だち',うみ:'海'}},
+    {w:['おおきな','いぬが','こうえんを','はしった'],r:{こうえん:'公園'}},
+    {w:['ゆきが','ふって','そとが','しろくなった'],r:{そと:'外'}},
+    {w:['あさひが','のぼって','うみが','ひかった'],r:{あさひ:'朝日',うみ:'海'}},
+    {w:['きいろい','はなが','かぜに','ゆれた'],r:{はな:'花',かぜ:'風'}},
+    {w:['おとうさんが','くるまで','むかえに','きた'],r:{おとうさん:'お父さん',くるま:'車'}},
+    {w:['やまの','うえから','まちが','みえた'],r:{やま:'山',まち:'町'}},
+    {w:['こどもたちが','どろで','あそんで','よごれた'],r:{こどもたち:'子どもたち'}},
+    {w:['ねこが','まるく','なって','ねている'],r:{}},
+    {w:['あたらしい','くつを','はいて','うれしい'],r:{くつ:'靴'}},
+    {w:['かわに','さかなが','およいで','きれい'],r:{かわ:'川',さかな:'魚'}},
+    {w:['おばあちゃんが','てがみを','よんで','ないた'],r:{てがみ:'手紙'}},
+    {w:['あめが','やんで','にじが','でた'],r:{にじ:'虹'}},
+    {w:['ひろい','のはらを','かけて','きもちいい'],r:{のはら:'野原'}},
+  ],
+  5: [
+    {w:['はるに','さくらが','きれいに','さいて','うれしい'],r:{さくら:'桜'}},
+    {w:['あさごはんに','たまごを','ふたつ','たべて','げんき'],r:{たまご:'卵'}},
+    {w:['がっこうで','ともだちと','きゅうしょくを','たべて','おいしかった'],r:{がっこう:'学校',ともだち:'友だち',きゅうしょく:'給食'}},
+    {w:['おかあさんと','おみせに','いって','ほんを','かった'],r:{おかあさん:'お母さん',ほん:'本'}},
+    {w:['あおい','そらに','しろい','くもが','うかんでいる'],r:{そら:'空'}},
+    {w:['やまの','むこうに','おおきな','かわが','ながれている'],r:{やま:'山',かわ:'川'}},
+    {w:['ふゆに','てぶくろを','はめて','そとへ','でかけた'],r:{てぶくろ:'手袋',そと:'外'}},
+    {w:['ゆうやけの','そらが','あかく','そまって','きれいだ'],r:{ゆうやけ:'夕焼け',そら:'空'}},
+    {w:['あめあがりに','かたつむりが','みちに','でて','あるいた'],r:{みち:'道'}},
+    {w:['おとうさんが','さかなを','つって','みんなで','たべた'],r:{おとうさん:'お父さん',さかな:'魚'}},
+    {w:['なつに','かきごおりを','たべたら','あたまが','いたくなった'],r:{かきごおり:'かき氷'}},
+    {w:['としょかんで','むずかしい','ほんを','よんで','つかれた'],r:{としょかん:'図書館',ほん:'本'}},
+    {w:['こどもが','おおきな','こえで','うたを','うたった'],r:{こども:'子ども',うた:'歌'}},
+    {w:['おおきな','つきが','やまの','うえに','でた'],r:{つき:'月',やま:'山'}},
+    {w:['かぞくで','こうえんに','いって','ボールで','あそんだ'],r:{かぞく:'家族',こうえん:'公園'}},
+    {w:['さむい','ふゆに','こたつで','みかんを','たべた'],r:{}},
+    {w:['あきに','もみじが','あかく','そまって','きれいだ'],r:{もみじ:'紅葉'}},
+    {w:['おじいちゃんと','いっしょに','はたけで','やさいを','そだてた'],r:{はたけ:'畑',やさい:'野菜'}},
+    {w:['あさ','はやく','おきて','あさひを','みた'],r:{あさひ:'朝日'}},
+    {w:['きれいな','こうえんで','しゃしんを','とって','たのしかった'],r:{こうえん:'公園',しゃしん:'写真'}},
+  ],
+  6: [
+    {w:['はるの','あたたかい','ひざしの','なかで','ねこが','ひなたぼっこした'],r:{ひざし:'日差し'}},
+    {w:['がっこうの','たいいくかんで','みんなと','たのしく','うたを','うたった'],r:{がっこう:'学校',たいいくかん:'体育館',うた:'歌'}},
+    {w:['おかあさんが','あたたかい','スープを','つくって','みんなが','よろこんだ'],r:{おかあさん:'お母さん'}},
+    {w:['あおい','うみで','ともだちと','いっしょに','およいで','たのしかった'],r:{うみ:'海',ともだち:'友だち'}},
+    {w:['おじいさんが','むかしの','ことを','たのしそうに','はなして','くれた'],r:{}},
+    {w:['ゆきの','ふった','よるに','きれいな','ほしが','でていた'],r:{ほし:'星'}},
+    {w:['あたらしい','じてんしゃで','こうえんの','なかを','はしって','きもちよかった'],r:{じてんしゃ:'自転車',こうえん:'公園'}},
+    {w:['ともだちの','たんじょうびに','てがみと','プレゼントを','わたして','よろこばれた'],r:{ともだち:'友だち',たんじょうび:'誕生日',てがみ:'手紙'}},
+    {w:['なつの','あつい','ひに','かわで','あそんで','つかれた'],r:{かわ:'川'}},
+    {w:['きいろい','ちょうちょが','はなから','はなへ','とんで','うつくしかった'],r:{はな:'花'}},
+    {w:['あきの','もりに','はいって','どんぐりを','ひろって','かえった'],r:{もり:'森'}},
+    {w:['おとうさんと','はじめて','でんしゃで','とおくの','まちへ','でかけた'],r:{おとうさん:'お父さん',でんしゃ:'電車',まち:'町'}},
+    {w:['よるに','おふろに','はいって','ほんを','よんで','ねた'],r:{ほん:'本'}},
+    {w:['しろい','くもが','たかい','そらに','うかんで','きえた'],r:{そら:'空'}},
+    {w:['やさしい','おばあちゃんが','てを','にぎって','うたを','うたってくれた'],r:{うた:'歌'}},
+    {w:['なつまつりで','みんなと','はなびを','みて','たいへん','もりあがった'],r:{はなび:'花火'}},
+    {w:['あさ','おきたら','まどから','きれいな','にじが','みえた'],r:{まど:'窓',にじ:'虹'}},
+    {w:['ふゆの','つめたい','かわの','みずに','さかなが','およいでいた'],r:{かわ:'川',さかな:'魚'}},
+    {w:['こうえんの','おおきな','きの','したで','みんなで','べんとうをたべた'],r:{こうえん:'公園',き:'木',べんとう:'弁当'}},
+    {w:['はるに','うえた','たねが','なつに','おおきな','はなになった'],r:{たね:'種',はな:'花'}},
+  ]
+};
+
+/* ═══════════════════════════════════════════════════════
+   時間モード 問題データ
+   形式: { month, day, weekday, hour, min, action }
+   weekday: 月〜日
+═══════════════════════════════════════════════════════ */
+const ACTIONS = [
+  'こうえんであそんだ','えほんをよんだ','ケーキをたべた','およぎにいった',
+  'えをかいた','ともだちとあそんだ','はなみをした','かいものをした',
+  'サッカーをした','はなびをみた','どうぶつえんにいった','ピアノをひいた',
+  'やきゅうをみた','カレーをたべた','おばあちゃんのいえにいった',
+  'うみにいった','じてんしゃにのった','むしとりをした','すいかをたべた',
+  'ゆきがっせんをした'
+];
+const MONTHS = [1,2,3,4,5,6,7,8,9,10,11,12];
+const HOURS = [8,9,10,11,13,14,15,16];
+
+function randomItem(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+function generateTimeQ(){
+  const month  = randomItem(MONTHS);
+  const day    = Math.floor(Math.random()*28)+1;
+  const hour   = randomItem(HOURS);
+  const action = randomItem(ACTIONS);
+  return { month, day, hour, action };
+}
+
+function timeText(q, level){
+  if(level==='hard'){
+    return `${q.month}がつ${q.day}にちの${q.hour}じに${q.action}`;
+  }
+  return `${q.month}がつ${q.day}にちに${q.action}`;
+}
+
+// 不正解選択肢生成
+function wrongMonths(correct,n){
+  const pool=MONTHS.filter(x=>x!==correct);
+  return shuffle(pool).slice(0,n).map(m=>`${m}がつ${Math.floor(Math.random()*28)+1}にち`);
+}
+function wrongHours(correct,n){
+  return shuffle(HOURS.filter(h=>h!==correct)).slice(0,n).map(h=>`${h}じ`);
+}
+function wrongActions(correct,n){
+  return shuffle(ACTIONS.filter(a=>a!==correct)).slice(0,n);
+}
+
+/* ─── タブ切り替え ─── */
+let currentTab = 'memory';
+function switchTab(tab){
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
+    b.classList.toggle('active', (i===0&&tab==='memory')||(i===1&&tab==='time'));
+  });
+  document.getElementById('tab-memory').classList.toggle('active', tab==='memory');
+  document.getElementById('tab-time').classList.toggle('active', tab==='time');
+}
+
+/* ═══════════════════════════════════════════════════════
+   きおくモード ロジック
+═══════════════════════════════════════════════════════ */
+let mDiff=4, mPool={}, mCurrent=null, mAssistOn=false;
+let mTotal=0, mCorrect=0, mStreak=0, mProgress=0;
+const M_SESSION=10;
+
+function mInit(){
+  [4,5,6].forEach(d=>{ mPool[d]=shuffle([...M_SENTENCES[d]]); });
+}
+
+function mSetDiff(n){
+  mDiff=n;
+  document.querySelectorAll('#tab-memory .diff-btn').forEach(b=>{
+    b.classList.toggle('active',+b.dataset.words===n);
+  });
+}
+
+function mStartQ(){
+  if(mPool[mDiff].length===0) mPool[mDiff]=shuffle([...M_SENTENCES[mDiff]]);
+  mCurrent=mPool[mDiff].pop();
+  mAssistOn=false;
+  document.getElementById('m-text-display').classList.remove('visible');
+  document.getElementById('m-answer-area').classList.remove('visible');
+  const q=mProgress+1;
+  document.getElementById('m-q-num').textContent=`もんだい ${q} / ${M_SESSION}`;
+  mUpdateProgress(mProgress);
+  mSetUI('speaking');
+  mSpeak();
+}
+
+function mSpeak(){
+  document.getElementById('m-replay-btn').disabled=true;
+  document.getElementById('m-assist-btn').disabled=true;
+  const text=mCurrent.w.join('')+'。';
+  speakText(text, ()=>{
+    mSetUI('waiting');
+    document.getElementById('m-replay-btn').disabled=false;
+    document.getElementById('m-assist-btn').disabled=false;
+  });
+}
+
+function mReplay(){
+  showToast();
+  mSetUI('speaking');
+  mSpeak();
+}
+
+function mToggleAssist(){
+  mAssistOn=!mAssistOn;
+  const td=document.getElementById('m-text-display');
+  if(mAssistOn){
+    td.innerHTML=mCurrent.w.map(w=>{
+      if(mCurrent.r&&mCurrent.r[w]) return `<ruby>${mCurrent.r[w]}<rt>${w}</rt></ruby>`;
+      return w;
+    }).join('　');
+    td.classList.add('visible');
+    document.getElementById('m-speaking-anim').classList.remove('visible');
+    document.getElementById('m-wait-area').classList.remove('visible');
+  } else {
+    td.classList.remove('visible');
+    document.getElementById('m-wait-area').classList.add('visible');
+  }
+}
+
+function mShowAnswer(){
+  const words=mCurrent.w;
+  document.getElementById('m-ans-first').textContent=words[0];
+  document.getElementById('m-ans-last').textContent=words[words.length-1];
+  const html=words.map((w,i)=>{
+    const isFirst=i===0, isLast=i===words.length-1;
+    const style=isFirst
+      ?'background:#fff0e0;color:var(--accent);border-radius:6px;padding:0 4px;font-weight:700;'
+      :isLast
+      ?'background:#e0f5f5;color:var(--accent2);border-radius:6px;padding:0 4px;font-weight:700;'
+      :'';
+    let disp=w;
+    if(mCurrent.r&&mCurrent.r[w]) disp=`<ruby>${mCurrent.r[w]}<rt>${w}</rt></ruby>`;
+    return style?`<span style="${style}">${disp}</span>`:disp;
+  }).join('　');
+  document.getElementById('m-ans-fulltext').innerHTML=html;
+  document.getElementById('m-answer-area').classList.add('visible');
+}
+
+function mMarkCorrect(){
+  mCorrect++; mStreak++; mTotal++; mProgress++;
+  mUpdateStats(); mUpdateProgress(mProgress);
+  showHana();
+  if(mProgress>=M_SESSION){ mProgress=0; mUpdateProgress(0); }
+  mSetUI('next');
+}
+
+function mNextQ(){
+  document.getElementById('m-answer-area').classList.remove('visible');
+  document.getElementById('m-text-display').classList.remove('visible');
+  mAssistOn=false;
+  mStartQ();
+}
+
+function mSetUI(state){
+  document.getElementById('m-btns-start').style.display='none';
+  document.getElementById('m-btns-playing').style.display='none';
+  document.getElementById('m-btns-judge').style.display='none';
+  document.getElementById('m-btns-next').style.display='none';
+  document.getElementById('m-speaking-anim').classList.remove('visible');
+  document.getElementById('m-wait-area').classList.remove('visible');
+  if(state==='speaking'){
+    document.getElementById('m-speaking-anim').classList.add('visible');
+    document.getElementById('m-btns-playing').style.display='flex';
+  } else if(state==='waiting'){
+    document.getElementById('m-wait-area').classList.add('visible');
+    document.getElementById('m-btns-judge').style.display='flex';
+  } else if(state==='next'){
+    document.getElementById('m-btns-next').style.display='flex';
+  }
+}
+
+function mUpdateStats(){
+  document.getElementById('m-st-total').textContent=mTotal;
+  document.getElementById('m-st-correct').textContent=mCorrect;
+  document.getElementById('m-st-streak').textContent=mStreak;
+}
+
+function mUpdateProgress(done){
+  const pct=Math.round((done/M_SESSION)*100);
+  document.getElementById('m-prog-fill').style.width=pct+'%';
+  document.getElementById('m-prog-label').textContent=`セット ${done} / ${M_SESSION}`;
+  document.getElementById('m-prog-pct').textContent=pct+'%';
+}
+
+/* ═══════════════════════════════════════════════════════
+   時間モード ロジック
+═══════════════════════════════════════════════════════ */
+let tLevel='easy', tCurrent=null, tSubQ=0, tSubQList=[];
+let tTotal=0, tCorrect=0, tStreak=0, tProgress=0;
+const T_SESSION=10;
+
+function tSetLevel(lv){
+  tLevel=lv;
+  document.querySelectorAll('#tab-time .diff-btn').forEach(b=>{
+    b.classList.toggle('active',b.dataset.tlevel===lv);
+  });
+}
+
+function tStartQ(){
+  tCurrent=generateTimeQ();
+  tSubQ=0;
+  tSubQList=buildSubQList(tLevel);
+  document.getElementById('t-question-block').style.display='none';
+  document.getElementById('t-feedback').textContent='';
+  const q=tProgress+1;
+  document.getElementById('t-q-num').textContent=`もんだい ${q} / ${T_SESSION}`;
+  tUpdateProgress(tProgress);
+  tSetUI('speaking');
+  tSpeak();
+}
+
+function buildSubQList(level){
+  if(level==='easy')   return [{type:'action'}];
+  if(level==='middle') return [{type:'date'},{type:'action'}];
+  return [{type:'date'},{type:'time'},{type:'action'}];
+}
+
+function tSpeak(){
+  document.getElementById('t-replay-btn').disabled=true;
+  const text=timeText(tCurrent, tLevel)+'。';
+  speakText(text,()=>{
+    tSetUI('waiting');
+    document.getElementById('t-replay-btn').disabled=false;
+    setTimeout(()=>tShowSubQ(), 600);
+  });
+}
+
+function tReplay(){
+  showToast();
+  document.getElementById('t-question-block').style.display='none';
+  tSetUI('speaking');
+  tSpeak();
+}
+
+function tShowSubQ(){
+  const sub=tSubQList[tSubQ];
+  document.getElementById('t-wait-area').classList.remove('visible');
+  document.getElementById('t-question-block').style.display='block';
+  document.getElementById('t-feedback').textContent='';
+  document.getElementById('t-feedback').className='t-feedback';
+
+  let label='', correct='', wrongs=[];
+  const q=tCurrent;
+
+  if(sub.type==='action'){
+    label='なにをしましたか？';
+    correct=q.action;
+    wrongs=wrongActions(q.action,3);
+  } else if(sub.type==='time'){
+    label='なんじですか？';
+    correct=`${q.hour}じ`;
+    wrongs=wrongHours(q.hour,3);
+  } else {
+    label='なんがつなんにちですか？';
+    correct=`${q.month}がつ${q.day}にち`;
+    wrongs=wrongMonths(q.month,3);
+  }
+
+  document.getElementById('t-q-label').textContent=label;
+
+  const choices=shuffle([correct,...wrongs]);
+  const grid=document.getElementById('t-choices');
+  grid.innerHTML='';
+  choices.forEach(ch=>{
+    const btn=document.createElement('button');
+    btn.className='choice-btn';
+    btn.textContent=ch;
+    btn.onclick=()=>tAnswer(ch===correct, btn, grid);
+    grid.appendChild(btn);
+  });
+}
+
+function tAnswer(isCorrect, btn, grid){
+  // 全ボタン無効化
+  grid.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('t-feedback');
+
+  if(isCorrect){
+    btn.classList.add('correct');
+    fb.textContent='せいかい！';
+    fb.className='t-feedback good';
+    tSubQ++;
+    if(tSubQ<tSubQList.length){
+      // 次の問いへ
+      setTimeout(()=>tShowSubQ(), 900);
+    } else {
+      // 全問正解
+      tCorrect++; tStreak++; tTotal++; tProgress++;
+      tUpdateStats(); tUpdateProgress(tProgress);
+      showHana();
+      if(tProgress>=T_SESSION){ tProgress=0; tUpdateProgress(0); }
+      setTimeout(()=>tSetUI('next'), 1000);
+    }
+  } else {
+    btn.classList.add('wrong');
+    // 正解ボタンをハイライト
+    const sub=tSubQList[tSubQ];
+    const q=tCurrent;
+    let correctText='';
+    if(sub.type==='action') correctText=q.action;
+    else if(sub.type==='time') correctText=`${q.hour}じ`;
+    else correctText=`${q.month}がつ${q.day}にち`;
+    grid.querySelectorAll('.choice-btn').forEach(b=>{
+      if(b.textContent===correctText) b.classList.add('correct');
+    });
+    fb.textContent='もう一度きいてみよう！　▶ 音声からやりなおすよ';
+    fb.className='t-feedback bad';
+    tStreak=0;
+    tUpdateStats();
+    // 1.8秒後に同じ問いのまま音声から再挑戦
+    setTimeout(()=>{
+      document.getElementById('t-question-block').style.display='none';
+      document.getElementById('t-feedback').textContent='';
+      tSetUI('speaking');
+      // tSubQはリセットせず同じ問いから再開
+      speakText(timeText(tCurrent, tLevel)+'。', ()=>{
+        tSetUI('waiting');
+        document.getElementById('t-replay-btn').disabled=false;
+        setTimeout(()=>tShowSubQ(), 600);
+      });
+    }, 1800);
+  }
+}
+
+function tNextQ(){
+  document.getElementById('t-question-block').style.display='none';
+  document.getElementById('t-feedback').textContent='';
+  tStartQ();
+}
+
+function tSetUI(state){
+  document.getElementById('t-btns-start').style.display='none';
+  document.getElementById('t-btns-playing').style.display='none';
+  document.getElementById('t-btns-next').style.display='none';
+  document.getElementById('t-speaking-anim').classList.remove('visible');
+  document.getElementById('t-wait-area').classList.remove('visible');
+  if(state==='speaking'){
+    document.getElementById('t-speaking-anim').classList.add('visible');
+    document.getElementById('t-btns-playing').style.display='flex';
+  } else if(state==='waiting'){
+    document.getElementById('t-wait-area').classList.add('visible');
+  } else if(state==='next'){
+    document.getElementById('t-btns-next').style.display='flex';
+  }
+}
+
+function tUpdateStats(){
+  document.getElementById('t-st-total').textContent=tTotal;
+  document.getElementById('t-st-correct').textContent=tCorrect;
+  document.getElementById('t-st-streak').textContent=tStreak;
+}
+
+function tUpdateProgress(done){
+  const pct=Math.round((done/T_SESSION)*100);
+  document.getElementById('t-prog-fill').style.width=pct+'%';
+  document.getElementById('t-prog-label').textContent=`セット ${done} / ${T_SESSION}`;
+  document.getElementById('t-prog-pct').textContent=pct+'%';
+}
+
+/* ═══════════════════════════════════════════════════════
+   音声（Web Speech API ／ Google Cloud TTS）
+   APIキーは設定UIから入力 → localStorage に保存
+═══════════════════════════════════════════════════════ */
+const LS_KEY = 'wm_google_tts_key';
+
+function getApiKey(){ return localStorage.getItem(LS_KEY) || ''; }
+function useGoogleTTS(){ return getApiKey().length > 0; }
+
+function speakText(text, onEnd){
+  if(useGoogleTTS()){
+    googleSpeak(text, onEnd);
+  } else {
+    webSpeechSpeak(text, onEnd);
+  }
+}
+
+/* ─── 設定UI ─── */
+function openSettings(){
+  const key=getApiKey();
+  const input=document.getElementById('api-key-input');
+  input.value = key ? '（保存済み）' : '';
+  input.placeholder = key ? '新しいキーを入力して上書き' : 'AIza... （APIキーを貼り付け）';
+  updateApiStatus(key ? 'ok' : 'none');
+  document.getElementById('settings-overlay').classList.add('open');
+}
+function closeSettings(){
+  document.getElementById('settings-overlay').classList.remove('open');
+}
+function closeSettingsIfBg(e){
+  if(e.target===document.getElementById('settings-overlay')) closeSettings();
+}
+function updateApiStatus(type, msg){
+  const el=document.getElementById('api-status');
+  el.className='';
+  if(type==='ok'){
+    el.className='status-ok';
+    el.textContent='✅ Google音声が有効です';
+  } else if(type==='err'){
+    el.className='status-err';
+    el.textContent='❌ '+(msg||'保存に失敗しました');
+  } else {
+    el.className='status-none';
+    el.textContent='─ 標準音声を使用中';
+  }
+}
+function saveApiKey(){
+  const val=document.getElementById('api-key-input').value.trim();
+  if(!val || val==='（保存済み）'){
+    updateApiStatus('err','キーを入力してください');
+    return;
+  }
+  if(!val.startsWith('AIza')){
+    updateApiStatus('err','Google APIキーは AIza で始まります');
+    return;
+  }
+  localStorage.setItem(LS_KEY, val);
+  document.getElementById('api-key-input').value='（保存済み）';
+  updateApiStatus('ok');
+}
+function clearApiKey(){
+  localStorage.removeItem(LS_KEY);
+  document.getElementById('api-key-input').value='';
+  document.getElementById('api-key-input').placeholder='AIza... （APIキーを貼り付け）';
+  updateApiStatus('none');
+}
+
+async function googleSpeak(text, onEnd){
+  const key=getApiKey();
+  try{
+    const res=await fetch(
+      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${key}`,
+      {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          input:{text},
+          voice:{languageCode:'ja-JP', name:'ja-JP-Studio-A', ssmlGender:'FEMALE'},
+          audioConfig:{audioEncoding:'MP3', speakingRate:0.90, pitch:0.0}
+        })
+      }
+    );
+    if(!res.ok) throw new Error(res.status);
+    const data=await res.json();
+    const bytes=atob(data.audioContent);
+    const buf=new Uint8Array(bytes.length);
+    for(let i=0;i<bytes.length;i++) buf[i]=bytes.charCodeAt(i);
+    const blob=new Blob([buf],{type:'audio/mp3'});
+    const url=URL.createObjectURL(blob);
+    const audio=new Audio(url);
+    audio.onended=()=>{ URL.revokeObjectURL(url); onEnd && onEnd(); };
+    audio.onerror=()=>{ URL.revokeObjectURL(url); onEnd && onEnd(); };
+    audio.play();
+  } catch(e){
+    console.error('Google TTS error:',e);
+    webSpeechSpeak(text, onEnd);
+  }
+}
+
+function webSpeechSpeak(text, onEnd){
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='ja-JP'; u.rate=0.85; u.pitch=1.0;
+  const voices=speechSynthesis.getVoices();
+  const jpv=voices.find(v=>v.lang==='ja-JP')||voices.find(v=>v.lang.startsWith('ja'));
+  if(jpv) u.voice=jpv;
+  u.onend=()=>{ onEnd && onEnd(); };
+  u.onerror=()=>{ onEnd && onEnd(); };
+  setTimeout(()=>speechSynthesis.speak(u), 80);
+}
+
+/* ─── 花丸フィードバック ─── */
+function showHana(){
+  const ov=document.getElementById('feedback-overlay');
+  ov.innerHTML='';
+  ov.classList.add('active');
+  const h=document.createElement('div');
+  h.className='hanmaru'; h.textContent='🌸';
+  ov.appendChild(h);
+  const colors=['#e8813a','#5ba4a4','#c25d8a','#f4c542','#7db87d'];
+  for(let i=0;i<24;i++){
+    const c=document.createElement('div');
+    c.className='confetti';
+    c.style.cssText=`left:${Math.random()*100}vw;top:-10px;width:${8+Math.random()*8}px;height:${8+Math.random()*8}px;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*0.5}s`;
+    ov.appendChild(c);
+  }
+  setTimeout(()=>{ ov.classList.remove('active'); ov.innerHTML=''; },2200);
+}
+
+/* ─── ユーティリティ ─── */
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function showToast(){
+  const t=document.getElementById('replay-toast');
+  t.classList.add('visible');
+  setTimeout(()=>t.classList.remove('visible'),1800);
+}
+
+if(speechSynthesis.onvoiceschanged!==undefined){
+  speechSynthesis.onvoiceschanged=()=>{};
+}
+
+mInit();
+</script>
+</body>
+</html>
