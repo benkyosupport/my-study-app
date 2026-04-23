@@ -117,6 +117,93 @@
             box-shadow: 0 5px 0 #27ae60;
         }
         .next-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #27ae60; }
+
+        /* ── タブ ── */
+        .tab-bar {
+            display: flex;
+            gap: 0;
+            width: 95%;
+            max-width: 800px;
+            margin: 10px 0 0;
+            border-bottom: 2px solid var(--dot-color);
+        }
+        .tab-btn {
+            padding: 9px 28px;
+            font-size: 15px;
+            cursor: pointer;
+            border: 2px solid var(--dot-color);
+            border-bottom: none;
+            background: white;
+            color: var(--dot-color);
+            border-radius: 8px 8px 0 0;
+            margin-right: 4px;
+        }
+        .tab-btn.active {
+            background: var(--dot-color);
+            color: white;
+        }
+
+        /* ── 逆引きタブ本体 ── */
+        #gyaku-panel {
+            display: none;
+            width: 90%;
+            max-width: 800px;
+            background: white;
+            border-radius: 0 16px 16px 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 24px 28px 32px;
+            margin-bottom: 20px;
+        }
+
+        .gyaku-hint {
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            color: #aaa;
+            margin-bottom: 18px;
+        }
+
+        .gyaku-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .gyaku-row {
+            display: grid;
+            grid-template-columns: 100px 24px 52px;
+            align-items: baseline;
+            padding: 9px 0;
+            border-bottom: 1px solid #ebebeb;
+            cursor: pointer;
+        }
+        .gyaku-row:last-child { border-bottom: none; }
+
+        .g-expr {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 24px;
+            color: white; /* hidden: text == bg */
+            background: white;
+            user-select: none;
+        }
+        .g-expr.revealed {
+            color: #333;
+            background: transparent;
+        }
+
+        .g-eq {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 24px;
+            color: #bbb;
+            text-align: center;
+        }
+
+        .g-ans {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-color);
+            text-align: right;
+        }
     </style>
 </head>
 <body>
@@ -129,6 +216,14 @@
     <span id="api-status" class="api-status off">●ブラウザ音声</span>
 </div>
 
+<!-- タブバー -->
+<div class="tab-bar">
+    <button class="tab-btn active" id="tab-main" onclick="switchTab('main')">九九練習</button>
+    <button class="tab-btn" id="tab-gyaku" onclick="switchTab('gyaku')">逆引き</button>
+</div>
+
+<!-- 九九練習パネル -->
+<div id="main-panel">
 <div class="menu-container" id="dan-menu"></div>
 
 <div class="mode-container" id="mode-menu">
@@ -153,6 +248,14 @@
 
 <div class="controls">
     <button class="next-btn" onclick="handleNext()">次へ</button>
+</div>
+</div>
+
+<!-- 逆引きパネル -->
+<div id="gyaku-panel">
+    <div class="menu-container" id="gyaku-dan-menu"></div>
+    <p class="gyaku-hint">式をタップすると読み上げます</p>
+    <div class="gyaku-list" id="gyaku-list"></div>
 </div>
 
 <script>
@@ -402,9 +505,96 @@
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleNext(); }
     });
 
+    // =====================================================
+    // 逆引きタブ
+    // =====================================================
+
+    // 逆引き専用読み：いち/に/さん/よん/ご/ろく/なな/はち/きゅう 固定
+    const YOMI1 = ['','いち','に','さん','よん','ご','ろく','なな','はち','きゅう'];
+
+    function gyakuYomi(n) {
+        if (n <= 9) return YOMI1[n];
+        const ju   = Math.floor(n / 10);
+        const ichi = n % 10;
+        const juPart   = ju === 1 ? 'じゅう' : YOMI1[ju] + 'じゅう';
+        const ichiPart = ichi === 0 ? '' : YOMI1[ichi];
+        return juPart + ichiPart;
+    }
+
+    async function gyakuSpeak(n1, n2) {
+        const ans  = n1 * n2;
+        const text = YOMI1[n1] + '\u3000' + YOMI1[n2] + '\u3000' + gyakuYomi(ans);
+        await speak(text);
+    }
+
+    let gyakuDan = 2;
+
+    // 逆引き段ボタン生成
+    const gyakuDanMenu = document.getElementById('gyaku-dan-menu');
+    for (let i = 1; i <= 9; i++) {
+        const b = document.createElement('button');
+        b.innerText = i + 'の段';
+        b.className = (i === gyakuDan) ? 'dan-btn active' : 'dan-btn';
+        b.dataset.n = i;
+        b.onclick = () => {
+            gyakuDan = i;
+            Array.from(gyakuDanMenu.children).forEach(btn => {
+                btn.className = (+btn.dataset.n === i) ? 'dan-btn active' : 'dan-btn';
+            });
+            renderGyaku();
+        };
+        gyakuDanMenu.appendChild(b);
+    }
+
+    function renderGyaku() {
+        const list = document.getElementById('gyaku-list');
+        list.innerHTML = '';
+        for (let i = 1; i <= 9; i++) {
+            const ans = gyakuDan * i;
+            const row = document.createElement('div');
+            row.className = 'gyaku-row';
+
+            const expr = document.createElement('span');
+            expr.className = 'g-expr';
+            expr.textContent = gyakuDan + ' × ' + i;
+
+            const eq = document.createElement('span');
+            eq.className = 'g-eq';
+            eq.textContent = '＝';
+
+            const ansEl = document.createElement('span');
+            ansEl.className = 'g-ans';
+            ansEl.textContent = String(ans).padStart(2, '\u2007');
+
+            row.appendChild(expr);
+            row.appendChild(eq);
+            row.appendChild(ansEl);
+
+            row.addEventListener('click', () => {
+                const wasHidden = !expr.classList.contains('revealed');
+                expr.classList.toggle('revealed');
+                if (wasHidden) {
+                    if (navigator.vibrate) navigator.vibrate(15);
+                    gyakuSpeak(gyakuDan, i);
+                }
+            });
+
+            list.appendChild(row);
+        }
+    }
+
+    // タブ切替
+    function switchTab(tab) {
+        document.getElementById('tab-main').classList.toggle('active', tab === 'main');
+        document.getElementById('tab-gyaku').classList.toggle('active', tab === 'gyaku');
+        document.getElementById('main-panel').style.display  = (tab === 'main')  ? '' : 'none';
+        document.getElementById('gyaku-panel').style.display = (tab === 'gyaku') ? 'block' : 'none';
+    }
+
     // 起動
     loadApiKey();
     updateUI();
+    renderGyaku();
 </script>
 </body>
 </html>
