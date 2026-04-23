@@ -1182,6 +1182,10 @@ function clearApiKey(){
 
 async function googleSpeak(text, onEnd){
   const key=getApiKey();
+  // iOS Safari対応: fetchより前（ユーザー操作の文脈）でAudioを生成しplay()を呼んでおく
+  const audio=new Audio();
+  audio.play().catch(()=>{});
+  audio.pause();
   try{
     const res=await fetch(
       `https://texttospeech.googleapis.com/v1/text:synthesize?key=${key}`,
@@ -1190,7 +1194,7 @@ async function googleSpeak(text, onEnd){
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
           input:{text},
-          voice:{languageCode:'ja-JP', name:'ja-JP-Studio-A', ssmlGender:'FEMALE'},
+          voice:{languageCode:'ja-JP', name:'ja-JP-Wavenet-A', ssmlGender:'FEMALE'},
           audioConfig:{audioEncoding:'MP3', speakingRate:0.90, pitch:0.0}
         })
       }
@@ -1202,7 +1206,7 @@ async function googleSpeak(text, onEnd){
     for(let i=0;i<bytes.length;i++) buf[i]=bytes.charCodeAt(i);
     const blob=new Blob([buf],{type:'audio/mp3'});
     const url=URL.createObjectURL(blob);
-    const audio=new Audio(url);
+    audio.src=url;
     audio.onended=()=>{ URL.revokeObjectURL(url); onEnd && onEnd(); };
     audio.onerror=()=>{ URL.revokeObjectURL(url); onEnd && onEnd(); };
     audio.play();
