@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>漢字学習 2年生</title>
+<style>
+:root {
+  --bg: #fdf6ec;
+  --card: #fff9f2;
+  --ink: #2c1a0e;
+  --muted: #8a6a4a;
+  --accent: #e85d2f;
+  --accent2: #2a7d4f;
+  --yellow: #f5c842;
+  --shadow: rgba(44,26,14,0.10);
+  --radius: 16px;
+  --font-kanji: "Hiragino Mincho ProN","Yu Mincho","游明朝",serif;
+  --font-ui: "Hiragino Kaku Gothic ProN","Yu Gothic","游ゴシック",sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ===== HEADER ===== */
+header {
+  width: 100%;
+  max-width: 600px;
+  padding: 12px 16px 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.back-btn {
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  border: 1px solid #d4b896;
+  border-radius: 20px;
+  padding: 4px 12px;
+  background: var(--card);
+  white-space: nowrap;
+}
+.progress-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.progress-label {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: right;
+}
+.progress-bar-outer {
+  height: 6px;
+  background: #e4d4c0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-bar-inner {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent2), #4caf80);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+  width: 0%;
+}
+.settings-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 4px 6px;
+  color: var(--muted);
+}
+
+/* ===== MAIN ===== */
+main {
+  width: 100%;
+  max-width: 600px;
+  padding: 6px 16px 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ===== PRESENT AREA ===== */
+.present-area {
+  display: flex;
+  gap: 12px;
+  height: 200px;
+}
+.illust-panel {
+  flex: 1;
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1.5px solid #e4d4c0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 10px;
+  box-shadow: 0 2px 8px var(--shadow);
+  overflow: hidden;
+}
+.illust-img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+.meaning-fallback {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+  line-height: 1.4;
+  padding: 10px 8px;
+  background: linear-gradient(135deg,#ffecd2,#ffe0b8);
+  border-radius: 10px;
+  width: 100%;
+}
+.bushu-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #f0e6d8;
+  color: var(--muted);
+  font-family: var(--font-kanji);
+}
+.category-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #e8f4ee;
+  color: var(--accent2);
+}
+
+.kanji-panel {
+  flex: 1;
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1.5px solid #e4d4c0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+.kanji-display {
+  font-size: clamp(72px, 20vw, 108px);
+  font-family: var(--font-kanji);
+  font-weight: 900;
+  line-height: 1;
+  color: var(--ink);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+  user-select: none;
+  position: relative;
+  z-index: 2;
+}
+.kanji-display.hidden {
+  opacity: 0;
+  transform: scale(0.82);
+}
+.kanji-ghost {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  grid-template-rows: repeat(4,1fr);
+  gap: 3px;
+  padding: 10px;
+  opacity: 0;
+  transition: opacity 0.35s ease 0.2s;
+  pointer-events: none;
+  z-index: 1;
+}
+.kanji-ghost.visible { opacity: 1; }
+.ghost-cell {
+  border-radius: 4px;
+  background: #f0e6d8;
+  animation: ghostPulse 2s ease-in-out infinite;
+}
+.ghost-cell:nth-child(2n) { animation-delay: 0.4s; }
+.ghost-cell:nth-child(3n) { animation-delay: 0.8s; }
+@keyframes ghostPulse {
+  0%,100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* ===== MEMORIZE BTN ===== */
+.memorize-btn {
+  width: 100%;
+  padding: 15px;
+  font-size: 17px;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), #c94020);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(232,93,47,0.35);
+  transition: transform 0.12s, box-shadow 0.12s;
+  letter-spacing: 0.04em;
+}
+.memorize-btn:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(232,93,47,0.25); }
+.memorize-btn.hidden { display: none; }
+
+/* ===== CHOICES ===== */
+.choices-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.choice-btn {
+  padding: 18px 8px;
+  font-size: clamp(34px, 10vw, 48px);
+  font-family: var(--font-kanji);
+  font-weight: 900;
+  background: var(--card);
+  border: 2px solid #e4d4c0;
+  border-radius: var(--radius);
+  cursor: pointer;
+  box-shadow: 0 2px 8px var(--shadow);
+  transition: transform 0.12s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  color: var(--ink);
+  line-height: 1;
+}
+.choice-btn:active { transform: scale(0.96); }
+.choice-btn.correct {
+  background: #e8f7ee;
+  border-color: var(--accent2);
+  color: var(--accent2);
+  box-shadow: 0 0 0 3px rgba(42,125,79,0.18);
+}
+.choice-btn.wrong {
+  background: #fde8e4;
+  border-color: #e04040;
+  color: #e04040;
+  box-shadow: 0 0 0 3px rgba(224,64,64,0.15);
+  animation: shake 0.35s ease;
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+.choices-grid.hidden { display: none; }
+
+/* ===== SLIDE ANIMATION (correct) ===== */
+.kanji-slide {
+  position: fixed;
+  font-family: var(--font-kanji);
+  font-weight: 900;
+  font-size: 72px;
+  color: var(--ink);
+  pointer-events: none;
+  z-index: 999;
+  transition: none;
+}
+
+/* ===== SETTINGS OVERLAY ===== */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(44,26,14,0.45);
+  z-index: 100;
+  align-items: flex-end;
+  justify-content: center;
+}
+.overlay.open { display: flex; }
+.settings-panel {
+  background: var(--card);
+  border-radius: 20px 20px 0 0;
+  padding: 24px 20px 36px;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 -4px 32px rgba(44,26,14,0.18);
+}
+.settings-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.settings-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.settings-row label { font-size: 13px; color: var(--muted); }
+.settings-row input[type="text"] {
+  padding: 10px 12px;
+  border: 1.5px solid #d4b896;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: monospace;
+  background: var(--bg);
+  color: var(--ink);
+  outline: none;
+}
+.settings-row input:focus { border-color: var(--accent); }
+.btn-row {
+  display: flex;
+  gap: 10px;
+}
+.btn-save {
+  flex: 1;
+  padding: 12px;
+  background: var(--accent2);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn-clear-key {
+  padding: 12px 16px;
+  background: #f0e6d8;
+  color: var(--muted);
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.btn-reset-progress {
+  width: 100%;
+  padding: 12px;
+  background: #fde8e4;
+  color: #c03030;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn-close-settings {
+  width: 100%;
+  padding: 12px;
+  background: #f0e6d8;
+  color: var(--muted);
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.api-status {
+  font-size: 12px;
+  color: var(--accent2);
+}
+
+/* ===== COMPLETE SCREEN ===== */
+.complete-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px 20px;
+  text-align: center;
+}
+.complete-screen.visible { display: flex; }
+.complete-emoji { font-size: 64px; }
+.complete-title { font-size: 22px; font-weight: 700; }
+.complete-sub { font-size: 14px; color: var(--muted); }
+.btn-restart {
+  padding: 14px 40px;
+  background: linear-gradient(135deg, var(--accent), #c94020);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(232,93,47,0.3);
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="back-btn">← メニュー</a>
+  <div class="progress-area">
+    <div class="progress-label" id="progressLabel">0 / 160</div>
+    <div class="progress-bar-outer">
+      <div class="progress-bar-inner" id="progressBar"></div>
+    </div>
+  </div>
+  <button class="settings-btn" id="settingsBtn" aria-label="設定">⚙️</button>
+</header>
+
+<main id="mainContent">
+  <!-- 提示エリア -->
+  <div class="present-area">
+    <div class="illust-panel" id="illustPanel">
+      <!-- JS で挿入 -->
+    </div>
+    <div class="kanji-panel" id="kanjiPanel">
+      <div class="kanji-ghost" id="kanjiGhost">
+        <div class="ghost-cell"></div><div class="ghost-cell"></div>
+        <div class="ghost-cell"></div><div class="ghost-cell"></div>
+        <div class="ghost-cell"></div><div class="ghost-cell"></div>
+        <div class="ghost-cell"></div><div class="ghost-cell"></div>
+        <div class="ghost-cell"></div><div class="ghost-cell"></div>
+        <div class="ghost-cell"></div><div class="ghost-cell"></div>
+        <div class="ghost-cell"></div><div class="ghost-cell"></div>
+        <div class="ghost-cell"></div><div class="ghost-cell"></div>
+      </div>
+      <div class="kanji-display" id="kanjiDisplay"></div>
+    </div>
+  </div>
+
+  <!-- 覚えたボタン -->
+  <button class="memorize-btn" id="memorizeBtn">覚えた！</button>
+
+  <!-- 4択 -->
+  <div class="choices-grid hidden" id="choicesGrid"></div>
+</main>
+
+<!-- 完了画面 -->
+<div class="complete-screen" id="completeScreen">
+  <div class="complete-emoji">🎉</div>
+  <div class="complete-title">160文字 全部クリア！</div>
+  <div class="complete-sub">もう一度はじめますか？</div>
+  <button class="btn-restart" id="restartBtn">もう一度</button>
+</div>
+
+<!-- 設定オーバーレイ -->
+<div class="overlay" id="settingsOverlay">
+  <div class="settings-panel">
+    <div class="settings-title">⚙️ 設定</div>
+    <div class="settings-row">
+      <label>Google Cloud TTS APIキー（任意）</label>
+      <input type="text" id="apiKeyInput" placeholder="AIza..." autocomplete="off">
+      <div class="api-status" id="apiStatus"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-save" id="saveKeyBtn">保存</button>
+      <button class="btn-clear-key" id="clearKeyBtn">削除</button>
+    </div>
+    <button class="btn-reset-progress" id="resetProgressBtn">進捗をリセット</button>
+    <button class="btn-close-settings" id="closeSettingsBtn">閉じる</button>
+  </div>
+</div>
+
+<script src="data/kanji2.js"></script>
+<script>
+// =============================================
+// データ参照
+// =============================================
+const DATA = typeof KANJI_DATA_UNIQUE !== "undefined" ? KANJI_DATA_UNIQUE : [];
+
+// =============================================
+// 定数
+// =============================================
+const STORAGE_KEY = "kanji2_done";
+const TTS_KEY_STORAGE = "google_tts_key";
+
+// =============================================
+// 状態
+// =============================================
+let currentKanji = null;
+let currentChoices = [];
+let queue = [];
+let answered = false;
+
+// =============================================
+// AudioContext（iOS Safari対応）
+// =============================================
+let audioCtx = null;
+
+function unlockAudioContext() {
+  if (audioCtx) return;
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const buf = audioCtx.createBuffer(1, 1, 22050);
+    const src = audioCtx.createBufferSource();
+    src.buffer = buf;
+    src.connect(audioCtx.destination);
+    src.start(0);
+  } catch(e) {}
+}
+
+async function speakGoogle(reading, apiKey) {
+  unlockAudioContext();
+  try {
+    const res = await fetch(
+      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          input: { text: reading },
+          voice: { languageCode: "ja-JP", name: "ja-JP-Neural2-B" },
+          audioConfig: { audioEncoding: "MP3" }
+        })
+      }
+    );
+    const data = await res.json();
+    if (!data.audioContent) throw new Error("no audio");
+    const binary = atob(data.audioContent);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    const decoded = await audioCtx.decodeAudioData(bytes.buffer);
+    const source = audioCtx.createBufferSource();
+    source.buffer = decoded;
+    source.connect(audioCtx.destination);
+    source.start(0);
+  } catch(e) {
+    webSpeechSpeak(reading);
+  }
+}
+
+function webSpeechSpeak(reading) {
+  try {
+    const utter = new SpeechSynthesisUtterance(reading);
+    utter.lang = "ja-JP";
+    utter.rate = 0.85;
+    speechSynthesis.speak(utter);
+  } catch(e) {}
+}
+
+function speak(reading) {
+  const apiKey = localStorage.getItem(TTS_KEY_STORAGE);
+  if (apiKey) {
+    speakGoogle(reading, apiKey);
+  } else {
+    webSpeechSpeak(reading);
+  }
+}
+
+// =============================================
+// 振動
+// =============================================
+function vibrate(pattern = [30]) {
+  if ("vibrate" in navigator) {
+    try { navigator.vibrate(pattern); } catch(e) {}
+  }
+}
+
+// =============================================
+// 進捗管理
+// =============================================
+function getDone() {
+  return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"));
+}
+
+function markCorrect(kanji) {
+  const done = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  if (!done.includes(kanji)) {
+    done.push(kanji);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(done));
+  }
+}
+
+function getQueue() {
+  const done = getDone();
+  const remaining = DATA.filter(k => !done.has(k.kanji));
+  return remaining.length > 0 ? remaining : [...DATA];
+}
+
+function updateProgressUI() {
+  const done = getDone();
+  const count = Math.min(done.size, DATA.length);
+  const pct = DATA.length > 0 ? (count / DATA.length) * 100 : 0;
+  document.getElementById("progressLabel").textContent = `${count} / ${DATA.length}`;
+  document.getElementById("progressBar").style.width = pct + "%";
+}
+
+// =============================================
+// 選択肢生成
+// =============================================
+function randomKanji(excludes) {
+  const excludeSet = new Set(excludes.map(k => k.kanji));
+  const pool = DATA.filter(k => !excludeSet.has(k.kanji));
+  if (pool.length === 0) return DATA[0];
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function generateChoices(target) {
+  const choices = [target];
+
+  // カテゴリー類似
+  const catMatch = DATA
+    .filter(k => k.category === target.category && k.kanji !== target.kanji)
+    .sort(() => Math.random() - 0.5)[0]
+    || randomKanji(choices);
+  choices.push(catMatch);
+
+  // relatedプール
+  const relatedPool = (target.related || [])
+    .map(k => DATA.find(d => d.kanji === k))
+    .filter(Boolean)
+    .sort(() => Math.random() - 0.5);
+
+  choices.push(relatedPool[0] || randomKanji(choices));
+
+  // 4つ目（重複除去）
+  const existing = new Set(choices.map(c => c.kanji));
+  const pool2 = (relatedPool.slice(1).filter(k => !existing.has(k.kanji)));
+  choices.push(pool2[0] || randomKanji(choices));
+
+  return choices.sort(() => Math.random() - 0.5);
+}
+
+// =============================================
+// UI描画
+// =============================================
+function renderIllust(k) {
+  const panel = document.getElementById("illustPanel");
+  let html = "";
+  if (k.image) {
+    html += `<img class="illust-img" src="${k.image}" alt="${k.meaning}">`;
+  } else {
+    html += `<div class="meaning-fallback">${k.meaning}</div>`;
+  }
+  html += `<div class="bushu-badge">部首：${k.bushu}</div>`;
+  html += `<div class="category-badge">${k.category}</div>`;
+  panel.innerHTML = html;
+}
+
+function renderKanji(k) {
+  const disp = document.getElementById("kanjiDisplay");
+  disp.textContent = k.kanji;
+  disp.classList.remove("hidden");
+  document.getElementById("kanjiGhost").classList.remove("visible");
+}
+
+function renderChoices(choices) {
+  const grid = document.getElementById("choicesGrid");
+  grid.innerHTML = "";
+  choices.forEach(c => {
+    const btn = document.createElement("button");
+    btn.className = "choice-btn";
+    btn.textContent = c.kanji;
+    btn.dataset.kanji = c.kanji;
+    btn.addEventListener("click", () => onChoiceClick(btn, c));
+    grid.appendChild(btn);
+  });
+  grid.classList.remove("hidden");
+}
+
+// =============================================
+// フロー制御
+// =============================================
+function loadNext() {
+  answered = false;
+  if (queue.length === 0) {
+    queue = getQueue();
+  }
+
+  // 全完了チェック（初回起動時のみ、done >= DATA.length）
+  const done = getDone();
+  if (done.size >= DATA.length && DATA.length > 0) {
+    showComplete();
+    return;
+  }
+
+  // キューからランダムに1件
+  const idx = Math.floor(Math.random() * queue.length);
+  currentKanji = queue.splice(idx, 1)[0];
+  currentChoices = generateChoices(currentKanji);
+
+  // Phase1: 提示
+  renderIllust(currentKanji);
+  renderKanji(currentKanji);
+  document.getElementById("memorizeBtn").classList.remove("hidden");
+  document.getElementById("choicesGrid").classList.add("hidden");
+  document.getElementById("mainContent").style.display = "";
+  document.getElementById("completeScreen").classList.remove("visible");
+
+  updateProgressUI();
+}
+
+function showComplete() {
+  document.getElementById("mainContent").style.display = "none";
+  document.getElementById("completeScreen").classList.add("visible");
+  updateProgressUI();
+}
+
+// =============================================
+// イベント：覚えたボタン
+// =============================================
+document.getElementById("memorizeBtn").addEventListener("click", () => {
+  vibrate([30]);
+  unlockAudioContext();
+
+  // Phase2: 消去
+  document.getElementById("kanjiDisplay").classList.add("hidden");
+  document.getElementById("kanjiGhost").classList.add("visible");
+  document.getElementById("memorizeBtn").classList.add("hidden");
+
+  // Phase3: 4択表示
+  renderChoices(currentChoices);
+});
+
+// =============================================
+// イベント：選択肢クリック
+// =============================================
+function onChoiceClick(btn, chosen) {
+  if (answered) return;
+  answered = true;
+  vibrate([30]);
+  unlockAudioContext();
+
+  const isCorrect = chosen.kanji === currentKanji.kanji;
+
+  if (isCorrect) {
+    btn.classList.add("correct");
+    markCorrect(currentKanji.kanji);
+    speak(currentKanji.reading);
+    animateSlide(btn);
+    setTimeout(() => {
+      loadNext();
+    }, 1100);
+  } else {
+    btn.classList.add("wrong");
+    vibrate([60, 40, 60]);
+    // 正解をヒント表示
+    const all = document.querySelectorAll(".choice-btn");
+    all.forEach(b => {
+      if (b.dataset.kanji === currentKanji.kanji) {
+        b.classList.add("correct");
+      }
+    });
+    // 正解を喋る
+    speak(currentKanji.reading);
+    setTimeout(() => {
+      loadNext();
+    }, 1600);
+  }
+}
+
+// =============================================
+// 正解アニメーション（漢字スライド）
+// =============================================
+function animateSlide(correctBtn) {
+  const kanjiPanel = document.getElementById("kanjiPanel");
+  const panelRect = kanjiPanel.getBoundingClientRect();
+  const btnRect = correctBtn.getBoundingClientRect();
+
+  const el = document.createElement("div");
+  el.className = "kanji-slide";
+  el.textContent = currentKanji.kanji;
+  el.style.left = btnRect.left + btnRect.width / 2 - 36 + "px";
+  el.style.top = btnRect.top + btnRect.height / 2 - 36 + "px";
+  el.style.fontSize = "72px";
+  el.style.opacity = "1";
+  document.body.appendChild(el);
+
+  const targetLeft = panelRect.left + panelRect.width / 2 - 36;
+  const targetTop = panelRect.top + panelRect.height / 2 - 36;
+
+  requestAnimationFrame(() => {
+    el.style.transition = "left 0.5s ease, top 0.5s ease, opacity 0.5s ease, transform 0.5s ease";
+    el.style.left = targetLeft + "px";
+    el.style.top = targetTop + "px";
+    el.style.transform = "scale(1.15)";
+  });
+
+  setTimeout(() => {
+    el.style.opacity = "0";
+    el.style.transform = "scale(0.9)";
+  }, 600);
+
+  setTimeout(() => {
+    el.remove();
+  }, 1100);
+}
+
+// =============================================
+// 設定パネル
+// =============================================
+document.getElementById("settingsBtn").addEventListener("click", () => {
+  const key = localStorage.getItem(TTS_KEY_STORAGE) || "";
+  document.getElementById("apiKeyInput").value = key;
+  document.getElementById("apiStatus").textContent = key ? "✅ APIキー設定済み" : "";
+  document.getElementById("settingsOverlay").classList.add("open");
+});
+
+document.getElementById("closeSettingsBtn").addEventListener("click", () => {
+  document.getElementById("settingsOverlay").classList.remove("open");
+});
+
+document.getElementById("settingsOverlay").addEventListener("click", (e) => {
+  if (e.target === document.getElementById("settingsOverlay")) {
+    document.getElementById("settingsOverlay").classList.remove("open");
+  }
+});
+
+document.getElementById("saveKeyBtn").addEventListener("click", () => {
+  const val = document.getElementById("apiKeyInput").value.trim();
+  if (val) {
+    localStorage.setItem(TTS_KEY_STORAGE, val);
+    document.getElementById("apiStatus").textContent = "✅ 保存しました";
+  }
+});
+
+document.getElementById("clearKeyBtn").addEventListener("click", () => {
+  localStorage.removeItem(TTS_KEY_STORAGE);
+  document.getElementById("apiKeyInput").value = "";
+  document.getElementById("apiStatus").textContent = "削除しました";
+});
+
+document.getElementById("resetProgressBtn").addEventListener("click", () => {
+  if (confirm("進捗をリセットしますか？")) {
+    localStorage.removeItem(STORAGE_KEY);
+    queue = [];
+    document.getElementById("settingsOverlay").classList.remove("open");
+    loadNext();
+  }
+});
+
+// ===== もう一度ボタン =====
+document.getElementById("restartBtn").addEventListener("click", () => {
+  localStorage.removeItem(STORAGE_KEY);
+  queue = [];
+  loadNext();
+});
+
+// =============================================
+// 起動
+// =============================================
+if (DATA.length === 0) {
+  document.getElementById("mainContent").innerHTML =
+    '<p style="padding:40px;color:#c03030;text-align:center;">data/kanji2.js が読み込めませんでした</p>';
+} else {
+  queue = getQueue();
+  loadNext();
+}
+</script>
+</body>
+</html>
