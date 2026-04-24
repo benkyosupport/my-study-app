@@ -423,6 +423,188 @@ main {
   color: #fff;
   box-shadow: 0 4px 16px rgba(232,93,47,0.35);
 }
+
+/* ===== MODE TABS ===== */
+.mode-tabs {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  gap: 0;
+  padding: 0 16px 0;
+  margin-bottom: -4px;
+}
+.mode-tab {
+  flex: 1;
+  padding: 9px 8px 12px;
+  font-size: 13px;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  background: #ede0d0;
+  color: var(--muted);
+  border: none;
+  cursor: pointer;
+  border-radius: 12px 12px 0 0;
+  transition: background 0.18s, color 0.18s;
+  letter-spacing: 0.03em;
+}
+.mode-tab.active {
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: 0 -2px 8px var(--shadow);
+}
+.mode-tab:first-child { margin-right: 3px; }
+
+/* ===== PARTS MODE ===== */
+#partsContent { display: none; }
+#partsContent.active { display: flex; flex-direction: column; gap: 12px; }
+
+/* パーツパネル：左に漢字ヒント情報、右に漢字表示（通常モードと同レイアウト） */
+.parts-present-area {
+  display: flex;
+  gap: 12px;
+  height: 200px;
+}
+
+/* 並べ替えエリア */
+.parts-sort-area {
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1.5px solid #e4d4c0;
+  box-shadow: 0 2px 8px var(--shadow);
+  padding: 14px 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.parts-sort-label {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+/* ドラッグ可能パーツタイル */
+.parts-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  min-height: 52px;
+  padding: 4px;
+}
+.parts-answer-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  min-height: 52px;
+  background: linear-gradient(135deg,#ffecd2,#ffe0b8);
+  border-radius: 10px;
+  padding: 6px;
+  border: 2px dashed #d4b896;
+  transition: border-color 0.2s;
+}
+.parts-answer-row.drag-over {
+  border-color: var(--accent);
+  background: linear-gradient(135deg,#ffd9b8,#ffcfa0);
+}
+
+.part-tile {
+  font-size: 22px;
+  font-family: var(--font-kanji);
+  font-weight: 700;
+  background: var(--card);
+  border: 2px solid #e4d4c0;
+  border-radius: 10px;
+  padding: 6px 10px;
+  cursor: grab;
+  box-shadow: 0 2px 6px var(--shadow);
+  user-select: none;
+  transition: transform 0.12s, box-shadow 0.12s, border-color 0.2s;
+  color: var(--ink);
+  touch-action: none;
+}
+.part-tile:active { cursor: grabbing; }
+.part-tile.dragging {
+  opacity: 0.45;
+  transform: scale(0.92);
+}
+.part-tile.in-answer {
+  background: #fff9f2;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* パーツ確認ボタン */
+.parts-check-btn {
+  width: 100%;
+  padding: 15px;
+  font-size: 17px;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  background: linear-gradient(135deg, #2a7d4f, #1d6040);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(42,125,79,0.30);
+  transition: transform 0.12s, box-shadow 0.12s;
+  letter-spacing: 0.04em;
+}
+.parts-check-btn:active { transform: scale(0.97); }
+.parts-check-btn.hidden { display: none; }
+
+/* パーツ結果フィードバック */
+.parts-feedback {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 10px;
+  border-radius: 10px;
+  display: none;
+}
+.parts-feedback.ok {
+  display: block;
+  background: #e8f7ee;
+  color: var(--accent2);
+}
+.parts-feedback.ng {
+  display: block;
+  background: #fde8e4;
+  color: #c03030;
+  animation: shake 0.35s ease;
+}
+
+/* パーツモード：覚えたボタン（通常と同スタイル） */
+.parts-memorize-btn {
+  width: 100%;
+  padding: 15px;
+  font-size: 17px;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), #c94020);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(232,93,47,0.35);
+  transition: transform 0.12s, box-shadow 0.12s;
+  letter-spacing: 0.04em;
+}
+.parts-memorize-btn:active { transform: scale(0.97); }
+.parts-memorize-btn.hidden { display: none; }
+
+/* パーツモード完了画面 */
+.parts-complete-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px 20px;
+  text-align: center;
+}
+.parts-complete-screen.visible { display: flex; }
 </style>
 </head>
 <body>
@@ -437,6 +619,12 @@ main {
   </div>
   <button class="settings-btn" id="settingsBtn">⚙️</button>
 </header>
+
+<!-- モードタブ -->
+<div class="mode-tabs">
+  <button class="mode-tab active" id="tabRead">📖 読み覚えモード</button>
+  <button class="mode-tab" id="tabParts">🧩 パーツ組み立て</button>
+</div>
 
 <main>
   <div id="mainContent">
@@ -481,8 +669,60 @@ main {
       <div class="complete-sub">160文字すべてクリアしました。<br>もう一度チャレンジしますか？</div>
       <button class="btn-restart" id="restartBtn">もう一度</button>
     </div>
-  </div>
-</main>
+  </div><!-- /#mainContent -->
+
+  <!-- ===== パーツ組み立てモード ===== -->
+  <div id="partsContent">
+
+    <div class="parts-present-area">
+      <!-- 左パネル（通常モードと同じ3ゾーン構造） -->
+      <div class="illust-panel" id="partsIllustPanel">
+        <div class="reading-zone" id="partsReadingZone"></div>
+        <div class="example-zone" id="partsExampleZone"></div>
+        <div class="emoji-zone" id="partsEmojiZone"></div>
+        <div class="badge-row" id="partsBadgeRow"></div>
+      </div>
+      <!-- 右パネル：漢字表示 -->
+      <div class="kanji-panel" id="partsKanjiPanel">
+        <div class="kanji-display" id="partsKanjiDisplay"></div>
+        <div class="kanji-ghost" id="partsKanjiGhost">
+          <div class="ghost-cell"></div><div class="ghost-cell"></div>
+          <div class="ghost-cell"></div><div class="ghost-cell"></div>
+          <div class="ghost-cell"></div><div class="ghost-cell"></div>
+          <div class="ghost-cell"></div><div class="ghost-cell"></div>
+          <div class="ghost-cell"></div><div class="ghost-cell"></div>
+          <div class="ghost-cell"></div><div class="ghost-cell"></div>
+          <div class="ghost-cell"></div><div class="ghost-cell"></div>
+          <div class="ghost-cell"></div><div class="ghost-cell"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 覚えたボタン（パーツモード用） -->
+    <button class="parts-memorize-btn" id="partsMemorizeBtn">覚えた！→ 組み立てへ</button>
+
+    <!-- パーツ並べ替えエリア -->
+    <div class="parts-sort-area hidden" id="partsSortArea">
+      <div class="parts-sort-label">パーツをドラッグして正しい順に並べよう</div>
+      <!-- ドラッグ元プール -->
+      <div class="parts-pool" id="partsPool"></div>
+      <!-- 回答エリア -->
+      <div class="parts-answer-row" id="partsAnswerRow"></div>
+      <div class="parts-feedback" id="partsFeedback"></div>
+    </div>
+
+    <!-- 確認ボタン -->
+    <button class="parts-check-btn hidden" id="partsCheckBtn">✔ 答えを確認する</button>
+
+    <!-- 完了画面 -->
+    <div class="parts-complete-screen" id="partsCompleteScreen">
+      <div class="complete-emoji">🎉</div>
+      <div class="complete-title">全部クリア！</div>
+      <div class="complete-sub">パーツ組み立てを全部クリアしました。<br>もう一度チャレンジしますか？</div>
+      <button class="btn-restart" id="partsRestartBtn">もう一度</button>
+    </div>
+
+  </div><!-- /#partsContent -->
 
 <!-- 設定オーバーレイ -->
 <div class="overlay" id="settingsOverlay">
@@ -502,6 +742,7 @@ main {
   </div>
 </div>
 
+<script src="data/KANJI_PARTS.js"></script>
 <script src="data/kanji2.js"></script>
 <script>
 // =============================================
@@ -890,6 +1131,340 @@ document.getElementById("restartBtn").addEventListener("click", () => {
   localStorage.removeItem(STORAGE_KEY);
   queue = [];
   loadNext();
+});
+
+// =============================================
+// タブ切り替え
+// =============================================
+const tabRead  = document.getElementById("tabRead");
+const tabParts = document.getElementById("tabParts");
+const mainContent  = document.getElementById("mainContent");
+const partsContent = document.getElementById("partsContent");
+
+tabRead.addEventListener("click", () => {
+  tabRead.classList.add("active");
+  tabParts.classList.remove("active");
+  mainContent.style.display = "";
+  partsContent.classList.remove("active");
+});
+
+tabParts.addEventListener("click", () => {
+  tabParts.classList.add("active");
+  tabRead.classList.remove("active");
+  mainContent.style.display = "none";
+  partsContent.classList.add("active");
+  if (!partsCurrentKanji) partsLoadNext();
+});
+
+// =============================================
+// パーツモード：状態
+// =============================================
+const PARTS_MAP = (() => {
+  const m = new Map();
+  if (typeof KANJI_PARTS !== "undefined") {
+    KANJI_PARTS.forEach(entry => {
+      // parts フィールドが配列のものだけ登録（一部エントリはpartsキーが欠落している）
+      if (Array.isArray(entry.parts)) {
+        m.set(entry.kanji, entry.parts);
+      }
+    });
+  }
+  return m;
+})();
+
+// KANJI_PARTS対応漢字のみに絞ったDATA
+const PARTS_DATA = DATA.filter(k => PARTS_MAP.has(k.kanji));
+
+const PARTS_STORAGE_KEY = "kanji2_parts_done";
+let partsQueue = [];
+let partsCurrentKanji = null;
+let partsAnswered = false;
+
+// =============================================
+// パーツモード：進捗
+// =============================================
+function partsGetDone() {
+  return new Set(JSON.parse(localStorage.getItem(PARTS_STORAGE_KEY) || "[]"));
+}
+function partsMarkCorrect(kanji) {
+  const done = JSON.parse(localStorage.getItem(PARTS_STORAGE_KEY) || "[]");
+  if (!done.includes(kanji)) {
+    done.push(kanji);
+    localStorage.setItem(PARTS_STORAGE_KEY, JSON.stringify(done));
+  }
+}
+function partsGetQueue() {
+  const done = partsGetDone();
+  const remaining = PARTS_DATA.filter(k => !done.has(k.kanji));
+  return remaining.length > 0 ? remaining : [...PARTS_DATA];
+}
+
+// =============================================
+// パーツモード：左パネル描画（通常モードと共通ロジック）
+// =============================================
+function partsRenderIllust(k) {
+  document.getElementById("partsReadingZone").textContent = k.reading;
+  document.getElementById("partsExampleZone").innerHTML = buildExampleHTML(k.meaning, k.kanji, false);
+  const ez = document.getElementById("partsEmojiZone");
+  if (k.image) {
+    ez.innerHTML = `<img class="illust-img" src="${k.image}" alt="${k.meaning}">`;
+  } else if (k.emoji) {
+    ez.textContent = k.emoji;
+  } else {
+    ez.textContent = "";
+  }
+  document.getElementById("partsBadgeRow").innerHTML = `
+    <span class="bushu-badge">部首：${k.bushu}</span>
+    <span class="category-badge">${k.category}</span>
+  `;
+}
+
+function partsMaskExample(k) {
+  document.getElementById("partsExampleZone").innerHTML = buildExampleHTML(k.meaning, k.kanji, true);
+}
+
+// =============================================
+// パーツモード：ロード
+// =============================================
+function partsLoadNext() {
+  partsAnswered = false;
+
+  if (partsQueue.length === 0) {
+    partsQueue = partsGetQueue();
+  }
+  const done = partsGetDone();
+  if (PARTS_DATA.length > 0 && done.size >= PARTS_DATA.length) {
+    partsShowComplete();
+    return;
+  }
+
+  const idx = Math.floor(Math.random() * partsQueue.length);
+  partsCurrentKanji = partsQueue.splice(idx, 1)[0];
+
+  // 左パネル
+  partsRenderIllust(partsCurrentKanji);
+  // 右パネル
+  const disp = document.getElementById("partsKanjiDisplay");
+  disp.textContent = partsCurrentKanji.kanji;
+  disp.classList.remove("hidden");
+  document.getElementById("partsKanjiGhost").classList.remove("visible");
+
+  // UI状態リセット
+  document.getElementById("partsMemorizeBtn").classList.remove("hidden");
+  document.getElementById("partsSortArea").classList.add("hidden");
+  document.getElementById("partsCheckBtn").classList.add("hidden");
+  document.getElementById("partsFeedback").className = "parts-feedback";
+  document.getElementById("partsFeedback").textContent = "";
+  document.getElementById("partsCompleteScreen").classList.remove("visible");
+}
+
+// =============================================
+// パーツモード：並べ替えクイズ描画
+// =============================================
+function partsRenderSort(k) {
+  const parts = [...PARTS_MAP.get(k.kanji)]; // コピー
+  const shuffled = parts.slice().sort(() => Math.random() - 0.5);
+  // プールが正解と同一順にならないよう再シャッフル保証
+  let attempts = 0;
+  while (shuffled.join("") === parts.join("") && parts.length > 1 && attempts < 20) {
+    shuffled.sort(() => Math.random() - 0.5);
+    attempts++;
+  }
+
+  const pool = document.getElementById("partsPool");
+  const answerRow = document.getElementById("partsAnswerRow");
+  pool.innerHTML = "";
+  answerRow.innerHTML = "";
+
+  shuffled.forEach((p, i) => {
+    const tile = createPartTile(p, i);
+    pool.appendChild(tile);
+  });
+
+  document.getElementById("partsSortArea").classList.remove("hidden");
+  document.getElementById("partsCheckBtn").classList.remove("hidden");
+}
+
+// =============================================
+// パーツタイル生成（ドラッグ＆ドロップ + タッチ）
+// =============================================
+let dragSrc = null;
+
+function createPartTile(char, idx) {
+  const tile = document.createElement("div");
+  tile.className = "part-tile";
+  tile.textContent = char;
+  tile.draggable = true;
+  tile.dataset.char = char;
+  tile.dataset.idx = idx;
+
+  // --- Mouse drag ---
+  tile.addEventListener("dragstart", e => {
+    dragSrc = tile;
+    tile.classList.add("dragging");
+    e.dataTransfer.effectAllowed = "move";
+  });
+  tile.addEventListener("dragend", () => {
+    tile.classList.remove("dragging");
+    dragSrc = null;
+  });
+
+  // --- Touch drag (pointer events) ---
+  let pointerStartX, pointerStartY, ghost;
+  tile.addEventListener("pointerdown", e => {
+    if (e.pointerType === "mouse") return;
+    tile.setPointerCapture(e.pointerId);
+    pointerStartX = e.clientX;
+    pointerStartY = e.clientY;
+    ghost = tile.cloneNode(true);
+    ghost.style.cssText = `
+      position:fixed; opacity:0.75; pointer-events:none; z-index:9999;
+      font-size:22px; font-family:var(--font-kanji); font-weight:700;
+      background:var(--card); border:2px solid var(--accent);
+      border-radius:10px; padding:6px 10px;
+    `;
+    ghost.style.left = (e.clientX - 22) + "px";
+    ghost.style.top  = (e.clientY - 22) + "px";
+    document.body.appendChild(ghost);
+    tile.classList.add("dragging");
+  });
+  tile.addEventListener("pointermove", e => {
+    if (!ghost) return;
+    ghost.style.left = (e.clientX - 22) + "px";
+    ghost.style.top  = (e.clientY - 22) + "px";
+  });
+  tile.addEventListener("pointerup", e => {
+    if (!ghost) return;
+    ghost.remove(); ghost = null;
+    tile.classList.remove("dragging");
+    // 指が離れた位置の要素を調べる
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const answerRow = document.getElementById("partsAnswerRow");
+    const pool = document.getElementById("partsPool");
+    if (answerRow && (answerRow === el || answerRow.contains(el))) {
+      moveTileToAnswer(tile);
+    } else if (pool && (pool === el || pool.contains(el))) {
+      moveTileToPool(tile);
+    }
+    partsCheckAutoComplete();
+  });
+
+  return tile;
+}
+
+function moveTileToAnswer(tile) {
+  const answerRow = document.getElementById("partsAnswerRow");
+  tile.classList.add("in-answer");
+  answerRow.appendChild(tile);
+}
+function moveTileToPool(tile) {
+  const pool = document.getElementById("partsPool");
+  tile.classList.remove("in-answer");
+  pool.appendChild(tile);
+}
+
+// ドロップゾーン（answerRow・pool両方）
+function setupDropZones() {
+  [document.getElementById("partsAnswerRow"), document.getElementById("partsPool")].forEach(zone => {
+    zone.addEventListener("dragover", e => {
+      e.preventDefault();
+      zone.classList.add("drag-over");
+    });
+    zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
+    zone.addEventListener("drop", e => {
+      e.preventDefault();
+      zone.classList.remove("drag-over");
+      if (!dragSrc) return;
+      if (zone.id === "partsAnswerRow") {
+        moveTileToAnswer(dragSrc);
+      } else {
+        moveTileToPool(dragSrc);
+      }
+      partsCheckAutoComplete();
+    });
+  });
+}
+
+// answerRowが全パーツ揃ったら自動で答え合わせ
+function partsCheckAutoComplete() {
+  const parts = PARTS_MAP.get(partsCurrentKanji.kanji);
+  const answerTiles = [...document.getElementById("partsAnswerRow").children];
+  if (answerTiles.length === parts.length) {
+    partsDoCheck();
+  }
+}
+
+// =============================================
+// パーツモード：答え合わせ
+// =============================================
+function partsDoCheck() {
+  if (partsAnswered) return;
+  const parts = PARTS_MAP.get(partsCurrentKanji.kanji);
+  const answerTiles = [...document.getElementById("partsAnswerRow").children];
+  if (answerTiles.length === 0) return;
+
+  const answered = answerTiles.map(t => t.dataset.char);
+  // 順序不問で全パーツが揃っているか判定
+  const sortedCorrect = [...parts].sort().join("");
+  const sortedAnswered = [...answered].sort().join("");
+  const isCorrect = sortedCorrect === sortedAnswered;
+
+  partsAnswered = true;
+  vibrate([30]);
+  const fb = document.getElementById("partsFeedback");
+
+  if (isCorrect) {
+    fb.className = "parts-feedback ok";
+    fb.textContent = "✅ 正解！ よくできました！";
+    partsMarkCorrect(partsCurrentKanji.kanji);
+    speak(partsCurrentKanji.reading);
+    document.getElementById("partsCheckBtn").classList.add("hidden");
+    setTimeout(() => partsLoadNext(), 1400);
+  } else {
+    fb.className = "parts-feedback ng";
+    fb.textContent = "❌ もう一度！ パーツを確認して";
+    vibrate([60, 40, 60]);
+    partsAnswered = false;
+    // タイルをプールに戻す
+    const pool = document.getElementById("partsPool");
+    answerTiles.forEach(t => { t.classList.remove("in-answer"); pool.appendChild(t); });
+  }
+}
+
+// =============================================
+// パーツモード：完了
+// =============================================
+function partsShowComplete() {
+  document.getElementById("partsSortArea").classList.add("hidden");
+  document.getElementById("partsCheckBtn").classList.add("hidden");
+  document.getElementById("partsMemorizeBtn").classList.add("hidden");
+  document.getElementById("partsCompleteScreen").classList.add("visible");
+}
+
+// =============================================
+// パーツモード：イベント
+// =============================================
+document.getElementById("partsMemorizeBtn").addEventListener("click", () => {
+  vibrate([30]);
+  unlockAudioContext();
+  document.getElementById("partsKanjiDisplay").classList.add("hidden");
+  document.getElementById("partsKanjiGhost").classList.add("visible");
+  document.getElementById("partsMemorizeBtn").classList.add("hidden");
+  partsMaskExample(partsCurrentKanji);
+  partsRenderSort(partsCurrentKanji);
+  setupDropZones();
+});
+
+document.getElementById("partsCheckBtn").addEventListener("click", () => {
+  vibrate([30]);
+  partsDoCheck();
+});
+
+document.getElementById("partsRestartBtn").addEventListener("click", () => {
+  localStorage.removeItem(PARTS_STORAGE_KEY);
+  partsQueue = [];
+  document.getElementById("partsCompleteScreen").classList.remove("visible");
+  partsLoadNext();
 });
 
 // =============================================
