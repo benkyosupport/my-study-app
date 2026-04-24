@@ -1134,29 +1134,6 @@ document.getElementById("restartBtn").addEventListener("click", () => {
 });
 
 // =============================================
-// タブ切り替え
-// =============================================
-const tabRead  = document.getElementById("tabRead");
-const tabParts = document.getElementById("tabParts");
-const mainContent  = document.getElementById("mainContent");
-const partsContent = document.getElementById("partsContent");
-
-tabRead.addEventListener("click", () => {
-  tabRead.classList.add("active");
-  tabParts.classList.remove("active");
-  mainContent.style.display = "";
-  partsContent.classList.remove("active");
-});
-
-tabParts.addEventListener("click", () => {
-  tabParts.classList.add("active");
-  tabRead.classList.remove("active");
-  mainContent.style.display = "none";
-  partsContent.classList.add("active");
-  if (!partsCurrentKanji) partsLoadNext();
-});
-
-// =============================================
 // パーツモード：状態
 // =============================================
 const PARTS_MAP = (() => {
@@ -1466,6 +1443,31 @@ document.getElementById("partsRestartBtn").addEventListener("click", () => {
   document.getElementById("partsCompleteScreen").classList.remove("visible");
   partsLoadNext();
 });
+
+// =============================================
+// タブ切り替え（パーツ関連コード全定義後に登録）
+// =============================================
+{
+  const tabRead     = document.getElementById("tabRead");
+  const tabParts    = document.getElementById("tabParts");
+  const mainContent  = document.getElementById("mainContent");
+  const partsContent = document.getElementById("partsContent");
+
+  tabRead.addEventListener("click", () => {
+    tabRead.classList.add("active");
+    tabParts.classList.remove("active");
+    mainContent.style.display = "";
+    partsContent.classList.remove("active");
+  });
+
+  tabParts.addEventListener("click", () => {
+    tabParts.classList.add("active");
+    tabRead.classList.remove("active");
+    mainContent.style.display = "none";
+    partsContent.classList.add("active");
+    if (!partsCurrentKanji) partsLoadNext();
+  });
+}
 
 // =============================================
 // 起動
