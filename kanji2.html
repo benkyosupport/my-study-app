@@ -98,6 +98,8 @@ main {
   gap: 12px;
   height: 200px;
 }
+
+/* ===== LEFT PANEL (3ゾーン) ===== */
 .illust-panel {
   flex: 1;
   background: var(--card);
@@ -106,28 +108,69 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 14px 10px;
+  justify-content: space-between;
+  gap: 0;
+  padding: 10px 10px 10px;
   box-shadow: 0 2px 8px var(--shadow);
   overflow: hidden;
 }
-.illust-img {
-  width: 72px;
-  height: 72px;
-  object-fit: contain;
-  border-radius: 8px;
+
+/* ゾーン1: 読みゾーン（常時表示） */
+.reading-zone {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: var(--font-ui);
+  letter-spacing: 0.05em;
+  text-align: center;
+  line-height: 1.2;
+  flex-shrink: 0;
 }
-.meaning-fallback {
-  font-size: 14px;
+
+/* ゾーン2: 例示ゾーン（漢字マスク対象） */
+.example-zone {
+  font-size: 15px;
   font-weight: 700;
   color: var(--ink);
   text-align: center;
   line-height: 1.4;
-  padding: 10px 8px;
+  padding: 6px 8px;
   background: linear-gradient(135deg,#ffecd2,#ffe0b8);
   border-radius: 10px;
   width: 100%;
+  font-family: var(--font-kanji);
+  flex-shrink: 0;
+  transition: opacity 0.25s ease;
+}
+.example-zone .masked {
+  color: var(--accent);
+  background: rgba(232,93,47,0.12);
+  border-radius: 4px;
+  padding: 0 2px;
+}
+
+/* ゾーン3: 絵文字／イラストゾーン */
+.emoji-zone {
+  font-size: 44px;
+  line-height: 1;
+  text-align: center;
+  flex-shrink: 0;
+  transition: opacity 0.25s ease;
+}
+.illust-img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+/* バッジ行 */
+.badge-row {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex-shrink: 0;
 }
 .bushu-badge {
   font-size: 11px;
@@ -145,6 +188,7 @@ main {
   color: var(--accent2);
 }
 
+/* ===== RIGHT PANEL (漢字) ===== */
 .kanji-panel {
   flex: 1;
   background: var(--card);
@@ -308,60 +352,49 @@ main {
   border: 1.5px solid #d4b896;
   border-radius: 10px;
   font-size: 14px;
-  font-family: monospace;
+  font-family: var(--font-ui);
   background: var(--bg);
   color: var(--ink);
+}
+.settings-row input[type="text"]:focus {
   outline: none;
+  border-color: var(--accent);
 }
-.settings-row input:focus { border-color: var(--accent); }
-.btn-row {
-  display: flex;
-  gap: 10px;
-}
-.btn-save {
+.api-status { font-size: 12px; color: var(--accent2); min-height: 18px; }
+.btn-row { display: flex; gap: 10px; }
+.settings-btn-action {
   flex: 1;
-  padding: 12px;
-  background: var(--accent2);
-  color: #fff;
+  padding: 10px;
   border: none;
   border-radius: 10px;
   font-size: 14px;
+  font-family: var(--font-ui);
   font-weight: 700;
   cursor: pointer;
 }
-.btn-clear-key {
-  padding: 12px 16px;
-  background: #f0e6d8;
-  color: var(--muted);
+.btn-save { background: var(--accent); color: #fff; }
+.btn-del  { background: #f0e6d8; color: var(--muted); }
+.btn-close {
+  padding: 12px;
   border: none;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 14px;
+  font-family: var(--font-ui);
+  font-weight: 700;
   cursor: pointer;
+  background: #f0e6d8;
+  color: var(--muted);
 }
-.btn-reset-progress {
-  width: 100%;
+.btn-reset {
   padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  cursor: pointer;
   background: #fde8e4;
   color: #c03030;
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-}
-.btn-close-settings {
-  width: 100%;
-  padding: 12px;
-  background: #f0e6d8;
-  color: var(--muted);
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  cursor: pointer;
-}
-.api-status {
-  font-size: 12px;
-  color: var(--accent2);
 }
 
 /* ===== COMPLETE SCREEN ===== */
@@ -376,124 +409,126 @@ main {
 }
 .complete-screen.visible { display: flex; }
 .complete-emoji { font-size: 64px; }
-.complete-title { font-size: 22px; font-weight: 700; }
-.complete-sub { font-size: 14px; color: var(--muted); }
+.complete-title { font-size: 22px; font-weight: 700; color: var(--ink); }
+.complete-sub { font-size: 14px; color: var(--muted); line-height: 1.6; }
 .btn-restart {
-  padding: 14px 40px;
-  background: linear-gradient(135deg, var(--accent), #c94020);
-  color: #fff;
+  padding: 14px 32px;
   border: none;
   border-radius: var(--radius);
   font-size: 16px;
+  font-family: var(--font-ui);
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(232,93,47,0.3);
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(232,93,47,0.35);
 }
 </style>
 </head>
 <body>
 
 <header>
-  <a href="index.html" class="back-btn">← メニュー</a>
+  <a class="back-btn" href="index.html">← もどる</a>
   <div class="progress-area">
     <div class="progress-label" id="progressLabel">0 / 160</div>
     <div class="progress-bar-outer">
       <div class="progress-bar-inner" id="progressBar"></div>
     </div>
   </div>
-  <button class="settings-btn" id="settingsBtn" aria-label="設定">⚙️</button>
+  <button class="settings-btn" id="settingsBtn">⚙️</button>
 </header>
 
-<main id="mainContent">
-  <!-- 提示エリア -->
-  <div class="present-area">
-    <div class="illust-panel" id="illustPanel">
-      <!-- JS で挿入 -->
-    </div>
-    <div class="kanji-panel" id="kanjiPanel">
-      <div class="kanji-ghost" id="kanjiGhost">
-        <div class="ghost-cell"></div><div class="ghost-cell"></div>
-        <div class="ghost-cell"></div><div class="ghost-cell"></div>
-        <div class="ghost-cell"></div><div class="ghost-cell"></div>
-        <div class="ghost-cell"></div><div class="ghost-cell"></div>
-        <div class="ghost-cell"></div><div class="ghost-cell"></div>
-        <div class="ghost-cell"></div><div class="ghost-cell"></div>
-        <div class="ghost-cell"></div><div class="ghost-cell"></div>
-        <div class="ghost-cell"></div><div class="ghost-cell"></div>
+<main>
+  <div id="mainContent">
+    <div class="present-area">
+
+      <!-- 左パネル：3ゾーン -->
+      <div class="illust-panel" id="illustPanel">
+        <!-- ゾーン1: 読み（常時表示） -->
+        <div class="reading-zone" id="readingZone"></div>
+        <!-- ゾーン2: 例示（漢字マスク） -->
+        <div class="example-zone" id="exampleZone"></div>
+        <!-- ゾーン3: 絵文字／イラスト -->
+        <div class="emoji-zone" id="emojiZone"></div>
+        <!-- バッジ -->
+        <div class="badge-row" id="badgeRow"></div>
       </div>
-      <div class="kanji-display" id="kanjiDisplay"></div>
+
+      <!-- 右パネル：漢字 -->
+      <div class="kanji-panel" id="kanjiPanel">
+        <div class="kanji-display" id="kanjiDisplay"></div>
+        <div class="kanji-ghost" id="kanjiGhost">
+          <div class="ghost-cell"></div><div class="ghost-cell"></div>
+          <div class="ghost-cell"></div><div class="ghost-cell"></div>
+          <div class="ghost-cell"></div><div class="ghost-cell"></div>
+          <div class="ghost-cell"></div><div class="ghost-cell"></div>
+          <div class="ghost-cell"></div><div class="ghost-cell"></div>
+          <div class="ghost-cell"></div><div class="ghost-cell"></div>
+          <div class="ghost-cell"></div><div class="ghost-cell"></div>
+          <div class="ghost-cell"></div><div class="ghost-cell"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <button class="memorize-btn" id="memorizeBtn">覚えた！→ 問題へ</button>
+
+    <div class="choices-grid hidden" id="choicesGrid"></div>
+
+    <div class="complete-screen" id="completeScreen">
+      <div class="complete-emoji">🎉</div>
+      <div class="complete-title">全部おぼえた！</div>
+      <div class="complete-sub">160文字すべてクリアしました。<br>もう一度チャレンジしますか？</div>
+      <button class="btn-restart" id="restartBtn">もう一度</button>
     </div>
   </div>
-
-  <!-- 覚えたボタン -->
-  <button class="memorize-btn" id="memorizeBtn">覚えた！</button>
-
-  <!-- 4択 -->
-  <div class="choices-grid hidden" id="choicesGrid"></div>
 </main>
-
-<!-- 完了画面 -->
-<div class="complete-screen" id="completeScreen">
-  <div class="complete-emoji">🎉</div>
-  <div class="complete-title">160文字 全部クリア！</div>
-  <div class="complete-sub">もう一度はじめますか？</div>
-  <button class="btn-restart" id="restartBtn">もう一度</button>
-</div>
 
 <!-- 設定オーバーレイ -->
 <div class="overlay" id="settingsOverlay">
   <div class="settings-panel">
     <div class="settings-title">⚙️ 設定</div>
     <div class="settings-row">
-      <label>Google Cloud TTS APIキー（任意）</label>
-      <input type="text" id="apiKeyInput" placeholder="AIza..." autocomplete="off">
+      <label>Google TTS APIキー（任意）</label>
+      <input type="text" id="apiKeyInput" placeholder="AIza...">
       <div class="api-status" id="apiStatus"></div>
+      <div class="btn-row">
+        <button class="settings-btn-action btn-save" id="saveKeyBtn">保存</button>
+        <button class="settings-btn-action btn-del" id="clearKeyBtn">削除</button>
+      </div>
     </div>
-    <div class="btn-row">
-      <button class="btn-save" id="saveKeyBtn">保存</button>
-      <button class="btn-clear-key" id="clearKeyBtn">削除</button>
-    </div>
-    <button class="btn-reset-progress" id="resetProgressBtn">進捗をリセット</button>
-    <button class="btn-close-settings" id="closeSettingsBtn">閉じる</button>
+    <button class="btn-reset" id="resetProgressBtn">進捗をリセット</button>
+    <button class="btn-close" id="closeSettingsBtn">閉じる</button>
   </div>
 </div>
 
 <script src="data/kanji2.js"></script>
 <script>
 // =============================================
-// データ参照
+// 定数・状態
 // =============================================
-const DATA = typeof KANJI_DATA_UNIQUE !== "undefined" ? KANJI_DATA_UNIQUE : [];
-
-// =============================================
-// 定数
-// =============================================
+const DATA = (typeof KANJI_DATA_UNIQUE !== "undefined") ? KANJI_DATA_UNIQUE : [];
 const STORAGE_KEY = "kanji2_done";
 const TTS_KEY_STORAGE = "google_tts_key";
 
-// =============================================
-// 状態
-// =============================================
+let queue = [];
 let currentKanji = null;
 let currentChoices = [];
-let queue = [];
 let answered = false;
 
 // =============================================
-// AudioContext（iOS Safari対応）
+// TTS
 // =============================================
 let audioCtx = null;
 
 function unlockAudioContext() {
   if (audioCtx) return;
-  try {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const buf = audioCtx.createBuffer(1, 1, 22050);
-    const src = audioCtx.createBufferSource();
-    src.buffer = buf;
-    src.connect(audioCtx.destination);
-    src.start(0);
-  } catch(e) {}
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const buf = audioCtx.createBuffer(1, 1, 22050);
+  const src = audioCtx.createBufferSource();
+  src.buffer = buf;
+  src.connect(audioCtx.destination);
+  src.start(0);
 }
 
 async function speakGoogle(reading, apiKey) {
@@ -527,21 +562,16 @@ async function speakGoogle(reading, apiKey) {
 }
 
 function webSpeechSpeak(reading) {
-  try {
-    const utter = new SpeechSynthesisUtterance(reading);
-    utter.lang = "ja-JP";
-    utter.rate = 0.85;
-    speechSynthesis.speak(utter);
-  } catch(e) {}
+  const utter = new SpeechSynthesisUtterance(reading);
+  utter.lang = "ja-JP";
+  utter.rate = 0.85;
+  speechSynthesis.speak(utter);
 }
 
 function speak(reading) {
   const apiKey = localStorage.getItem(TTS_KEY_STORAGE);
-  if (apiKey) {
-    speakGoogle(reading, apiKey);
-  } else {
-    webSpeechSpeak(reading);
-  }
+  if (apiKey) speakGoogle(reading, apiKey);
+  else webSpeechSpeak(reading);
 }
 
 // =============================================
@@ -594,44 +624,78 @@ function randomKanji(excludes) {
 
 function generateChoices(target) {
   const choices = [target];
-
-  // カテゴリー類似
   const catMatch = DATA
     .filter(k => k.category === target.category && k.kanji !== target.kanji)
     .sort(() => Math.random() - 0.5)[0]
     || randomKanji(choices);
   choices.push(catMatch);
-
-  // relatedプール
   const relatedPool = (target.related || [])
     .map(k => DATA.find(d => d.kanji === k))
     .filter(Boolean)
     .sort(() => Math.random() - 0.5);
-
   choices.push(relatedPool[0] || randomKanji(choices));
-
-  // 4つ目（重複除去）
   const existing = new Set(choices.map(c => c.kanji));
-  const pool2 = (relatedPool.slice(1).filter(k => !existing.has(k.kanji)));
+  const pool2 = relatedPool.slice(1).filter(k => !existing.has(k.kanji));
   choices.push(pool2[0] || randomKanji(choices));
-
   return choices.sort(() => Math.random() - 0.5);
 }
 
 // =============================================
 // UI描画
 // =============================================
-function renderIllust(k) {
-  const panel = document.getElementById("illustPanel");
+
+/**
+ * meaning文字列中の対象漢字（kanji）をspanでマークアップして返す。
+ * マスク時はspanのtextContentを「＿」に置き換える。
+ */
+function buildExampleHTML(meaning, kanji, masked) {
+  // 対象漢字を1文字ずつspan.masked-charに包む
   let html = "";
-  if (k.image) {
-    html += `<img class="illust-img" src="${k.image}" alt="${k.meaning}">`;
-  } else {
-    html += `<div class="meaning-fallback">${k.meaning}</div>`;
+  for (const ch of meaning) {
+    if (ch === kanji) {
+      html += masked
+        ? `<span class="masked">＿</span>`
+        : `<span class="masked-char">${ch}</span>`;
+    } else {
+      html += ch;
+    }
   }
-  html += `<div class="bushu-badge">部首：${k.bushu}</div>`;
-  html += `<div class="category-badge">${k.category}</div>`;
-  panel.innerHTML = html;
+  return html;
+}
+
+function renderIllust(k) {
+  // ゾーン1: 読み（フリガナのみ抽出）
+  const readingZone = document.getElementById("readingZone");
+  readingZone.textContent = k.reading;
+
+  // ゾーン2: 例示（対象漢字を通常表示）
+  const exampleZone = document.getElementById("exampleZone");
+  exampleZone.innerHTML = buildExampleHTML(k.meaning, k.kanji, false);
+
+  // ゾーン3: 絵文字 or 画像
+  const emojiZone = document.getElementById("emojiZone");
+  if (k.image) {
+    emojiZone.innerHTML = `<img class="illust-img" src="${k.image}" alt="${k.meaning}">`;
+  } else if (k.emoji) {
+    emojiZone.textContent = k.emoji;
+  } else {
+    emojiZone.textContent = "";
+  }
+
+  // バッジ
+  const badgeRow = document.getElementById("badgeRow");
+  badgeRow.innerHTML = `
+    <span class="bushu-badge">部首：${k.bushu}</span>
+    <span class="category-badge">${k.category}</span>
+  `;
+}
+
+/**
+ * 「覚えた」押下時に例示ゾーンの対象漢字を「＿」にマスク
+ */
+function maskExample(k) {
+  const exampleZone = document.getElementById("exampleZone");
+  exampleZone.innerHTML = buildExampleHTML(k.meaning, k.kanji, true);
 }
 
 function renderKanji(k) {
@@ -663,20 +727,15 @@ function loadNext() {
   if (queue.length === 0) {
     queue = getQueue();
   }
-
-  // 全完了チェック（初回起動時のみ、done >= DATA.length）
   const done = getDone();
   if (done.size >= DATA.length && DATA.length > 0) {
     showComplete();
     return;
   }
-
-  // キューからランダムに1件
   const idx = Math.floor(Math.random() * queue.length);
   currentKanji = queue.splice(idx, 1)[0];
   currentChoices = generateChoices(currentKanji);
 
-  // Phase1: 提示
   renderIllust(currentKanji);
   renderKanji(currentKanji);
   document.getElementById("memorizeBtn").classList.remove("hidden");
@@ -700,12 +759,15 @@ document.getElementById("memorizeBtn").addEventListener("click", () => {
   vibrate([30]);
   unlockAudioContext();
 
-  // Phase2: 消去
+  // 右パネル：漢字を消去してゴーストへ
   document.getElementById("kanjiDisplay").classList.add("hidden");
   document.getElementById("kanjiGhost").classList.add("visible");
   document.getElementById("memorizeBtn").classList.add("hidden");
 
-  // Phase3: 4択表示
+  // 左パネル：例示ゾーンの対象漢字をマスク（読み・絵文字は残る）
+  maskExample(currentKanji);
+
+  // 4択表示
   renderChoices(currentChoices);
 });
 
@@ -731,14 +793,12 @@ function onChoiceClick(btn, chosen) {
   } else {
     btn.classList.add("wrong");
     vibrate([60, 40, 60]);
-    // 正解をヒント表示
     const all = document.querySelectorAll(".choice-btn");
     all.forEach(b => {
       if (b.dataset.kanji === currentKanji.kanji) {
         b.classList.add("correct");
       }
     });
-    // 正解を喋る
     speak(currentKanji.reading);
     setTimeout(() => {
       loadNext();
@@ -826,7 +886,6 @@ document.getElementById("resetProgressBtn").addEventListener("click", () => {
   }
 });
 
-// ===== もう一度ボタン =====
 document.getElementById("restartBtn").addEventListener("click", () => {
   localStorage.removeItem(STORAGE_KEY);
   queue = [];
