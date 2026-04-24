@@ -471,10 +471,10 @@ main {
   border-radius: var(--radius);
   border: 1.5px solid #e4d4c0;
   box-shadow: 0 2px 8px var(--shadow);
-  padding: 14px 12px 10px;
+  padding: 10px 12px 10px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 .parts-sort-label {
   font-size: 12px;
@@ -483,7 +483,7 @@ main {
   letter-spacing: 0.04em;
 }
 
-/* ドラッグ可能パーツタイル */
+/* パーツプール（ドラッグ元） */
 .parts-pool {
   display: flex;
   flex-wrap: wrap;
@@ -492,47 +492,74 @@ main {
   min-height: 52px;
   padding: 4px;
 }
-.parts-answer-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-  min-height: 52px;
-  background: linear-gradient(135deg,#ffecd2,#ffe0b8);
-  border-radius: 10px;
-  padding: 6px;
-  border: 2px dashed #d4b896;
-  transition: border-color 0.2s;
-}
-.parts-answer-row.drag-over {
-  border-color: var(--accent);
-  background: linear-gradient(135deg,#ffd9b8,#ffcfa0);
-}
 
+/* ドラッグ可能パーツタイル */
 .part-tile {
-  font-size: 22px;
+  font-size: 20px;
   font-family: var(--font-kanji);
   font-weight: 700;
   background: var(--card);
   border: 2px solid #e4d4c0;
   border-radius: 10px;
-  padding: 6px 10px;
+  padding: 5px 9px;
   cursor: grab;
   box-shadow: 0 2px 6px var(--shadow);
   user-select: none;
-  transition: transform 0.12s, box-shadow 0.12s, border-color 0.2s;
+  transition: transform 0.12s, box-shadow 0.12s, border-color 0.2s, opacity 0.2s;
   color: var(--ink);
   touch-action: none;
+  min-width: 40px;
+  text-align: center;
 }
 .part-tile:active { cursor: grabbing; }
-.part-tile.dragging {
-  opacity: 0.45;
-  transform: scale(0.92);
+.part-tile.dragging { opacity: 0.35; transform: scale(0.88); }
+.part-tile.placed   { opacity: 0.3; pointer-events: none; }
+
+/* 右パネル内グリッド（ドロップ先） */
+.parts-drop-grid {
+  position: absolute;
+  inset: 8px;
+  display: grid;
+  gap: 4px;
 }
-.part-tile.in-answer {
-  background: #fff9f2;
+/* グリッドセル */
+.drop-cell {
+  border-radius: 8px;
+  background: rgba(228,212,192,0.45);
+  border: 2px dashed #c8b090;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+  position: relative;
+  font-size: 18px;
+  font-family: var(--font-kanji);
+  font-weight: 700;
+}
+.drop-cell.drag-over {
+  background: rgba(232,93,47,0.12);
   border-color: var(--accent);
-  color: var(--accent);
+}
+.drop-cell.filled {
+  background: rgba(255,249,242,0.9);
+  border: 2px solid #e4d4c0;
+}
+.drop-cell.correct {
+  background: rgba(232,247,238,0.95);
+  border-color: var(--accent2);
+  color: var(--accent2);
+}
+.drop-cell.wrong {
+  background: rgba(253,232,228,0.95);
+  border-color: #e04040;
+  color: #e04040;
+  animation: shake 0.35s ease;
+}
+.drop-cell .placed-label {
+  font-size: 18px;
+  font-family: var(--font-kanji);
+  font-weight: 700;
+  line-height: 1;
 }
 
 /* パーツ確認ボタン */
@@ -682,19 +709,10 @@ main {
         <div class="emoji-zone" id="partsEmojiZone"></div>
         <div class="badge-row" id="partsBadgeRow"></div>
       </div>
-      <!-- 右パネル：漢字表示 -->
+      <!-- 右パネル：漢字表示 → 覚えた後はドロップグリッドに変わる -->
       <div class="kanji-panel" id="partsKanjiPanel">
         <div class="kanji-display" id="partsKanjiDisplay"></div>
-        <div class="kanji-ghost" id="partsKanjiGhost">
-          <div class="ghost-cell"></div><div class="ghost-cell"></div>
-          <div class="ghost-cell"></div><div class="ghost-cell"></div>
-          <div class="ghost-cell"></div><div class="ghost-cell"></div>
-          <div class="ghost-cell"></div><div class="ghost-cell"></div>
-          <div class="ghost-cell"></div><div class="ghost-cell"></div>
-          <div class="ghost-cell"></div><div class="ghost-cell"></div>
-          <div class="ghost-cell"></div><div class="ghost-cell"></div>
-          <div class="ghost-cell"></div><div class="ghost-cell"></div>
-        </div>
+        <!-- ドロップグリッドはJSで動的生成 -->
       </div>
     </div>
 
@@ -703,11 +721,9 @@ main {
 
     <!-- パーツ並べ替えエリア -->
     <div class="parts-sort-area hidden" id="partsSortArea">
-      <div class="parts-sort-label">パーツをドラッグして正しい順に並べよう</div>
+      <div class="parts-sort-label">パーツを右のマスにドラッグして配置しよう</div>
       <!-- ドラッグ元プール -->
       <div class="parts-pool" id="partsPool"></div>
-      <!-- 回答エリア -->
-      <div class="parts-answer-row" id="partsAnswerRow"></div>
       <div class="parts-feedback" id="partsFeedback"></div>
     </div>
 
@@ -1228,11 +1244,12 @@ function partsLoadNext() {
 
   // 左パネル
   partsRenderIllust(partsCurrentKanji);
-  // 右パネル
+  // 右パネル：漢字表示に戻す・古いグリッド除去
   const disp = document.getElementById("partsKanjiDisplay");
   disp.textContent = partsCurrentKanji.kanji;
   disp.classList.remove("hidden");
-  document.getElementById("partsKanjiGhost").classList.remove("visible");
+  const oldGrid = document.querySelector("#partsKanjiPanel .parts-drop-grid");
+  if (oldGrid) oldGrid.remove();
 
   // UI状態リセット
   document.getElementById("partsMemorizeBtn").classList.remove("hidden");
@@ -1244,175 +1261,226 @@ function partsLoadNext() {
 }
 
 // =============================================
-// パーツモード：並べ替えクイズ描画
+// パーツモード：グリッド生成ヘルパー
 // =============================================
+
+/** パーツ数 → グリッド列数・行数を返す */
+function getGridDims(n) {
+  if (n <= 2) return { cols: 2, rows: 1 };
+  if (n <= 4) return { cols: 2, rows: 2 };
+  if (n <= 6) return { cols: 3, rows: 2 };
+  return { cols: 3, rows: 3 };
+}
+
+/**
+ * KANJI_PARTS の parts 配列インデックスを
+ * グリッドセルのインデックスにマッピングする。
+ * パーツ数がグリッドより少ない場合は中央寄せに配置。
+ */
+function assignCells(parts, cols, rows) {
+  const total = cols * rows;
+  const n = parts.length;
+  // 余りセル数
+  const spare = total - n;
+  // 前後に分散（前半を切り捨て寄せ）
+  const offset = Math.floor(spare / 2);
+  // partIdx → cellIdx
+  const map = {};
+  parts.forEach((_, i) => { map[i] = offset + i; });
+  return map; // partIdx → cellIdx
+}
+
+// =============================================
+// パーツモード：並べ替えクイズ描画（グリッド版）
+// =============================================
+let dragSrc = null;          // ドラッグ中タイルのDOM
+let dragSrcPartIdx = null;   // ドラッグ中タイルのパーツインデックス
+
 function partsRenderSort(k) {
-  const parts = [...PARTS_MAP.get(k.kanji)]; // コピー
-  const shuffled = parts.slice().sort(() => Math.random() - 0.5);
-  // プールが正解と同一順にならないよう再シャッフル保証
-  let attempts = 0;
-  while (shuffled.join("") === parts.join("") && parts.length > 1 && attempts < 20) {
-    shuffled.sort(() => Math.random() - 0.5);
-    attempts++;
+  const parts = PARTS_MAP.get(k.kanji);
+  const { cols, rows } = getGridDims(parts.length);
+  const partToCellMap = assignCells(parts, cols, rows); // partIdx → cellIdx
+
+  // ── 右パネルにドロップグリッドを生成 ──
+  const panel = document.getElementById("partsKanjiPanel");
+  // 既存グリッド除去
+  const old = panel.querySelector(".parts-drop-grid");
+  if (old) old.remove();
+  document.getElementById("partsKanjiDisplay").classList.add("hidden");
+
+  const grid = document.createElement("div");
+  grid.className = "parts-drop-grid";
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  grid.style.gridTemplateRows    = `repeat(${rows}, 1fr)`;
+
+  const totalCells = cols * rows;
+  const cells = [];
+  for (let ci = 0; ci < totalCells; ci++) {
+    const cell = document.createElement("div");
+    cell.className = "drop-cell";
+    cell.dataset.cellIdx = ci;
+    cell.dataset.filled  = "0";
+
+    // どのパーツインデックスが正解かを逆引き
+    const correctPartIdx = Object.entries(partToCellMap).find(([, v]) => v === ci)?.[0];
+    if (correctPartIdx !== undefined) {
+      cell.dataset.correctPartIdx = correctPartIdx;
+    } else {
+      // 空きセル（回答不要）
+      cell.dataset.correctPartIdx = "";
+      cell.style.background = "transparent";
+      cell.style.border = "none";
+    }
+
+    // dragover / drop（マウス）
+    cell.addEventListener("dragover", e => {
+      if (cell.dataset.correctPartIdx === "") return;
+      e.preventDefault();
+      cell.classList.add("drag-over");
+    });
+    cell.addEventListener("dragleave", () => cell.classList.remove("drag-over"));
+    cell.addEventListener("drop", e => {
+      e.preventDefault();
+      cell.classList.remove("drag-over");
+      if (dragSrc === null) return;
+      handleDrop(cell, dragSrc);
+    });
+
+    grid.appendChild(cell);
+    cells.push(cell);
   }
+  panel.appendChild(grid);
 
+  // ── 下パネルにパーツプールを生成 ──
   const pool = document.getElementById("partsPool");
-  const answerRow = document.getElementById("partsAnswerRow");
   pool.innerHTML = "";
-  answerRow.innerHTML = "";
-
-  shuffled.forEach((p, i) => {
-    const tile = createPartTile(p, i);
+  // シャッフルして表示（見た目のみ。正解インデックスは parts[] の元順）
+  const shuffledIdxs = parts.map((_, i) => i).sort(() => Math.random() - 0.5);
+  shuffledIdxs.forEach(partIdx => {
+    const tile = createPartTile(parts[partIdx], partIdx);
     pool.appendChild(tile);
   });
 
   document.getElementById("partsSortArea").classList.remove("hidden");
-  document.getElementById("partsCheckBtn").classList.remove("hidden");
+  document.getElementById("partsCheckBtn").classList.add("hidden"); // 自動判定のみ
 }
 
 // =============================================
-// パーツタイル生成（ドラッグ＆ドロップ + タッチ）
+// パーツタイル生成
 // =============================================
-let dragSrc = null;
-
-function createPartTile(char, idx) {
+function createPartTile(char, partIdx) {
   const tile = document.createElement("div");
   tile.className = "part-tile";
   tile.textContent = char;
   tile.draggable = true;
-  tile.dataset.char = char;
-  tile.dataset.idx = idx;
+  tile.dataset.char    = char;
+  tile.dataset.partIdx = partIdx;
 
-  // --- Mouse drag ---
+  // マウスドラッグ
   tile.addEventListener("dragstart", e => {
     dragSrc = tile;
+    dragSrcPartIdx = parseInt(tile.dataset.partIdx);
     tile.classList.add("dragging");
     e.dataTransfer.effectAllowed = "move";
   });
   tile.addEventListener("dragend", () => {
     tile.classList.remove("dragging");
     dragSrc = null;
+    dragSrcPartIdx = null;
   });
 
-  // --- Touch drag (pointer events) ---
-  let pointerStartX, pointerStartY, ghost;
+  // タッチドラッグ（pointer events）
+  let ghost = null;
   tile.addEventListener("pointerdown", e => {
     if (e.pointerType === "mouse") return;
     tile.setPointerCapture(e.pointerId);
-    pointerStartX = e.clientX;
-    pointerStartY = e.clientY;
     ghost = tile.cloneNode(true);
-    ghost.style.cssText = `
-      position:fixed; opacity:0.75; pointer-events:none; z-index:9999;
-      font-size:22px; font-family:var(--font-kanji); font-weight:700;
-      background:var(--card); border:2px solid var(--accent);
-      border-radius:10px; padding:6px 10px;
-    `;
-    ghost.style.left = (e.clientX - 22) + "px";
-    ghost.style.top  = (e.clientY - 22) + "px";
+    Object.assign(ghost.style, {
+      position: "fixed", opacity: "0.8", pointerEvents: "none",
+      zIndex: "9999", left: (e.clientX - 24) + "px", top: (e.clientY - 24) + "px",
+      fontSize: "20px", fontFamily: "var(--font-kanji)", fontWeight: "700",
+      background: "var(--card)", border: "2px solid var(--accent)",
+      borderRadius: "10px", padding: "5px 9px"
+    });
     document.body.appendChild(ghost);
     tile.classList.add("dragging");
+    dragSrc = tile;
+    dragSrcPartIdx = parseInt(tile.dataset.partIdx);
   });
   tile.addEventListener("pointermove", e => {
     if (!ghost) return;
-    ghost.style.left = (e.clientX - 22) + "px";
-    ghost.style.top  = (e.clientY - 22) + "px";
+    ghost.style.left = (e.clientX - 24) + "px";
+    ghost.style.top  = (e.clientY - 24) + "px";
   });
   tile.addEventListener("pointerup", e => {
     if (!ghost) return;
     ghost.remove(); ghost = null;
     tile.classList.remove("dragging");
-    // 指が離れた位置の要素を調べる
+    // 指を離した位置のドロップセルを探す
     const el = document.elementFromPoint(e.clientX, e.clientY);
-    const answerRow = document.getElementById("partsAnswerRow");
-    const pool = document.getElementById("partsPool");
-    if (answerRow && (answerRow === el || answerRow.contains(el))) {
-      moveTileToAnswer(tile);
-    } else if (pool && (pool === el || pool.contains(el))) {
-      moveTileToPool(tile);
+    const cell = el?.closest(".drop-cell");
+    if (cell && cell.dataset.correctPartIdx !== "") {
+      handleDrop(cell, tile);
     }
-    partsCheckAutoComplete();
+    dragSrc = null;
+    dragSrcPartIdx = null;
   });
 
   return tile;
 }
 
-function moveTileToAnswer(tile) {
-  const answerRow = document.getElementById("partsAnswerRow");
-  tile.classList.add("in-answer");
-  answerRow.appendChild(tile);
-}
-function moveTileToPool(tile) {
-  const pool = document.getElementById("partsPool");
-  tile.classList.remove("in-answer");
-  pool.appendChild(tile);
-}
+// =============================================
+// ドロップ処理（共通）
+// =============================================
+function handleDrop(cell, tile) {
+  // 既にfilled（正解済み）のセルには置けない
+  if (cell.dataset.filled === "1") return;
 
-// ドロップゾーン（answerRow・pool両方）
-function setupDropZones() {
-  [document.getElementById("partsAnswerRow"), document.getElementById("partsPool")].forEach(zone => {
-    zone.addEventListener("dragover", e => {
-      e.preventDefault();
-      zone.classList.add("drag-over");
-    });
-    zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
-    zone.addEventListener("drop", e => {
-      e.preventDefault();
-      zone.classList.remove("drag-over");
-      if (!dragSrc) return;
-      if (zone.id === "partsAnswerRow") {
-        moveTileToAnswer(dragSrc);
-      } else {
-        moveTileToPool(dragSrc);
-      }
-      partsCheckAutoComplete();
-    });
-  });
-}
+  const partIdx   = parseInt(tile.dataset.partIdx);
+  const correctIdx = cell.dataset.correctPartIdx === ""
+    ? null
+    : parseInt(cell.dataset.correctPartIdx);
 
-// answerRowが全パーツ揃ったら自動で答え合わせ
-function partsCheckAutoComplete() {
-  const parts = PARTS_MAP.get(partsCurrentKanji.kanji);
-  const answerTiles = [...document.getElementById("partsAnswerRow").children];
-  if (answerTiles.length === parts.length) {
-    partsDoCheck();
+  if (correctIdx === null) return; // 空きセル
+
+  const isCorrect = partIdx === correctIdx;
+
+  if (isCorrect) {
+    // セルを正解表示に
+    cell.dataset.filled = "1";
+    cell.classList.add("filled", "correct");
+    cell.innerHTML = `<span class="placed-label">${tile.dataset.char}</span>`;
+    // タイルをプールから消す（placed状態）
+    tile.classList.add("placed");
+    tile.style.visibility = "hidden";
+    vibrate([20]);
+    // 全セル正解チェック
+    checkAllCellsDone();
+  } else {
+    // 不正解フィードバック
+    cell.classList.add("wrong");
+    vibrate([60, 40, 60]);
+    setTimeout(() => cell.classList.remove("wrong"), 400);
   }
 }
 
 // =============================================
-// パーツモード：答え合わせ
+// 全マス正解チェック
 // =============================================
-function partsDoCheck() {
-  if (partsAnswered) return;
-  const parts = PARTS_MAP.get(partsCurrentKanji.kanji);
-  const answerTiles = [...document.getElementById("partsAnswerRow").children];
-  if (answerTiles.length === 0) return;
-
-  const answered = answerTiles.map(t => t.dataset.char);
-  // 順序不問で全パーツが揃っているか判定
-  const sortedCorrect = [...parts].sort().join("");
-  const sortedAnswered = [...answered].sort().join("");
-  const isCorrect = sortedCorrect === sortedAnswered;
-
-  partsAnswered = true;
-  vibrate([30]);
-  const fb = document.getElementById("partsFeedback");
-
-  if (isCorrect) {
+function checkAllCellsDone() {
+  const grid = document.querySelector(".parts-drop-grid");
+  if (!grid) return;
+  // correctPartIdx が空でないセルが全部 filled かチェック
+  const required = [...grid.querySelectorAll(".drop-cell")]
+    .filter(c => c.dataset.correctPartIdx !== "");
+  const allDone = required.every(c => c.dataset.filled === "1");
+  if (allDone) {
+    const fb = document.getElementById("partsFeedback");
     fb.className = "parts-feedback ok";
     fb.textContent = "✅ 正解！ よくできました！";
     partsMarkCorrect(partsCurrentKanji.kanji);
     speak(partsCurrentKanji.reading);
-    document.getElementById("partsCheckBtn").classList.add("hidden");
     setTimeout(() => partsLoadNext(), 1400);
-  } else {
-    fb.className = "parts-feedback ng";
-    fb.textContent = "❌ もう一度！ パーツを確認して";
-    vibrate([60, 40, 60]);
-    partsAnswered = false;
-    // タイルをプールに戻す
-    const pool = document.getElementById("partsPool");
-    answerTiles.forEach(t => { t.classList.remove("in-answer"); pool.appendChild(t); });
   }
 }
 
@@ -1433,16 +1501,9 @@ document.getElementById("partsMemorizeBtn").addEventListener("click", () => {
   vibrate([30]);
   unlockAudioContext();
   document.getElementById("partsKanjiDisplay").classList.add("hidden");
-  document.getElementById("partsKanjiGhost").classList.add("visible");
   document.getElementById("partsMemorizeBtn").classList.add("hidden");
   partsMaskExample(partsCurrentKanji);
   partsRenderSort(partsCurrentKanji);
-  setupDropZones();
-});
-
-document.getElementById("partsCheckBtn").addEventListener("click", () => {
-  vibrate([30]);
-  partsDoCheck();
 });
 
 document.getElementById("partsRestartBtn").addEventListener("click", () => {
