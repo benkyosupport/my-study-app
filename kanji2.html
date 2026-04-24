@@ -1218,6 +1218,14 @@ function partsLoadNext() {
   const idx = Math.floor(Math.random() * partsQueue.length);
   partsCurrentKanji = partsQueue.splice(idx, 1)[0];
 
+  if (!partsCurrentKanji) {
+    // PARTS_DATAが空（KANJI_PARTS.jsが読めていない等）
+    document.getElementById("partsMemorizeBtn").classList.add("hidden");
+    document.getElementById("partsKanjiDisplay").textContent = "⚠";
+    document.getElementById("partsReadingZone").textContent = "data/KANJI_PARTS.js が読み込めていません";
+    return;
+  }
+
   // 左パネル
   partsRenderIllust(partsCurrentKanji);
   // 右パネル
