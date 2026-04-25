@@ -1,10 +1,10 @@
-```html id="k3r9lx"
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>漢字選択モード（拡張版）</title>
+<title>漢字選択モード（改良版）</title>
 <style>
 body { margin:0; font-family:sans-serif; background:#f5f5f5; }
 
@@ -13,10 +13,12 @@ body { margin:0; font-family:sans-serif; background:#f5f5f5; }
   background:#ffffff;
   display:flex;
   justify-content:space-between;
-  align-items:center;
 }
 
-.container { display:flex; height:calc(100vh - 50px); }
+.container {
+  display:flex;
+  height:calc(100vh - 50px);
+}
 
 .left {
   width:40%;
@@ -25,16 +27,22 @@ body { margin:0; font-family:sans-serif; background:#f5f5f5; }
   display:flex;
   flex-direction:column;
   justify-content:center;
-  font-size:28px;
-  gap:20px;
+  font-size:32px;
+  gap:16px;
 }
 
 .right {
   width:60%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.grid {
   display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:20px;
-  padding:20px;
+  gap:12px;
+  width:90%;
+  max-width:400px;
 }
 
 .choice {
@@ -43,8 +51,8 @@ body { margin:0; font-family:sans-serif; background:#f5f5f5; }
   display:flex;
   justify-content:center;
   align-items:center;
-  font-size:40px;
-  height:100px;
+  font-size:48px;
+  height:80px;
   cursor:pointer;
 }
 
@@ -81,13 +89,14 @@ body { margin:0; font-family:sans-serif; background:#f5f5f5; }
 
 <div class="container">
   <div class="left" id="question"></div>
-  <div class="right" id="choices"></div>
+  <div class="right">
+    <div class="grid" id="choices"></div>
+  </div>
 </div>
 
 <button class="next-btn" id="nextBtn">次へ</button>
 
 <script>
-// ===== データ（簡略版。全量貼替可） =====
 const KANJI_FILL = [
   { kanji: "東", on: "東西（とうざい）", kun: "東（ひがし）" },
   { kanji: "西", on: "西洋（せいよう）", kun: "西（にし）" },
@@ -97,81 +106,86 @@ const KANJI_FILL = [
   { kanji: "空", on: "空間（くうかん）", kun: "空（そら）" }
 ];
 
-// ===== 状態 =====
-let current = null;
-let wrongCount = 0;
-let reviewQueue = [];
+let current, wrongCount=0, reviewQueue=[];
 
-// ===== util =====
-function splitWord(str) {
-  const m = str.match(/(.+?)（(.+?)）/);
-  return { text: m[1], reading: m[2] };
+function splitWord(str){
+  const m=str.match(/(.+?)（(.+?)）/);
+  return {text:m[1],reading:m[2]};
 }
-function mask(w, k) { return w.replaceAll(k, "○"); }
+
+function mask(w,k){ return w.replaceAll(k,"○"); }
 function shuffle(a){ return a.sort(()=>Math.random()-0.5); }
 
-// ===== 音声 =====
 function speakSequence(list){
   if(!list.length) return;
-  const u = new SpeechSynthesisUtterance(list.shift());
+  const u=new SpeechSynthesisUtterance(list.shift());
   u.lang="ja-JP"; u.rate=0.9;
   u.onend=()=>speakSequence(list);
   speechSynthesis.speak(u);
 }
 
-// ===== 問題生成 =====
+// ===== 問題描画（重要：再利用）=====
+function renderQuestion(showAnswer=false){
+  const q=document.getElementById("question");
+  q.innerHTML="";
+
+  const on=splitWord(current.on);
+  const kun=current.kun?splitWord(current.kun):null;
+
+  if(kun){
+    const d=document.createElement("div");
+    d.textContent = showAnswer
+      ? `${kun.text}（${kun.reading}）`
+      : `${mask(kun.text,current.kanji)}（${kun.reading}）`;
+    q.appendChild(d);
+  }
+
+  const d2=document.createElement("div");
+  d2.textContent = showAnswer
+    ? `${on.text}（${on.reading}）`
+    : `${mask(on.text,current.kanji)}（${on.reading}）`;
+  q.appendChild(d2);
+
+  return {on,kun};
+}
+
 function newQuestion(){
-  wrongCount = 0;
+  wrongCount=0;
   document.getElementById("nextBtn").style.display="none";
 
-  // 復習優先
-  if(reviewQueue.length > 0){
-    current = reviewQueue.shift();
-  } else {
-    current = KANJI_FILL[Math.floor(Math.random()*KANJI_FILL.length)];
-  }
+  current = reviewQueue.length
+    ? reviewQueue.shift()
+    : KANJI_FILL[Math.floor(Math.random()*KANJI_FILL.length)];
 
   updateReviewInfo();
 
-  const on = splitWord(current.on);
-  const kun = current.kun ? splitWord(current.kun) : null;
+  const {on,kun}=renderQuestion(false);
 
-  // 問題表示
-  const q = document.getElementById("question");
-  q.innerHTML = "";
-  if(kun){
-    const d=document.createElement("div");
-    d.textContent = mask(kun.text,current.kanji)+"（"+kun.reading+"）";
-    q.appendChild(d);
-  }
-  const d2=document.createElement("div");
-  d2.textContent = mask(on.text,current.kanji)+"（"+on.reading+"）";
-  q.appendChild(d2);
+  const count=parseInt(document.getElementById("modeSelect").value);
 
-  // 選択肢数
-  const count = parseInt(document.getElementById("modeSelect").value);
+  const pool=KANJI_FILL.map(x=>x.kanji).filter(k=>k!==current.kanji);
+  const choices=shuffle([current.kanji,...pool.slice(0,count-1)]);
 
-  const pool = KANJI_FILL.map(x=>x.kanji).filter(k=>k!==current.kanji);
-  const choices = shuffle([current.kanji,...pool.slice(0,count-1)]);
-
-  const c = document.getElementById("choices");
-  c.innerHTML="";
-  c.style.gridTemplateColumns = count===6 ? "repeat(3,1fr)" : "repeat(2,1fr)";
+  const grid=document.getElementById("choices");
+  grid.innerHTML="";
+  grid.style.gridTemplateColumns = count===6 ? "repeat(3,1fr)" : "repeat(2,1fr)";
 
   choices.forEach(k=>{
     const btn=document.createElement("div");
     btn.className="choice";
     btn.textContent=k;
     btn.onclick=()=>handleChoice(btn,k,on,kun);
-    c.appendChild(btn);
+    grid.appendChild(btn);
   });
 }
 
-// ===== 選択処理 =====
 function handleChoice(btn,k,on,kun){
   if(k===current.kanji){
     btn.classList.add("correct");
     navigator.vibrate(50);
+
+    // ★ マスク解除
+    renderQuestion(true);
 
     const list=[];
     if(kun) list.push(kun.reading);
@@ -181,14 +195,13 @@ function handleChoice(btn,k,on,kun){
     speakSequence(list);
 
     document.getElementById("nextBtn").style.display="block";
-  } else {
+  }else{
     wrongCount++;
     navigator.vibrate([10,40,10]);
 
     btn.classList.add("wrong");
     setTimeout(()=>btn.classList.remove("wrong"),300);
 
-    // 復習キューに追加（重複防止）
     if(!reviewQueue.includes(current)){
       reviewQueue.push(current);
     }
@@ -198,7 +211,6 @@ function handleChoice(btn,k,on,kun){
   }
 }
 
-// ===== ヒント =====
 function highlightHint(){
   document.querySelectorAll(".choice").forEach(btn=>{
     if(btn.textContent===current.kanji){
@@ -207,7 +219,6 @@ function highlightHint(){
   });
 }
 
-// ===== 削減 =====
 function reduceChoices(){
   document.querySelectorAll(".choice").forEach(btn=>{
     if(btn.textContent!==current.kanji && Math.random()<0.5){
@@ -216,17 +227,14 @@ function reduceChoices(){
   });
 }
 
-// ===== UI更新 =====
 function updateReviewInfo(){
   document.getElementById("reviewInfo").textContent =
-    "復習キュー: " + reviewQueue.length;
+    "復習キュー: "+reviewQueue.length;
 }
 
-// ===== イベント =====
 document.getElementById("nextBtn").onclick=newQuestion;
 document.getElementById("modeSelect").onchange=newQuestion;
 
-// 初期化
 newQuestion();
 </script>
 
