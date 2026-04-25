@@ -893,6 +893,7 @@ main {
 
 <script src="data/KANJI_PARTS.js"></script>
 <script src="data/kanji2.js"></script>
+<script src="data/KANJI_FILL.js"></script>
 <script>
 // =============================================
 // 定数・状態
@@ -1703,24 +1704,38 @@ function fillHoles(kanji) {
 // 正答後TTS用：最初の例題テキスト（穴あき前の元テキスト）
 let fillFirstContext = "";
 
+// KANJI_FILL を Map 化（起動時に一度だけ実行）
+const FILL_MAP = (() => {
+  const m = new Map();
+  if (typeof KANJI_FILL !== "undefined") {
+    KANJI_FILL.forEach(e => m.set(e.kanji, e));
+  }
+  return m;
+})();
+
 // =============================================
-// 穴埋めモード：文脈リストを2件以上に正規化して返す
+// 穴埋めモード：文脈リストを返す（必ず2件）
+// KANJI_FILL の on/on2/kun/kun2 を使用
 // 戻り値: string[]（元テキスト、穴あき前）
 // =============================================
 function fillBuildContextList(k) {
-  // examples配列がある場合（2件以上保証）
-  if (Array.isArray(k.examples) && k.examples.length >= 2) return k.examples;
-  if (Array.isArray(k.examples) && k.examples.length === 1) {
-    // 2件目：「漢字」は〜〜とよむ（漢字を含むので穴があく）
-    return [k.examples[0], `${k.kanji}は「${k.reading}」とよむ`];
+  const entry = FILL_MAP.get(k.kanji);
+  if (entry) {
+    if (entry.kun) {
+      // 音読み熟語 + 訓読み単語
+      return [entry.on, entry.kun];
+    } else if (entry.on2) {
+      // 訓読みなし → 音読み2件
+      return [entry.on, entry.on2];
+    } else if (entry.kun2) {
+      // 音読みなし → 訓読み2件
+      return [entry.kun, entry.kun2];
+    }
+    // on のみある場合（フォールバック）
+    return [entry.on, entry.on];
   }
-
-  // examples なし：meaning を1件目として使う
-  // meaning は単一文字列として扱う（・分割しない）
-  const first = k.meaning;
-  // 2件目：reading を使った補助文脈（漢字を含む）
-  const second = `${k.kanji}は「${k.reading}」とよむ`;
-  return [first, second];
+  // KANJI_FILL に未登録の場合は meaning を使う
+  return [k.meaning, k.meaning];
 }
 
 // =============================================
