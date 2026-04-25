@@ -632,6 +632,104 @@ main {
   text-align: center;
 }
 .parts-complete-screen.visible { display: flex; }
+
+/* ===== 穴埋めモード ===== */
+#fillContent { display: none; }
+#fillContent.active { display: flex; flex-direction: column; gap: 12px; }
+
+/* 穴埋め：右パネルの？表示 */
+.fill-question-mark {
+  font-size: clamp(72px, 20vw, 108px);
+  font-family: var(--font-kanji);
+  font-weight: 900;
+  color: #c8b090;
+  line-height: 1;
+  user-select: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.fill-kanji-reveal {
+  font-size: clamp(72px, 20vw, 108px);
+  font-family: var(--font-kanji);
+  font-weight: 900;
+  color: var(--ink);
+  line-height: 1;
+  user-select: none;
+  display: none;
+  animation: popIn 0.35s ease-out;
+}
+@keyframes popIn {
+  0% { transform: scale(0.7); opacity: 0; }
+  70% { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* 穴（○）スタイル */
+.hole {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.3em;
+  height: 1.3em;
+  border: 2px solid #3b82f6;
+  border-radius: 6px;
+  background-color: #eff6ff;
+  color: #3b82f6;
+  font-weight: bold;
+  margin: 0 2px;
+  vertical-align: middle;
+  transition: all 0.25s ease;
+}
+.hole.filled {
+  border-color: transparent;
+  background-color: transparent;
+  color: #1d4ed8;
+  animation: popIn 0.3s ease-out;
+  font-family: var(--font-kanji);
+}
+
+/* 文脈リスト */
+.context-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 1.35rem;
+  line-height: 2.1;
+  font-family: var(--font-kanji);
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+  width: 100%;
+}
+
+/* 穴埋め読みゾーン（？マーク） */
+.fill-reading-zone {
+  font-size: 22px;
+  font-weight: 700;
+  color: #3b82f6;
+  font-family: var(--font-ui);
+  letter-spacing: 0.05em;
+  text-align: center;
+  line-height: 1.2;
+  flex-shrink: 0;
+}
+
+/* 穴埋め完了画面 */
+.fill-complete-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px 20px;
+  text-align: center;
+}
+.fill-complete-screen.visible { display: flex; }
+
+/* 穴埋めモード 4択ボタン（通常モードと同じgridを流用、IDを分ける） */
+#fillChoicesGrid .choice-btn {
+  padding: 18px 8px;
+}
+
 </style>
 </head>
 <body>
@@ -649,8 +747,9 @@ main {
 
 <!-- モードタブ -->
 <div class="mode-tabs">
-  <button class="mode-tab active" id="tabRead">📖 読み覚えモード</button>
+  <button class="mode-tab active" id="tabRead">📖 読み覚え</button>
   <button class="mode-tab" id="tabParts">🧩 パーツ組み立て</button>
+  <button class="mode-tab" id="tabFill">🔍 穴埋め</button>
 </div>
 
 <main>
@@ -739,6 +838,40 @@ main {
     </div>
 
   </div><!-- /#partsContent -->
+
+  <!-- ===== 穴埋めモード ===== -->
+  <div id="fillContent">
+
+    <div class="present-area">
+      <!-- 左パネル：文脈提示 -->
+      <div class="illust-panel" id="fillIllustPanel">
+        <!-- ゾーン1: ？マーク -->
+        <div class="fill-reading-zone" id="fillReadingZone">？　なんの漢字かな？</div>
+        <!-- ゾーン2: 文脈リスト（○入り） -->
+        <div class="example-zone" id="fillExampleZone" style="flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;"></div>
+        <!-- ゾーン3: 空（カテゴリのみ） -->
+        <div class="badge-row" id="fillBadgeRow"></div>
+      </div>
+
+      <!-- 右パネル：？ → 正解漢字 -->
+      <div class="kanji-panel" id="fillKanjiPanel">
+        <div class="fill-question-mark" id="fillQuestionMark">？</div>
+        <div class="fill-kanji-reveal" id="fillKanjiReveal"></div>
+      </div>
+    </div>
+
+    <!-- 4択 -->
+    <div class="choices-grid" id="fillChoicesGrid"></div>
+
+    <!-- 完了画面 -->
+    <div class="fill-complete-screen" id="fillCompleteScreen">
+      <div class="complete-emoji">🎉</div>
+      <div class="complete-title">全部クリア！</div>
+      <div class="complete-sub">穴埋めトレーニングを全部クリアしました。<br>もう一度チャレンジしますか？</div>
+      <button class="btn-restart" id="fillRestartBtn">もう一度</button>
+    </div>
+
+  </div><!-- /#fillContent -->
 
 <!-- 設定オーバーレイ -->
 <div class="overlay" id="settingsOverlay">
@@ -1514,27 +1647,244 @@ document.getElementById("partsRestartBtn").addEventListener("click", () => {
 });
 
 // =============================================
+// 穴埋めモード：状態
+// =============================================
+const FILL_STORAGE_KEY = "kanji2_fill_done";
+let fillQueue = [];
+let fillCurrentKanji = null;
+let fillAnswered = false;
+let fillCurrentChoices = [];
+
+// =============================================
+// 穴埋めモード：進捗
+// =============================================
+function fillGetDone() {
+  return new Set(JSON.parse(localStorage.getItem(FILL_STORAGE_KEY) || "[]"));
+}
+function fillMarkCorrect(kanji) {
+  const done = JSON.parse(localStorage.getItem(FILL_STORAGE_KEY) || "[]");
+  if (!done.includes(kanji)) {
+    done.push(kanji);
+    localStorage.setItem(FILL_STORAGE_KEY, JSON.stringify(done));
+  }
+}
+function fillGetQueue() {
+  const done = fillGetDone();
+  const remaining = DATA.filter(k => !done.has(k.kanji));
+  return remaining.length > 0 ? remaining : [...DATA];
+}
+
+// =============================================
+// 穴埋めモード：文脈HTML生成
+// 対象漢字を <span class="hole">○</span> に置換
+// =============================================
+function buildFillContextHTML(text, kanji) {
+  let html = "";
+  for (const ch of text) {
+    if (ch === kanji) {
+      html += `<span class="hole">○</span>`;
+    } else {
+      html += ch;
+    }
+  }
+  return html;
+}
+
+// =============================================
+// 穴埋めモード：文脈を正解漢字で埋める
+// =============================================
+function fillHoles(kanji) {
+  document.querySelectorAll("#fillExampleZone .hole").forEach(span => {
+    span.textContent = kanji;
+    span.classList.add("filled");
+  });
+}
+
+// =============================================
+// 穴埋めモード：左パネル描画
+// =============================================
+function fillRenderIllust(k) {
+  // ゾーン1: ？表示（固定）
+  document.getElementById("fillReadingZone").textContent = "？　なんの漢字かな？";
+
+  // ゾーン2: examples配列があれば優先、なければmeaningで代替
+  const exampleZone = document.getElementById("fillExampleZone");
+  if (Array.isArray(k.examples) && k.examples.length > 0) {
+    const ul = document.createElement("ul");
+    ul.className = "context-list";
+    k.examples.forEach(ex => {
+      const li = document.createElement("li");
+      li.innerHTML = buildFillContextHTML(ex, k.kanji);
+      ul.appendChild(li);
+    });
+    exampleZone.innerHTML = "";
+    exampleZone.appendChild(ul);
+  } else {
+    // meaningをそのまま使って穴あき表示
+    const ul = document.createElement("ul");
+    ul.className = "context-list";
+    const li = document.createElement("li");
+    li.innerHTML = buildFillContextHTML(k.meaning, k.kanji);
+    ul.appendChild(li);
+    exampleZone.innerHTML = "";
+    exampleZone.appendChild(ul);
+  }
+
+  // バッジ（カテゴリのみ）
+  document.getElementById("fillBadgeRow").innerHTML =
+    `<span class="category-badge">${k.category}</span>`;
+}
+
+// =============================================
+// 穴埋めモード：右パネル初期化（？表示）
+// =============================================
+function fillResetKanjiPanel() {
+  const qm = document.getElementById("fillQuestionMark");
+  const reveal = document.getElementById("fillKanjiReveal");
+  qm.style.display = "";
+  qm.style.opacity = "1";
+  reveal.style.display = "none";
+  reveal.textContent = "";
+}
+
+// =============================================
+// 穴埋めモード：正解後に漢字を表示
+// =============================================
+function fillRevealKanji(k) {
+  const qm = document.getElementById("fillQuestionMark");
+  const reveal = document.getElementById("fillKanjiReveal");
+  qm.style.opacity = "0";
+  setTimeout(() => {
+    qm.style.display = "none";
+    reveal.textContent = k.kanji;
+    reveal.style.display = "";
+  }, 200);
+}
+
+// =============================================
+// 穴埋めモード：4択描画
+// =============================================
+function fillRenderChoices(choices) {
+  const grid = document.getElementById("fillChoicesGrid");
+  grid.innerHTML = "";
+  choices.forEach(c => {
+    const btn = document.createElement("button");
+    btn.className = "choice-btn";
+    btn.textContent = c.kanji;
+    btn.dataset.kanji = c.kanji;
+    btn.addEventListener("click", () => fillOnChoiceClick(btn, c));
+    grid.appendChild(btn);
+  });
+}
+
+// =============================================
+// 穴埋めモード：選択肢クリック
+// =============================================
+function fillOnChoiceClick(btn, chosen) {
+  if (fillAnswered) return;
+  fillAnswered = true;
+  vibrate([30]);
+  unlockAudioContext();
+
+  const isCorrect = chosen.kanji === fillCurrentKanji.kanji;
+
+  if (isCorrect) {
+    btn.classList.add("correct");
+    fillMarkCorrect(fillCurrentKanji.kanji);
+    fillHoles(fillCurrentKanji.kanji);
+    fillRevealKanji(fillCurrentKanji);
+    speak(fillCurrentKanji.reading);
+    // 正解後：読みをゾーン1に表示
+    document.getElementById("fillReadingZone").textContent = fillCurrentKanji.reading;
+    setTimeout(() => fillLoadNext(), 1400);
+  } else {
+    btn.classList.add("wrong");
+    vibrate([60, 40, 60]);
+    // 全ボタンの正解を示す
+    document.querySelectorAll("#fillChoicesGrid .choice-btn").forEach(b => {
+      if (b.dataset.kanji === fillCurrentKanji.kanji) b.classList.add("correct");
+    });
+    speak(fillCurrentKanji.reading);
+    setTimeout(() => fillLoadNext(), 1800);
+  }
+}
+
+// =============================================
+// 穴埋めモード：次の漢字をロード
+// =============================================
+function fillLoadNext() {
+  fillAnswered = false;
+
+  if (fillQueue.length === 0) {
+    fillQueue = fillGetQueue();
+  }
+  const done = fillGetDone();
+  if (done.size >= DATA.length && DATA.length > 0) {
+    fillShowComplete();
+    return;
+  }
+
+  const idx = Math.floor(Math.random() * fillQueue.length);
+  fillCurrentKanji = fillQueue.splice(idx, 1)[0];
+  fillCurrentChoices = generateChoices(fillCurrentKanji);
+
+  fillRenderIllust(fillCurrentKanji);
+  fillResetKanjiPanel();
+  fillRenderChoices(fillCurrentChoices);
+  document.getElementById("fillCompleteScreen").classList.remove("visible");
+}
+
+// =============================================
+// 穴埋めモード：完了
+// =============================================
+function fillShowComplete() {
+  document.getElementById("fillCompleteScreen").classList.add("visible");
+  document.getElementById("fillChoicesGrid").innerHTML = "";
+}
+
+// 穴埋めモード：リスタート
+document.getElementById("fillRestartBtn").addEventListener("click", () => {
+  localStorage.removeItem(FILL_STORAGE_KEY);
+  fillQueue = [];
+  fillCurrentKanji = null;
+  document.getElementById("fillCompleteScreen").classList.remove("visible");
+  fillLoadNext();
+});
+
+// =============================================
 // タブ切り替え（パーツ関連コード全定義後に登録）
 // =============================================
 {
   const tabRead     = document.getElementById("tabRead");
   const tabParts    = document.getElementById("tabParts");
+  const tabFill     = document.getElementById("tabFill");
   const mainContent  = document.getElementById("mainContent");
   const partsContent = document.getElementById("partsContent");
+  const fillContent  = document.getElementById("fillContent");
+
+  function activateTab(active) {
+    [tabRead, tabParts, tabFill].forEach(t => t.classList.remove("active"));
+    active.classList.add("active");
+    mainContent.style.display  = "none";
+    partsContent.classList.remove("active");
+    fillContent.classList.remove("active");
+  }
 
   tabRead.addEventListener("click", () => {
-    tabRead.classList.add("active");
-    tabParts.classList.remove("active");
+    activateTab(tabRead);
     mainContent.style.display = "";
-    partsContent.classList.remove("active");
   });
 
   tabParts.addEventListener("click", () => {
-    tabParts.classList.add("active");
-    tabRead.classList.remove("active");
-    mainContent.style.display = "none";
+    activateTab(tabParts);
     partsContent.classList.add("active");
     if (!partsCurrentKanji) partsLoadNext();
+  });
+
+  tabFill.addEventListener("click", () => {
+    activateTab(tabFill);
+    fillContent.classList.add("active");
+    if (!fillCurrentKanji) fillLoadNext();
   });
 }
 
