@@ -1708,19 +1708,19 @@ let fillFirstContext = "";
 // 戻り値: string[]（元テキスト、穴あき前）
 // =============================================
 function fillBuildContextList(k) {
-  // examples配列がある場合
-  if (Array.isArray(k.examples) && k.examples.length > 0) {
-    if (k.examples.length >= 2) return k.examples;
-    // 1件のみ → 補助文脈を追加
-    return [k.examples[0], `${k.kanji}（${k.reading}）`];
+  // examples配列がある場合（2件以上保証）
+  if (Array.isArray(k.examples) && k.examples.length >= 2) return k.examples;
+  if (Array.isArray(k.examples) && k.examples.length === 1) {
+    // 2件目：「漢字」は〜〜とよむ（漢字を含むので穴があく）
+    return [k.examples[0], `${k.kanji}は「${k.reading}」とよむ`];
   }
 
-  // meaningを・で分割して複数文脈を試みる
-  const parts = k.meaning.split("・").map(s => s.trim()).filter(s => s.length > 0);
-  if (parts.length >= 2) return parts;
-
-  // 1件しかない → reading補助を追加
-  return [k.meaning, `${k.kanji}（${k.reading}）`];
+  // examples なし：meaning を1件目として使う
+  // meaning は単一文字列として扱う（・分割しない）
+  const first = k.meaning;
+  // 2件目：reading を使った補助文脈（漢字を含む）
+  const second = `${k.kanji}は「${k.reading}」とよむ`;
+  return [first, second];
 }
 
 // =============================================
