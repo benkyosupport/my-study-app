@@ -1,0 +1,235 @@
+```html id="k3r9lx"
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>漢字選択モード（拡張版）</title>
+<style>
+body { margin:0; font-family:sans-serif; background:#f5f5f5; }
+
+.topbar {
+  padding:10px;
+  background:#ffffff;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.container { display:flex; height:calc(100vh - 50px); }
+
+.left {
+  width:40%;
+  background:#fff;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  font-size:28px;
+  gap:20px;
+}
+
+.right {
+  width:60%;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:20px;
+  padding:20px;
+}
+
+.choice {
+  background:#fff;
+  border-radius:12px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:40px;
+  height:100px;
+  cursor:pointer;
+}
+
+.correct { background:#c8f7c5 !important; }
+.wrong { background:#ffd6d6 !important; }
+.hint { outline:4px solid #a0e0ff; }
+
+.next-btn {
+  position:absolute;
+  bottom:20px;
+  right:20px;
+  padding:12px 24px;
+  font-size:18px;
+  background:#4caf50;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  display:none;
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    モード:
+    <select id="modeSelect">
+      <option value="4">4択</option>
+      <option value="6">6択</option>
+    </select>
+  </div>
+  <div id="reviewInfo">復習キュー: 0</div>
+</div>
+
+<div class="container">
+  <div class="left" id="question"></div>
+  <div class="right" id="choices"></div>
+</div>
+
+<button class="next-btn" id="nextBtn">次へ</button>
+
+<script>
+// ===== データ（簡略版。全量貼替可） =====
+const KANJI_FILL = [
+  { kanji: "東", on: "東西（とうざい）", kun: "東（ひがし）" },
+  { kanji: "西", on: "西洋（せいよう）", kun: "西（にし）" },
+  { kanji: "南", on: "南極（なんきょく）", kun: "南（みなみ）" },
+  { kanji: "北", on: "北極（ほっきょく）", kun: "北（きた）" },
+  { kanji: "春", on: "新春（しんしゅん）", kun: "春（はる）" },
+  { kanji: "空", on: "空間（くうかん）", kun: "空（そら）" }
+];
+
+// ===== 状態 =====
+let current = null;
+let wrongCount = 0;
+let reviewQueue = [];
+
+// ===== util =====
+function splitWord(str) {
+  const m = str.match(/(.+?)（(.+?)）/);
+  return { text: m[1], reading: m[2] };
+}
+function mask(w, k) { return w.replaceAll(k, "○"); }
+function shuffle(a){ return a.sort(()=>Math.random()-0.5); }
+
+// ===== 音声 =====
+function speakSequence(list){
+  if(!list.length) return;
+  const u = new SpeechSynthesisUtterance(list.shift());
+  u.lang="ja-JP"; u.rate=0.9;
+  u.onend=()=>speakSequence(list);
+  speechSynthesis.speak(u);
+}
+
+// ===== 問題生成 =====
+function newQuestion(){
+  wrongCount = 0;
+  document.getElementById("nextBtn").style.display="none";
+
+  // 復習優先
+  if(reviewQueue.length > 0){
+    current = reviewQueue.shift();
+  } else {
+    current = KANJI_FILL[Math.floor(Math.random()*KANJI_FILL.length)];
+  }
+
+  updateReviewInfo();
+
+  const on = splitWord(current.on);
+  const kun = current.kun ? splitWord(current.kun) : null;
+
+  // 問題表示
+  const q = document.getElementById("question");
+  q.innerHTML = "";
+  if(kun){
+    const d=document.createElement("div");
+    d.textContent = mask(kun.text,current.kanji)+"（"+kun.reading+"）";
+    q.appendChild(d);
+  }
+  const d2=document.createElement("div");
+  d2.textContent = mask(on.text,current.kanji)+"（"+on.reading+"）";
+  q.appendChild(d2);
+
+  // 選択肢数
+  const count = parseInt(document.getElementById("modeSelect").value);
+
+  const pool = KANJI_FILL.map(x=>x.kanji).filter(k=>k!==current.kanji);
+  const choices = shuffle([current.kanji,...pool.slice(0,count-1)]);
+
+  const c = document.getElementById("choices");
+  c.innerHTML="";
+  c.style.gridTemplateColumns = count===6 ? "repeat(3,1fr)" : "repeat(2,1fr)";
+
+  choices.forEach(k=>{
+    const btn=document.createElement("div");
+    btn.className="choice";
+    btn.textContent=k;
+    btn.onclick=()=>handleChoice(btn,k,on,kun);
+    c.appendChild(btn);
+  });
+}
+
+// ===== 選択処理 =====
+function handleChoice(btn,k,on,kun){
+  if(k===current.kanji){
+    btn.classList.add("correct");
+    navigator.vibrate(50);
+
+    const list=[];
+    if(kun) list.push(kun.reading);
+    list.push(on.reading);
+
+    speechSynthesis.cancel();
+    speakSequence(list);
+
+    document.getElementById("nextBtn").style.display="block";
+  } else {
+    wrongCount++;
+    navigator.vibrate([10,40,10]);
+
+    btn.classList.add("wrong");
+    setTimeout(()=>btn.classList.remove("wrong"),300);
+
+    // 復習キューに追加（重複防止）
+    if(!reviewQueue.includes(current)){
+      reviewQueue.push(current);
+    }
+
+    if(wrongCount>=2) highlightHint();
+    if(wrongCount>=3) reduceChoices();
+  }
+}
+
+// ===== ヒント =====
+function highlightHint(){
+  document.querySelectorAll(".choice").forEach(btn=>{
+    if(btn.textContent===current.kanji){
+      btn.classList.add("hint");
+    }
+  });
+}
+
+// ===== 削減 =====
+function reduceChoices(){
+  document.querySelectorAll(".choice").forEach(btn=>{
+    if(btn.textContent!==current.kanji && Math.random()<0.5){
+      btn.style.display="none";
+    }
+  });
+}
+
+// ===== UI更新 =====
+function updateReviewInfo(){
+  document.getElementById("reviewInfo").textContent =
+    "復習キュー: " + reviewQueue.length;
+}
+
+// ===== イベント =====
+document.getElementById("nextBtn").onclick=newQuestion;
+document.getElementById("modeSelect").onchange=newQuestion;
+
+// 初期化
+newQuestion();
+</script>
+
+</body>
+</html>
+```
