@@ -1700,6 +1700,29 @@ function fillHoles(kanji) {
   });
 }
 
+// 正答後TTS用：最初の例題テキスト（穴あき前の元テキスト）
+let fillFirstContext = "";
+
+// =============================================
+// 穴埋めモード：文脈リストを2件以上に正規化して返す
+// 戻り値: string[]（元テキスト、穴あき前）
+// =============================================
+function fillBuildContextList(k) {
+  // examples配列がある場合
+  if (Array.isArray(k.examples) && k.examples.length > 0) {
+    if (k.examples.length >= 2) return k.examples;
+    // 1件のみ → 補助文脈を追加
+    return [k.examples[0], `${k.kanji}（${k.reading}）`];
+  }
+
+  // meaningを・で分割して複数文脈を試みる
+  const parts = k.meaning.split("・").map(s => s.trim()).filter(s => s.length > 0);
+  if (parts.length >= 2) return parts;
+
+  // 1件しかない → reading補助を追加
+  return [k.meaning, `${k.kanji}（${k.reading}）`];
+}
+
 // =============================================
 // 穴埋めモード：左パネル描画
 // =============================================
@@ -1707,28 +1730,22 @@ function fillRenderIllust(k) {
   // ゾーン1: ？表示（固定）
   document.getElementById("fillReadingZone").textContent = "？　なんの漢字かな？";
 
-  // ゾーン2: examples配列があれば優先、なければmeaningで代替
+  // 2件以上保証の文脈リストを取得
+  const contexts = fillBuildContextList(k);
+  // TTS用：最初の例題テキストを保持
+  fillFirstContext = contexts[0];
+
+  // ゾーン2: 文脈リスト表示
   const exampleZone = document.getElementById("fillExampleZone");
-  if (Array.isArray(k.examples) && k.examples.length > 0) {
-    const ul = document.createElement("ul");
-    ul.className = "context-list";
-    k.examples.forEach(ex => {
-      const li = document.createElement("li");
-      li.innerHTML = buildFillContextHTML(ex, k.kanji);
-      ul.appendChild(li);
-    });
-    exampleZone.innerHTML = "";
-    exampleZone.appendChild(ul);
-  } else {
-    // meaningをそのまま使って穴あき表示
-    const ul = document.createElement("ul");
-    ul.className = "context-list";
+  const ul = document.createElement("ul");
+  ul.className = "context-list";
+  contexts.forEach(ctx => {
     const li = document.createElement("li");
-    li.innerHTML = buildFillContextHTML(k.meaning, k.kanji);
+    li.innerHTML = buildFillContextHTML(ctx, k.kanji);
     ul.appendChild(li);
-    exampleZone.innerHTML = "";
-    exampleZone.appendChild(ul);
-  }
+  });
+  exampleZone.innerHTML = "";
+  exampleZone.appendChild(ul);
 
   // バッジ（カテゴリのみ）
   document.getElementById("fillBadgeRow").innerHTML =
@@ -1793,7 +1810,7 @@ function fillOnChoiceClick(btn, chosen) {
     fillMarkCorrect(fillCurrentKanji.kanji);
     fillHoles(fillCurrentKanji.kanji);
     fillRevealKanji(fillCurrentKanji);
-    speak(fillCurrentKanji.reading);
+    speak(fillFirstContext);
     // 正解後：読みをゾーン1に表示
     document.getElementById("fillReadingZone").textContent = fillCurrentKanji.reading;
     setTimeout(() => fillLoadNext(), 1400);
@@ -1804,7 +1821,7 @@ function fillOnChoiceClick(btn, chosen) {
     document.querySelectorAll("#fillChoicesGrid .choice-btn").forEach(b => {
       if (b.dataset.kanji === fillCurrentKanji.kanji) b.classList.add("correct");
     });
-    speak(fillCurrentKanji.reading);
+    speak(fillFirstContext);
     setTimeout(() => fillLoadNext(), 1800);
   }
 }
