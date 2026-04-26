@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>漢字構成パズル - Professional Edition</title>
+<style>
+:root {
+  --primary: #2c3e50;
+  --accent: #e85d2f;
+  --bg: #f0f2f5;
+  --success: #27ae60;
+  --font-kanji: "Hiragino Mincho ProN","Yu Mincho","游明朝",serif;
+}
+
+body {
+  margin: 0; font-family: 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg); height: 100vh; overflow: hidden;
+  display: flex; flex-direction: column;
+  user-select: none; -webkit-user-select: none;
+}
+
+/* Header & Progress */
+header {
+  padding: 15px 20px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  display: flex; justify-content: space-between; align-items: center; z-index: 100;
+}
+.title-group h1 { margin: 0; font-size: 1.2rem; color: var(--primary); }
+.progress-text { font-size: 0.8rem; color: #666; margin-top: 4px; }
+
+/* Test Panel */
+.test-panel {
+  padding: 8px; background: #dfe4ea; display: flex; gap: 8px;
+  overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch;
+}
+.test-panel button {
+  padding: 6px 15px; border: none; border-radius: 20px; background: white;
+  font-weight: bold; cursor: pointer; transition: 0.2s;
+}
+.test-panel button.current { background: var(--accent); color: white; }
+.test-panel button.cleared::after { content: " ✓"; font-size: 0.7rem; }
+
+/* Main Stage */
+#stage {
+  flex: 1; position: relative; display: flex; align-items: center; justify-content: center;
+  touch-action: none;
+}
+#canvas {
+  width: 380px; height: 380px; background: white; border-radius: 24px;
+  position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+  border: 4px solid #fff; transition: border-color 0.3s;
+}
+#canvas.success-flash { border-color: var(--success); }
+
+#guide {
+  position: absolute; width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-kanji); font-size: 320px;
+  color: rgba(0, 0, 0, 0.04); pointer-events: none;
+}
+
+.snapped {
+  position: absolute; font-family: var(--font-kanji);
+  color: #1a1a1a; pointer-events: none;
+  display: flex; align-items: center; justify-content: center;
+  animation: snapAnim 0.2s ease-out;
+}
+@keyframes snapAnim {
+  0% { transform: translate(-50%, -50%) scale(1.3); opacity: 0.5; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+/* HTMLファイルの <style> 内の #perfect を以下に差し替えてください */
+#perfect {
+  position: absolute; width: 100%; height: 100%; display: none;
+  align-items: center; justify-content: center;
+  font-family: var(--font-kanji); font-size: 320px; color: #000; z-index: 50;
+  pointer-events: none; /* ← これを追加！ */
+}
+
+/* Tray */
+#tray {
+  height: 160px; background: #cbd5e0; display: flex;
+  padding: 0 20px; gap: 15px; align-items: center; overflow-x: auto;
+}
+.tray-item {
+  min-width: 85px; height: 85px; background: white; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3.2rem; font-family: var(--font-kanji);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15); cursor: grab;
+  touch-action: none; position: relative;
+}
+
+#dragProxy {
+  position: fixed; pointer-events: none; z-index: 1000;
+  font-family: var(--font-kanji); font-size: 4rem; display: none;
+  color: var(--primary); text-shadow: 0 0 10px rgba(255,255,255,0.8);
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title-group">
+    <h1 id="kanjiTitle">漢字パズル</h1>
+    <div id="progressDisplay" class="progress-text">クリア: 0 / 160</div>
+  </div>
+  <button onclick="resetProgress()" style="font-size:0.7rem; opacity:0.5;">記録リセット</button>
+</header>
+
+<div id="testPanel" class="test-panel"></div>
+
+<div id="stage">
+  <div id="canvas">
+    <div id="guide"></div>
+    <div id="perfect"></div>
+  </div>
+</div>
+
+<div id="tray"></div>
+<div id="dragProxy"></div>
+
+<script src="kanji_partsdata.js"></script>
+
+<script>
+let currentID = "";
+let snappedCount = 0;
+let clearedSet = new Set(JSON.parse(localStorage.getItem('kanji_cleared') || '[]'));
+let draggingItem = null;
+const proxy = document.getElementById('dragProxy');
+
+function init() {
+  // データが読み込まれているか確認
+  if (typeof KANJI_CONFIG === 'undefined') {
+    alert("kanji_partsdata.js が見つからないか、読み込めていません。");
+    return;
+  }
+
+  // 最初の文字をセット
+  if (!currentID) currentID = Object.keys(KANJI_CONFIG)[0];
+
+  const config = KANJI_CONFIG[currentID];
+  document.getElementById('kanjiTitle').textContent = `漢字パズル：${currentID}`;
+  document.getElementById('guide').textContent = currentID;
+  document.getElementById('guide').style.display = 'flex';
+  document.getElementById('perfect').textContent = currentID;
+  document.getElementById('perfect').style.display = 'none';
+  document.getElementById('canvas').classList.remove('success-flash');
+  
+  Array.from(document.querySelectorAll('.snapped')).forEach(el => el.remove());
+  snappedCount = 0;
+
+  updateUI();
+  renderTray(config);
+}
+
+function updateUI() {
+  const panel = document.getElementById('testPanel');
+  panel.innerHTML = '';
+  Object.keys(KANJI_CONFIG).forEach(k => {
+    const btn = document.createElement('button');
+    btn.textContent = k;
+    btn.className = (k === currentID ? 'current' : '') + (clearedSet.has(k) ? ' cleared' : '');
+    btn.onclick = () => { currentID = k; init(); };
+    panel.appendChild(btn);
+  });
+  document.getElementById('progressDisplay').textContent = `クリア: ${clearedSet.size} / 160`;
+}
+
+function renderTray(config) {
+  const tray = document.getElementById('tray');
+  tray.innerHTML = '';
+  const allParts = [...config.parts.map(p => p.p), ...(config.dummies || [])].sort(() => Math.random() - 0.5);
+  
+  allParts.forEach(char => {
+    const div = document.createElement('div');
+    div.className = 'tray-item';
+    div.textContent = char;
+    div.onmousedown = (e) => startDrag(e, char);
+    div.ontouchstart = (e) => startDrag(e.touches[0], char);
+    tray.appendChild(div);
+  });
+}
+
+function startDrag(e, char) {
+  draggingItem = char;
+  proxy.textContent = char;
+  proxy.style.display = 'block';
+  moveProxy(e);
+  window.onmousemove = moveProxy;
+  window.ontouchmove = (te) => moveProxy(te.touches[0]);
+  window.onmouseup = endDrag;
+  window.ontouchend = endDrag;
+}
+
+function moveProxy(e) {
+  if (!draggingItem) return;
+  proxy.style.left = e.clientX + 'px';
+  proxy.style.top = e.clientY + 'px';
+  proxy.style.transform = "translate(-50%, -50%)";
+}
+
+function endDrag(e) {
+  if (!draggingItem) return;
+  const clientX = e.clientX || (e.changedTouches ? e.changedTouches[0].clientX : 0);
+  const clientY = e.clientY || (e.changedTouches ? e.changedTouches[0].clientY : 0);
+  checkSnap(clientX, clientY);
+  draggingItem = null;
+  proxy.style.display = 'none';
+  window.onmousemove = window.ontouchmove = window.onmouseup = window.ontouchend = null;
+}
+
+function checkSnap(x, y) {
+  const canvas = document.getElementById('canvas');
+  const rect = canvas.getBoundingClientRect();
+  const relX = x - rect.left - 190;
+  const relY = y - rect.top - 190;
+  
+  const config = KANJI_CONFIG[currentID];
+  const slot = config.parts.find(p => 
+    p.p === draggingItem && 
+    Math.sqrt((p.x - relX)**2 + (p.y - relY)**2) < 45 &&
+    !isAlreadySnapped(p)
+  );
+
+  if (slot) {
+    const el = document.createElement('div');
+    el.className = 'snapped';
+    el.textContent = slot.p;
+    el.style.fontSize = (320 * slot.s) + "px";
+    el.style.left = (190 + slot.x) + "px";
+    el.style.top = (190 + slot.y) + "px";
+    el.style.transform = "translate(-50%, -50%)";
+    el.dataset.meta = JSON.stringify(slot);
+    canvas.appendChild(el);
+    snappedCount++;
+    if (snappedCount === config.parts.length) finish();
+  }
+}
+
+function isAlreadySnapped(slot) {
+  return Array.from(document.querySelectorAll('.snapped')).some(el => el.dataset.meta === JSON.stringify(slot));
+}
+
+function finish() {
+  clearedSet.add(currentID);
+  localStorage.setItem('kanji_cleared', JSON.stringify([...clearedSet]));
+  document.getElementById('canvas').classList.add('success-flash');
+  document.getElementById('guide').style.display = 'none';
+  Array.from(document.querySelectorAll('.snapped')).forEach(el => el.style.opacity = '0');
+  const perfect = document.getElementById('perfect');
+  perfect.style.display = 'flex';
+  setTimeout(updateUI, 500);
+}
+
+function resetProgress() {
+  if (confirm("クリア記録をリセットしますか？")) {
+    clearedSet.clear();
+    localStorage.removeItem('kanji_cleared');
+    init();
+  }
+}
+
+// 読み込み完了後に起動
+window.onload = init;
+</script>
+</body>
+</html>
