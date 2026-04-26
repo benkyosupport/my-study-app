@@ -95,7 +95,7 @@ button:disabled{opacity:.35;cursor:default;transform:none;}
   min-height:44px;display:flex;align-items:center;margin-bottom:1.1rem;
 }
 #grid-wrapper{
-  position:relative;width:280px;height:340px;margin:0 auto .4rem;
+  position:relative;width:360px;height:340px;margin:0 auto .4rem;
 }
 .cell{
   position:absolute;width:80px;height:80px;
@@ -111,7 +111,7 @@ button:disabled{opacity:.35;cursor:default;transform:none;}
 }
 #h-line{
   position:absolute;left:0;top:186px;
-  width:280px;height:3px;background:var(--text);border-radius:2px;display:none;
+  width:360px;height:3px;background:var(--text);border-radius:2px;display:none;
 }
 #h-sum-temp,#h-tens-sum{
   position:absolute;font-size:40px;font-weight:800;color:#cc2222;display:none;z-index:9;
@@ -125,13 +125,14 @@ button:disabled{opacity:.35;cursor:default;transform:none;}
   position:absolute;font-size:22px;font-weight:800;color:#cc2222;display:none;
   transition:left .7s ease,top .7s ease,opacity .6s ease;z-index:11;
 }
-#h-ao,#h-at{
+#h-ao,#h-at,#h-ah{
   position:absolute;width:80px;height:80px;display:none;
   align-items:center;justify-content:center;
   font-size:40px;font-weight:800;color:var(--text);
 }
-#h-ao{left:200px;top:240px;}
-#h-at{left:120px;top:240px;}
+#h-hund-sum{
+  position:absolute;font-size:40px;font-weight:800;color:#cc2222;display:none;z-index:9;
+}
 .h-next{border-color:var(--accent);color:var(--accent);}
 .h-next:hover{background:var(--accent-s);}
 .h-new{border-color:var(--green);color:var(--green);display:none;}
@@ -324,8 +325,27 @@ button:disabled{opacity:.35;cursor:default;transform:none;}
 
   <!-- ══ ひっ算モード ══ -->
   <div id="hissan-mode">
+    <!-- レベル選択 -->
+    <div class="lv-row" id="h-lv-row">
+      <button class="lv-btn active" id="h-lv1-btn" onclick="hSetLevel(1)">Lv1</button>
+      <button class="lv-btn"        id="h-lv2-btn" onclick="hSetLevel(2)">Lv2</button>
+      <button class="lv-btn"        id="h-lv3-btn" onclick="hSetLevel(3)">Lv3</button>
+    </div>
     <div id="h-hint">ボタンを押して計算を進めよう！</div>
+    <!--
+      3列グリッド（絶対座標）
+      列: 百の位 left=40 / 十の位 left=120 / 一の位 left=200
+      行0(top=0): 被加数
+      行1(top=80): 加数
+      行2(top=186): 横線
+      行3(top=240): 答え
+      wrapper: 360×340px（百の位追加で80px拡張）
+    -->
     <div id="grid-wrapper">
+      <!-- 百の位セル（Lv3のみ表示） -->
+      <div id="h-h1" class="cell" style="left:40px;top:0;display:none"></div>
+      <div id="h-h2" class="cell" style="left:40px;top:80px;display:none"></div>
+      <!-- 十の位 -->
       <div id="h-t1" class="cell" style="left:120px;top:0"></div>
       <div id="h-o1" class="cell" style="left:200px;top:0"></div>
       <div id="h-t2" class="cell" style="left:120px;top:80px;display:none"></div>
@@ -334,11 +354,14 @@ button:disabled{opacity:.35;cursor:default;transform:none;}
       <div id="h-line"></div>
       <div id="h-sum-temp"></div>
       <div id="h-tens-sum"></div>
+      <div id="h-hund-sum"></div>
       <div id="h-c1"></div>
       <div id="h-c2"></div>
       <div id="h-cbubble"></div>
-      <div id="h-ao"></div>
-      <div id="h-at"></div>
+      <!-- 答えセル -->
+      <div id="h-ao"  style="left:200px;top:240px"></div>
+      <div id="h-at"  style="left:120px;top:240px"></div>
+      <div id="h-ah"  style="left:40px;top:240px"></div>
     </div>
     <div class="btn-row">
       <button class="h-next" id="h-step" onclick="hStep()">つぎへ ▶</button>
@@ -465,23 +488,69 @@ function switchTab(mode){
 /* ══════════════════════════════════
    ひっ算モード
 ══════════════════════════════════ */
-let hN1,hN2,hO1,hO2,hT1,hOS,hCa,hSt;
+let hN1,hN2,hO1,hO2,hT1,hT2,hOS,hTS,hCa,hSt,hLevel=1;
+// hO1,hO2: 一の位 / hT1,hT2: 十の位 / hOS: 一の位合計 / hTS: 十の位合計 / hCa: 繰り上がりフラグ
+
 const hEl=id=>document.getElementById(id);
 const hTx=(id,t)=>hEl(id).textContent=t;
-const hSh=(id,f)=>hEl(id).style.display=f?'flex':'block';
 const hHi=id=>hEl(id).style.display='none';
+const hFx=(id,d='flex')=>hEl(id).style.display=d;
 
+/* ── レベル切替 ── */
+function hSetLevel(lv){
+  hLevel=lv;
+  [1,2,3].forEach(n=>{
+    hEl('h-lv'+n+'-btn').classList.toggle('active',n===lv);
+  });
+  hNew();
+}
+
+/* ── 問題生成 ── */
 function hNew(){
-  hN1=Math.floor(Math.random()*9)+11;
-  hN2=Math.floor(Math.random()*9)+1;
-  hO1=hN1%10;hT1=Math.floor(hN1/10);
-  hO2=hN2;hOS=hO1+hO2;hCa=hOS>=10?1:0;hSt=0;
-  hTx('h-t1',hT1);hTx('h-o1',hO1);
-  hTx('h-t2','');hTx('h-o2','');
-  ['h-t2','h-o2','h-plus','h-line','h-sum-temp','h-tens-sum',
-   'h-c1','h-c2','h-cbubble'].forEach(hHi);
-  hEl('h-ao').style.display='none';hEl('h-at').style.display='none';
+  // レベル別問題生成
+  if(hLevel===1){
+    // Lv1: 11〜19 ＋ 1〜9、繰り上がりあり・なし両方
+    hN1=Math.floor(Math.random()*9)+11;
+    hN2=Math.floor(Math.random()*9)+1;
+  }else if(hLevel===2){
+    // Lv2: 21〜99 ＋ 1〜9、一の位繰り上がりのみ
+    do{
+      hN1=Math.floor(Math.random()*79)+21;
+      hN2=Math.floor(Math.random()*9)+1;
+    }while((hN1%10)+hN2<10);
+  }else{
+    // Lv3: 21〜59 ＋ 11〜99、一の位繰り上がりのみ・十の位は繰り上がらない
+    do{
+      hN1=Math.floor(Math.random()*39)+21;
+      hN2=Math.floor(Math.random()*89)+11;
+    }while(
+      (hN1%10)+(hN2%10)<10 ||
+      Math.floor(hN1/10)+Math.floor(hN2/10)+(1)>9
+    );
+  }
+
+  hO1=hN1%10; hT1=Math.floor(hN1/10);
+  hO2=hN2%10; hT2=Math.floor(hN2/10);
+  hOS=hO1+hO2;                   // 一の位合計
+  hTS=hT1+hT2+(hOS>=10?1:0);    // 十の位合計（繰り上がり込み）
+  hCa=hOS>=10?1:0;
+  hSt=0;
+
+  // グリッドリセット
+  const hideIds=['h-t2','h-o2','h-h1','h-h2','h-plus','h-line',
+    'h-sum-temp','h-tens-sum','h-hund-sum','h-c1','h-c2','h-cbubble'];
+  hideIds.forEach(hHi);
+  ['h-ao','h-at','h-ah'].forEach(id=>hEl(id).style.display='none');
   ['h-c1','h-c2','h-cbubble'].forEach(id=>hEl(id).style.opacity='1');
+
+  // 被加数を表示
+  if(hLevel===3){
+    hTx('h-t1',hT1); hTx('h-o1',hO1);
+    // 百の位セルは表示するが加数側は後で出す
+  }else{
+    hTx('h-t1',hT1); hTx('h-o1',hO1);
+  }
+
   hEl('h-new').style.display='none';
   hEl('h-step').style.display='inline-block';
   hEl('h-step').disabled=false;
@@ -489,76 +558,110 @@ function hNew(){
   sPop();vib();
 }
 
+/* ── ステップ実行 ── */
 function hStep(){
-  vib();hEl('h-step').disabled=true;
+  vib(); hEl('h-step').disabled=true;
+
+  // Lv3は十の位に2桁ある場合の座標オフセット
+  // 座標定義: 一の位=left:200 / 十の位=left:120 / 百の位=left:40
+  const leftH=40, leftT=120, leftO=200;
+
   if(hSt===0){
-    hEl('h-t2').style.display='flex';hEl('h-o2').style.display='flex';
-    hTx('h-t2','');hTx('h-o2',hO2);
-    hEl('h-plus').style.display='flex';hSh('h-line');
+    // ── step0: 加数行を表示 ──
+    hEl('h-t2').style.display='flex'; hTx('h-t2',hT2||'');
+    hEl('h-o2').style.display='flex'; hTx('h-o2',hO2);
+    if(hLevel===3){
+      hEl('h-h1').style.display='flex'; hTx('h-h1','');
+      hEl('h-h2').style.display='flex'; hTx('h-h2','');
+      hEl('h-plus').style.left='0px';
+    }else{
+      hEl('h-plus').style.left='60px';
+    }
+    hEl('h-plus').style.display='flex';
+    hEl('h-line').style.display='block';
     sPop();
     hTx('h-hint','一の位どうしを足してみよう：'+hO1+' ＋ '+hO2);
-    hSt=1;hEl('h-step').disabled=false;
+    hSt=1; hEl('h-step').disabled=false;
+
   }else if(hSt===1){
+    // ── step1: 一の位合計を赤字表示 ──
     const s=hEl('h-sum-temp');
-    s.style.display='block';s.style.left='196px';s.style.top='168px';
-    s.textContent=hOS;sCalc();
+    s.style.display='block'; s.style.left=leftO-4+'px'; s.style.top='168px';
+    s.textContent=hOS; sCalc();
     if(hCa){
-      hTx('h-hint',hO1+' ＋ '+hO2+' ＝ '+hOS+'（繰り上がりあり！）');hSt=2;
+      hTx('h-hint',hO1+' ＋ '+hO2+' ＝ '+hOS+'（繰り上がりあり！）'); hSt=2;
     }else{
-      hTx('h-hint',hO1+' ＋ '+hO2+' ＝ '+hOS+'（そのまま答えへ）');hSt='nc';
+      hTx('h-hint',hO1+' ＋ '+hO2+' ＝ '+hOS+'（そのまま答えへ）'); hSt='nc';
     }
     setTimeout(()=>hEl('h-step').disabled=false,400);
+
   }else if(hSt==='nc'){
+    // ── stepNC: 繰り上がりなし → 一発答え確定 ──
     hHi('h-sum-temp');
-    hEl('h-ao').style.display='flex';hEl('h-ao').textContent=hOS;
-    hEl('h-at').style.display='flex';hEl('h-at').textContent=hT1;
+    hFx('h-ao'); hTx('h-ao',hOS);
+    hFx('h-at'); hTx('h-at',hT1+hT2);
+    if(hLevel===3){ hFx('h-ah'); hTx('h-ah',''); }
     sPucha();
     hTx('h-hint','答え：'+(hN1+hN2)+'　せいかい！');
-    hEl('h-step').style.display='none';hEl('h-new').style.display='inline-block';
+    hEl('h-step').style.display='none'; hEl('h-new').style.display='inline-block';
+
   }else if(hSt===2){
+    // ── step2: 1と端数に分離してアニメーション ──
     const c1=hEl('h-c1'),c2=hEl('h-c2');
-    c1.style.transition='none';c2.style.transition='none';
-    c1.style.opacity='1';c2.style.opacity='1';
-    c1.style.left='196px';c1.style.top='168px';
-    c2.style.left='220px';c2.style.top='168px';
-    c1.textContent='1';c2.textContent=hOS%10;
-    c1.style.display='block';c2.style.display='block';
-    hHi('h-sum-temp');sFloat();
+    c1.style.transition='none'; c2.style.transition='none';
+    c1.style.opacity='1';       c2.style.opacity='1';
+    c1.style.left=leftO-4+'px'; c1.style.top='168px';
+    c2.style.left=leftO+16+'px';c2.style.top='168px';
+    c1.textContent='1'; c2.textContent=hOS%10;
+    c1.style.display='block'; c2.style.display='block';
+    hHi('h-sum-temp'); sFloat();
     hTx('h-hint','「1」が十の位へ、「'+(hOS%10)+'」が一の位の答えへ！');
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
       c1.style.transition='left .7s ease,top .7s ease,opacity .5s ease';
       c2.style.transition='left .7s ease,top .7s ease,opacity .5s ease';
-      c1.style.left='128px';c1.style.top='4px';
-      c2.style.left='208px';c2.style.top='242px';
+      c1.style.left=leftT+8+'px'; c1.style.top='4px';
+      c2.style.left=leftO+8+'px'; c2.style.top='242px';
     }));
-    hSt=3;setTimeout(()=>hEl('h-step').disabled=false,820);
+    hSt=3; setTimeout(()=>hEl('h-step').disabled=false,820);
+
   }else if(hSt===3){
-    hEl('h-ao').style.display='flex';hEl('h-ao').textContent=hOS%10;
-    hEl('h-c2').style.opacity='0';setTimeout(()=>hHi('h-c2'),500);
+    // ── step3: 一の位答え確定 ──
+    hFx('h-ao'); hTx('h-ao',hOS%10);
+    hEl('h-c2').style.opacity='0'; setTimeout(()=>hHi('h-c2'),500);
     sPop();
     hTx('h-hint','一の位の答えは「'+(hOS%10)+'」に確定！');
-    hSt=4;setTimeout(()=>hEl('h-step').disabled=false,500);
+    hSt=4; setTimeout(()=>hEl('h-step').disabled=false,500);
+
   }else if(hSt===4){
+    // ── step4: 十の位の繰り上がりバブル ──
     const ts=hEl('h-tens-sum');
-    ts.style.display='block';ts.style.left='118px';ts.style.top='168px';
-    ts.textContent=hT1+1;
+    ts.style.display='block'; ts.style.left=leftT-2+'px'; ts.style.top='168px';
+    ts.textContent=hT1+hT2+1; // 繰り上がり込みの十の位
     const cb=hEl('h-cbubble');
-    cb.style.transition='none';cb.style.opacity='1';
-    cb.style.left='128px';cb.style.top='4px';cb.textContent='１';cb.style.display='block';
+    cb.style.transition='none'; cb.style.opacity='1';
+    cb.style.left=leftT+8+'px'; cb.style.top='4px';
+    cb.textContent='１'; cb.style.display='block';
     sFloat();
-    hTx('h-hint',hT1+' ＋ 繰り上がりの1 ＝ '+(hT1+1));
+    hTx('h-hint',hT1+(hT2?'＋'+hT2:'')+'＋ 繰り上がりの1 ＝ '+(hT1+hT2+1));
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
       cb.style.transition='top .6s ease,opacity .6s ease';
-      cb.style.top='168px';cb.style.opacity='0';
+      cb.style.top='168px'; cb.style.opacity='0';
     }));
-    hSt=5;setTimeout(()=>hEl('h-step').disabled=false,750);
+    hSt=5; setTimeout(()=>hEl('h-step').disabled=false,750);
+
   }else if(hSt===5){
-    hEl('h-at').style.display='flex';hEl('h-at').textContent=hT1+1;
-    hHi('h-tens-sum');
-    hEl('h-c1').style.opacity='0';setTimeout(()=>hHi('h-c1'),400);
+    // ── step5: 十の位答え確定（Lv3は百の位も） ──
+    hFx('h-at'); hTx('h-at',hTS%10);
+    hEl('h-c1').style.opacity='0'; setTimeout(()=>hHi('h-c1'),400);
+    if(hLevel===3 && Math.floor(hTS/10)>0){
+      // 十の位が繰り上がって百の位が立つケース（制約上発生しないが念のため）
+      hFx('h-ah'); hTx('h-ah',Math.floor(hTS/10));
+    }else if(hLevel===3){
+      hFx('h-ah'); hTx('h-ah',Math.floor(hTS/10)||'');
+    }
     sPucha();
     hTx('h-hint','答え：'+(hN1+hN2)+'　せいかい！🎉');
-    hEl('h-step').style.display='none';hEl('h-new').style.display='inline-block';
+    hEl('h-step').style.display='none'; hEl('h-new').style.display='inline-block';
   }
 }
 
