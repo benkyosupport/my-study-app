@@ -4,67 +4,82 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>漢字選択モード（改良版）</title>
+<title>漢字選択モード（最適化版）</title>
+
 <style>
 body { margin:0; font-family:sans-serif; background:#f5f5f5; }
 
 .topbar {
   padding:10px;
-  background:#ffffff;
+  background:#fff;
   display:flex;
   justify-content:space-between;
 }
 
 .container {
   display:flex;
+  flex-direction:column;
   height:calc(100vh - 50px);
 }
 
-.left {
-  width:40%;
-  background:#fff;
-  padding:20px;
+.top {
+  padding:20px 10px 10px;
   display:flex;
   flex-direction:column;
-  justify-content:center;
-  font-size:32px;
-  gap:16px;
+  align-items:center;
+  font-size:36px;
+  gap:12px;
 }
 
-.right {
-  width:60%;
+.bottom {
+  flex:1;
   display:flex;
-  justify-content:center;
+  flex-direction:column;
   align-items:center;
+  justify-content:flex-start;
 }
 
 .grid {
   display:grid;
   gap:12px;
   width:90%;
-  max-width:400px;
+  max-width:420px;
+  margin-top:6px;
 }
 
 .choice {
   background:#fff;
-  border-radius:12px;
+  border-radius:14px;
   display:flex;
   justify-content:center;
   align-items:center;
-  font-size:48px;
-  height:80px;
+  font-size:64px;
+  height:96px;
   cursor:pointer;
+  transition:0.15s;
 }
+
+.choice:active { transform:scale(0.95); }
 
 .correct { background:#c8f7c5 !important; }
 .wrong { background:#ffd6d6 !important; }
 .hint { outline:4px solid #a0e0ff; }
 
+.fade-in {
+  animation:fadeIn 0.35s ease;
+}
+@keyframes fadeIn {
+  from { opacity:0; transform:translateY(6px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.highlight {
+  background:yellow;
+}
+
 .next-btn {
-  position:absolute;
-  bottom:20px;
-  right:20px;
-  padding:12px 24px;
+  margin-top:14px;
+  padding:12px 28px;
   font-size:18px;
   background:#4caf50;
   color:#fff;
@@ -74,6 +89,7 @@ body { margin:0; font-family:sans-serif; background:#f5f5f5; }
 }
 </style>
 </head>
+
 <body>
 
 <div class="topbar">
@@ -88,23 +104,21 @@ body { margin:0; font-family:sans-serif; background:#f5f5f5; }
 </div>
 
 <div class="container">
-  <div class="left" id="question"></div>
-  <div class="right">
+  <div class="top" id="question"></div>
+
+  <div class="bottom">
     <div class="grid" id="choices"></div>
+    <button class="next-btn" id="nextBtn">次へ</button>
   </div>
 </div>
 
-<button class="next-btn" id="nextBtn">次へ</button>
+<!-- ★ 修正済み：dataフォルダ参照 -->
+<script src="data/kanji_select_data.js"></script>
 
 <script>
-const KANJI_FILL = [
-  { kanji: "東", on: "東西（とうざい）", kun: "東（ひがし）" },
-  { kanji: "西", on: "西洋（せいよう）", kun: "西（にし）" },
-  { kanji: "南", on: "南極（なんきょく）", kun: "南（みなみ）" },
-  { kanji: "北", on: "北極（ほっきょく）", kun: "北（きた）" },
-  { kanji: "春", on: "新春（しんしゅん）", kun: "春（はる）" },
-  { kanji: "空", on: "空間（くうかん）", kun: "空（そら）" }
-];
+if(!window.KANJI_SELECT_DATA || !KANJI_SELECT_DATA.length){
+  alert("データ読み込み失敗：data/kanji_select_data.js を確認");
+}
 
 let current, wrongCount=0, reviewQueue=[];
 
@@ -119,34 +133,48 @@ function shuffle(a){ return a.sort(()=>Math.random()-0.5); }
 function speakSequence(list){
   if(!list.length) return;
   const u=new SpeechSynthesisUtterance(list.shift());
-  u.lang="ja-JP"; u.rate=0.9;
+  u.lang="ja-JP";
+  u.rate=0.9;
   u.onend=()=>speakSequence(list);
   speechSynthesis.speak(u);
 }
 
-// ===== 問題描画（重要：再利用）=====
-function renderQuestion(showAnswer=false){
+function renderQuestion(show=false){
   const q=document.getElementById("question");
   q.innerHTML="";
 
   const on=splitWord(current.on);
   const kun=current.kun?splitWord(current.kun):null;
 
-  if(kun){
+  function line(text,reading){
     const d=document.createElement("div");
-    d.textContent = showAnswer
-      ? `${kun.text}（${kun.reading}）`
-      : `${mask(kun.text,current.kanji)}（${kun.reading}）`;
-    q.appendChild(d);
+    d.classList.add("fade-in");
+
+    const t=document.createElement("span");
+    t.textContent=text;
+
+    const r=document.createElement("span");
+    r.textContent="（"+reading+"）";
+
+    d.appendChild(t);
+    d.appendChild(r);
+
+    return {d,r};
   }
 
-  const d2=document.createElement("div");
-  d2.textContent = showAnswer
-    ? `${on.text}（${on.reading}）`
-    : `${mask(on.text,current.kanji)}（${on.reading}）`;
-  q.appendChild(d2);
+  const elements=[];
 
-  return {on,kun};
+  if(kun){
+    const el=line(show?kun.text:mask(kun.text,current.kanji),kun.reading);
+    q.appendChild(el.d);
+    elements.push(el);
+  }
+
+  const el2=line(show?on.text:mask(on.text,current.kanji),on.reading);
+  q.appendChild(el2.d);
+  elements.push(el2);
+
+  return {on,kun,elements};
 }
 
 function newQuestion(){
@@ -155,7 +183,7 @@ function newQuestion(){
 
   current = reviewQueue.length
     ? reviewQueue.shift()
-    : KANJI_FILL[Math.floor(Math.random()*KANJI_FILL.length)];
+    : KANJI_SELECT_DATA[Math.floor(Math.random()*KANJI_SELECT_DATA.length)];
 
   updateReviewInfo();
 
@@ -163,8 +191,11 @@ function newQuestion(){
 
   const count=parseInt(document.getElementById("modeSelect").value);
 
-  const pool=KANJI_FILL.map(x=>x.kanji).filter(k=>k!==current.kanji);
-  const choices=shuffle([current.kanji,...pool.slice(0,count-1)]);
+  const pool = KANJI_SELECT_DATA
+    .map(x=>x.kanji)
+    .filter(k=>k!==current.kanji);
+
+  const choices=shuffle([current.kanji,...shuffle(pool).slice(0,count-1)]);
 
   const grid=document.getElementById("choices");
   grid.innerHTML="";
@@ -180,12 +211,18 @@ function newQuestion(){
 }
 
 function handleChoice(btn,k,on,kun){
-  if(k===current.kanji){
-    btn.classList.add("correct");
-    navigator.vibrate(50);
 
-    // ★ マスク解除
-    renderQuestion(true);
+  if(k===current.kanji){
+
+    btn.classList.add("correct");
+    navigator.vibrate?.(50);
+
+    const result=renderQuestion(true);
+
+    result.elements.forEach(el=>{
+      el.r.classList.add("highlight");
+      setTimeout(()=>el.r.classList.remove("highlight"),600);
+    });
 
     const list=[];
     if(kun) list.push(kun.reading);
@@ -195,9 +232,11 @@ function handleChoice(btn,k,on,kun){
     speakSequence(list);
 
     document.getElementById("nextBtn").style.display="block";
+
   }else{
+
     wrongCount++;
-    navigator.vibrate([10,40,10]);
+    navigator.vibrate?.([10,40,10]);
 
     btn.classList.add("wrong");
     setTimeout(()=>btn.classList.remove("wrong"),300);
