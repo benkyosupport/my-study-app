@@ -4,205 +4,145 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>漢字選択アプリ</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500&display=swap" rel="stylesheet">
 <style>
 body {
 margin: 0;
-font-family: 'Noto Sans JP', sans-serif;
+font-family: sans-serif;
 background: #f5f5f5;
 }
-.container {
-width: 100%;
-height: 100vh;
-padding: 20px;
-box-sizing: border-box;
-}
-/* セット選択 */
-#menu {
-display: flex;
-flex-wrap: wrap;
-gap: 15px;
-justify-content: center;
-}
-.set-btn {
-width: 220px;
-height: 90px;
-font-size: 22px;
-border-radius: 12px;
-border: none;
-}
-/* 問題 */
 #app {
-display: none;
-flex-direction: column;
-justify-content: space-between;
+max-width: 900px;
+margin: auto;
+padding: 20px;
 }
+/* 問題表示 */
 #question {
-font-size: 44px;
-text-align: center;
-line-height: 1.7;
+font-size: 2.2rem;
+margin-bottom: 20px;
 }
+/* 選択肢 */
 #choices {
 display: grid;
 grid-template-columns: repeat(3, 1fr);
-gap: 20px;
+gap: 15px;
 }
 .choice-btn {
-height: 120px;
-font-size: 36px;
-border-radius: 12px;
-border: none;
-}
-#controls {
-display: flex;
-justify-content: center;
-gap: 20px;
-}
-.control-btn {
-width: 220px;
 height: 80px;
-font-size: 24px;
-border-radius: 12px;
 border: none;
+border-radius: 10px;
+background: white;
+box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
+/* ←ここが今回の修正 */
+.choice-btn span {
+font-size: 2.4rem;
+}
+/* 結果表示 */
+#result {
+margin-top: 30px;
+}
+.result-line {
+font-size: 2.2rem;
+margin: 6px 0;
+}
+.result-line span {
+font-size: 1.5rem;
+color: #666;
+}
+/* ボタン */
 #nextBtn {
+margin-top: 20px;
+padding: 12px 20px;
+font-size: 1.2rem;
 display: none;
 }
 </style>
 </head>
 <body>
-<div id="menu" class="container"></div>
-<div id="app" class="container">
+<div id="app">
 <div id="question"></div>
 <div id="choices"></div>
-<div id="controls">
-<button id="speakBtn" class="control-btn">🔊 よみあげ</button>
-<button id="nextBtn" class="control-btn">次の問題へ</button>
-</div>
+<div id="result"></div>
+<button id="nextBtn">次の問題へ</button>
 </div>
 <script>
 let data;
-let currentSet = [];
-let index = 0;
-let currentQuestion = null;
-/* 初期ロード */
-async function load() {
-const res = await fetch("./data/data.json"); // ← 修正済み
-data = await res.json();
-buildMenu();
-}
-/* セット一覧生成 */
-function buildMenu() {
-const menu = document.getElementById("menu");
-data.sets.forEach(set => {
-const btn = document.createElement("button");
-btn.className = "set-btn";
-btn.textContent = "セット" + set.id + "（" + set.title + "）";
-btn.onclick = () => startSet(set);
-menu.appendChild(btn);
+let currentSet = 0;
+let currentIndex = 0;
+fetch('./data/data.json')
+.then(res => res.json())
+.then(json => {
+data = json;
+loadQuestion();
 });
-}
-/* セット開始 */
-function startSet(set) {
-currentSet = set.questions;
-index = 0;
-document.getElementById("menu").style.display = "none";
-document.getElementById("app").style.display = "flex";
-showQuestion();
-}
-/* 問題表示 */
-function showQuestion() {
-currentQuestion = currentSet[index];
-document.getElementById("nextBtn").style.display = "none";
-let html = "";
-const kun = currentQuestion.kun[0];
-html += kun.display + "（" + kun.text + "）<br>";
-currentQuestion.on.forEach(o => {
-html += o.display + "（" + o.text + "）<br>";
-});
-document.getElementById("question").innerHTML = html;
+function loadQuestion() {
+const q = data.sets[currentSet].questions[currentIndex];
+// 問題文
+const lines = [
+q.kun[0].display,
+...q.on.map(o => o.display)
+];
+document.getElementById("question").innerHTML =
+lines.map(l => `<div>${l}</div>`).join("");
+// 選択肢ランダム化
+const shuffled = [...q.choices].sort(() => Math.random() - 0.5);
 const choicesDiv = document.getElementById("choices");
 choicesDiv.innerHTML = "";
-const shuffled = [...currentQuestion.choices].sort(() => Math.random() - 0.5);
-shuffled.forEach(c => {
+shuffled.forEach(choice => {
 const btn = document.createElement("button");
 btn.className = "choice-btn";
-btn.textContent = c.char;
-btn.onclick = () => selectAnswer(c);
+btn.innerHTML = `<span>${choice.char}</span>`;
+btn.onclick = () => handleAnswer(choice, q);
 choicesDiv.appendChild(btn);
 });
+document.getElementById("result").innerHTML = "";
+document.getElementById("nextBtn").style.display = "none";
 }
-/* 回答処理 */
-function selectAnswer(choice) {
+function handleAnswer(choice, q) {
 if (choice.type === "correct") {
-showAnswer();
+showResult(q);
 } else {
 playError();
 }
 }
-/* 正解表示 */
-function showAnswer() {
-let html = "";
-const kanji = currentQuestion.kanji;
-const kun = currentQuestion.kun[0];
-html += kun.display.replace("◯", kanji) + "<br>";
-currentQuestion.on.forEach(o => {
-html += o.display.replace("◯", kanji) + "<br>";
-});
-document.getElementById("question").innerHTML = html;
-document.getElementById("nextBtn").style.display = "inline-block";
-playCorrect();
-speakAll();
-}
-/* 次へ */
-document.getElementById("nextBtn").onclick = () => {
-index++;
-if (index >= currentSet.length) {
-location.reload();
-} else {
-showQuestion();
-}
-};
-/* 音声 */
-function speakAll() {
-const texts = [
-currentQuestion.kun[0].text,
-...currentQuestion.on.map(o => o.text)
+function showResult(q) {
+const kanji = q.kanji;
+const kun = q.kun[0];
+const kunWord = kun.display.replace("◯", kanji);
+const lines = [
+`${kunWord}<span>（${kun.text}）</span>`,
+...q.on.map(o => {
+const word = o.display.replace("◯", kanji);
+return `${word}<span>（${o.text}）</span>`;
+})
 ];
-let i = 0;
-function speakNext() {
-if (i >= texts.length) return;
-const uttr = new SpeechSynthesisUtterance(texts[i]);
-uttr.lang = "ja-JP";
-uttr.onend = () => {
-i++;
-speakNext();
-};
-speechSynthesis.speak(uttr);
+document.getElementById("result").innerHTML =
+lines.map(l => `<div class="result-line">${l}</div>`).join("");
+playVoice(q);
+document.getElementById("nextBtn").style.display = "block";
 }
+function playVoice(q) {
+const texts = [
+q.kun[0].text,
+...q.on.map(o => o.text)
+];
+const utter = new SpeechSynthesisUtterance(texts.join("、"));
 speechSynthesis.cancel();
-speakNext();
+speechSynthesis.speak(utter);
 }
-/* 手動再生 */
-document.getElementById("speakBtn").onclick = () => {
-speakAll();
-};
-/* エラー音 */
 function playError() {
-const ctx = new AudioContext();
-const o = ctx.createOscillator();
-o.type = "sawtooth";
-o.frequency.setValueAtTime(120, ctx.currentTime);
-o.connect(ctx.destination);
-o.start();
-o.stop(ctx.currentTime + 0.2);
+const utter = new SpeechSynthesisUtterance("ブー");
+speechSynthesis.cancel();
+speechSynthesis.speak(utter);
 }
-/* 正解時 */
-function playCorrect() {
-if (navigator.vibrate) navigator.vibrate(100);
+document.getElementById("nextBtn").onclick = () => {
+currentIndex++;
+if (currentIndex >= 10) {
+alert("セット終了");
+return;
 }
-/* 起動 */
-load();
+loadQuestion();
+};
 </script>
 </body>
 </html>
