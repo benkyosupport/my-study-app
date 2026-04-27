@@ -1,10 +1,9 @@
-```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>漢字選択モード（最適化版）</title>
+<title>漢字選択モード</title>
 
 <style>
 body { margin:0; font-family:sans-serif; background:#f5f5f5; }
@@ -22,64 +21,65 @@ body { margin:0; font-family:sans-serif; background:#f5f5f5; }
   height:calc(100vh - 50px);
 }
 
+/* 上段 */
 .top {
-  padding:20px 10px 10px;
+  padding:16px 10px 6px;
   display:flex;
   flex-direction:column;
   align-items:center;
-  font-size:36px;
-  gap:12px;
+  font-size:34px;
+  gap:8px;
 }
 
+/* 下段 */
 .bottom {
   flex:1;
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:flex-start;
 }
 
+/* グリッド */
 .grid {
   display:grid;
-  gap:12px;
-  width:90%;
+  gap:10px;
+  width:92%;
   max-width:420px;
-  margin-top:6px;
+  margin-top:4px;
 }
 
+/* 選択肢 */
 .choice {
   background:#fff;
-  border-radius:14px;
+  border-radius:12px;
   display:flex;
   justify-content:center;
   align-items:center;
   font-size:64px;
-  height:96px;
+  height:90px;
   cursor:pointer;
-  transition:0.15s;
+  transition:0.12s;
 }
 
 .choice:active { transform:scale(0.95); }
 
 .correct { background:#c8f7c5 !important; }
 .wrong { background:#ffd6d6 !important; }
-.hint { outline:4px solid #a0e0ff; }
+.hint { outline:4px solid #6ecbff; }
 
 .fade-in {
-  animation:fadeIn 0.35s ease;
+  animation:fadeIn 0.25s ease;
 }
 @keyframes fadeIn {
-  from { opacity:0; transform:translateY(6px); }
+  from { opacity:0; transform:translateY(5px); }
   to { opacity:1; transform:translateY(0); }
 }
 
-.highlight {
-  background:yellow;
-}
+.highlight { background:yellow; }
 
 .next-btn {
-  margin-top:14px;
-  padding:12px 28px;
+  margin-top:10px;
+  padding:10px 24px;
   font-size:18px;
   background:#4caf50;
   color:#fff;
@@ -94,13 +94,12 @@ body { margin:0; font-family:sans-serif; background:#f5f5f5; }
 
 <div class="topbar">
   <div>
-    モード:
     <select id="modeSelect">
       <option value="4">4択</option>
       <option value="6">6択</option>
     </select>
   </div>
-  <div id="reviewInfo">復習キュー: 0</div>
+  <div id="reviewInfo">復習:0</div>
 </div>
 
 <div class="container">
@@ -108,17 +107,20 @@ body { margin:0; font-family:sans-serif; background:#f5f5f5; }
 
   <div class="bottom">
     <div class="grid" id="choices"></div>
-    <button class="next-btn" id="nextBtn">次へ</button>
+    <button id="nextBtn" class="next-btn">次へ</button>
   </div>
 </div>
 
-<!-- ★ 修正済み：dataフォルダ参照 -->
+<!-- ★先にデータ -->
 <script src="data/kanji_select_data.js"></script>
 
 <script>
-if(!window.KANJI_SELECT_DATA || !KANJI_SELECT_DATA.length){
-  alert("データ読み込み失敗：data/kanji_select_data.js を確認");
+if(!window.KANJI_SELECT_DATA){
+  alert("データ読み込み失敗");
+  throw new Error("DATA LOAD ERROR");
 }
+
+const DATA = window.KANJI_SELECT_DATA;
 
 let current, wrongCount=0, reviewQueue=[];
 
@@ -130,16 +132,15 @@ function splitWord(str){
 function mask(w,k){ return w.replaceAll(k,"○"); }
 function shuffle(a){ return a.sort(()=>Math.random()-0.5); }
 
-function speakSequence(list){
+function speak(list){
   if(!list.length) return;
   const u=new SpeechSynthesisUtterance(list.shift());
   u.lang="ja-JP";
-  u.rate=0.9;
-  u.onend=()=>speakSequence(list);
+  u.onend=()=>speak(list);
   speechSynthesis.speak(u);
 }
 
-function renderQuestion(show=false){
+function render(show=false){
   const q=document.getElementById("question");
   q.innerHTML="";
 
@@ -162,66 +163,61 @@ function renderQuestion(show=false){
     return {d,r};
   }
 
-  const elements=[];
+  const arr=[];
 
   if(kun){
     const el=line(show?kun.text:mask(kun.text,current.kanji),kun.reading);
     q.appendChild(el.d);
-    elements.push(el);
+    arr.push(el);
   }
 
   const el2=line(show?on.text:mask(on.text,current.kanji),on.reading);
   q.appendChild(el2.d);
-  elements.push(el2);
+  arr.push(el2);
 
-  return {on,kun,elements};
+  return {on,kun,arr};
 }
 
 function newQuestion(){
   wrongCount=0;
-  document.getElementById("nextBtn").style.display="none";
+  nextBtn.style.display="none";
 
   current = reviewQueue.length
     ? reviewQueue.shift()
-    : KANJI_SELECT_DATA[Math.floor(Math.random()*KANJI_SELECT_DATA.length)];
+    : DATA[Math.floor(Math.random()*DATA.length)];
 
-  updateReviewInfo();
+  reviewInfo.textContent="復習:"+reviewQueue.length;
 
-  const {on,kun}=renderQuestion(false);
+  const {on,kun}=render(false);
 
-  const count=parseInt(document.getElementById("modeSelect").value);
+  const count=parseInt(modeSelect.value);
 
-  const pool = KANJI_SELECT_DATA
-    .map(x=>x.kanji)
-    .filter(k=>k!==current.kanji);
-
+  const pool=DATA.map(x=>x.kanji).filter(k=>k!==current.kanji);
   const choices=shuffle([current.kanji,...shuffle(pool).slice(0,count-1)]);
 
-  const grid=document.getElementById("choices");
-  grid.innerHTML="";
-  grid.style.gridTemplateColumns = count===6 ? "repeat(3,1fr)" : "repeat(2,1fr)";
+  choicesEl.innerHTML="";
+  choicesEl.style.gridTemplateColumns =
+    count===6 ? "repeat(3,1fr)" : "repeat(2,1fr)";
 
   choices.forEach(k=>{
-    const btn=document.createElement("div");
-    btn.className="choice";
-    btn.textContent=k;
-    btn.onclick=()=>handleChoice(btn,k,on,kun);
-    grid.appendChild(btn);
+    const b=document.createElement("div");
+    b.className="choice";
+    b.textContent=k;
+    b.onclick=()=>select(b,k,on,kun);
+    choicesEl.appendChild(b);
   });
 }
 
-function handleChoice(btn,k,on,kun){
-
+function select(btn,k,on,kun){
   if(k===current.kanji){
-
     btn.classList.add("correct");
     navigator.vibrate?.(50);
 
-    const result=renderQuestion(true);
+    const r=render(true);
 
-    result.elements.forEach(el=>{
-      el.r.classList.add("highlight");
-      setTimeout(()=>el.r.classList.remove("highlight"),600);
+    r.arr.forEach(e=>{
+      e.r.classList.add("highlight");
+      setTimeout(()=>e.r.classList.remove("highlight"),600);
     });
 
     const list=[];
@@ -229,54 +225,46 @@ function handleChoice(btn,k,on,kun){
     list.push(on.reading);
 
     speechSynthesis.cancel();
-    speakSequence(list);
+    speak(list);
 
-    document.getElementById("nextBtn").style.display="block";
-
+    nextBtn.style.display="block";
   }else{
-
     wrongCount++;
     navigator.vibrate?.([10,40,10]);
 
     btn.classList.add("wrong");
-    setTimeout(()=>btn.classList.remove("wrong"),300);
+    setTimeout(()=>btn.classList.remove("wrong"),250);
 
     if(!reviewQueue.includes(current)){
       reviewQueue.push(current);
     }
 
-    if(wrongCount>=2) highlightHint();
-    if(wrongCount>=3) reduceChoices();
+    if(wrongCount>=2){
+      document.querySelectorAll(".choice").forEach(b=>{
+        if(b.textContent===current.kanji) b.classList.add("hint");
+      });
+    }
+
+    if(wrongCount>=3){
+      document.querySelectorAll(".choice").forEach(b=>{
+        if(b.textContent!==current.kanji && Math.random()<0.5){
+          b.style.display="none";
+        }
+      });
+    }
   }
 }
 
-function highlightHint(){
-  document.querySelectorAll(".choice").forEach(btn=>{
-    if(btn.textContent===current.kanji){
-      btn.classList.add("hint");
-    }
-  });
-}
+nextBtn.onclick=newQuestion;
+modeSelect.onchange=newQuestion;
 
-function reduceChoices(){
-  document.querySelectorAll(".choice").forEach(btn=>{
-    if(btn.textContent!==current.kanji && Math.random()<0.5){
-      btn.style.display="none";
-    }
-  });
-}
-
-function updateReviewInfo(){
-  document.getElementById("reviewInfo").textContent =
-    "復習キュー: "+reviewQueue.length;
-}
-
-document.getElementById("nextBtn").onclick=newQuestion;
-document.getElementById("modeSelect").onchange=newQuestion;
+const nextBtn=document.getElementById("nextBtn");
+const choicesEl=document.getElementById("choices");
+const reviewInfo=document.getElementById("reviewInfo");
+const modeSelect=document.getElementById("modeSelect");
 
 newQuestion();
 </script>
 
 </body>
 </html>
-```
