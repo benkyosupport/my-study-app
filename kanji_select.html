@@ -14,11 +14,19 @@ background: #f5f5f5;
 max-width: 900px;
 margin: auto;
 padding: 20px;
+text-align: center; /* ←中央寄せ */
 }
-/* 問題表示 */
+/* 問題文 */
 #question {
 font-size: 2.2rem;
 margin-bottom: 20px;
+}
+.q-line {
+margin: 6px 0;
+}
+.q-line span {
+font-size: 1.4rem;
+color: #666;
 }
 /* 選択肢 */
 #choices {
@@ -33,23 +41,10 @@ border-radius: 10px;
 background: white;
 box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
-/* ←ここが今回の修正 */
 .choice-btn span {
 font-size: 2.4rem;
 }
-/* 結果表示 */
-#result {
-margin-top: 30px;
-}
-.result-line {
-font-size: 2.2rem;
-margin: 6px 0;
-}
-.result-line span {
-font-size: 1.5rem;
-color: #666;
-}
-/* ボタン */
+/* 次へボタン */
 #nextBtn {
 margin-top: 20px;
 padding: 12px 20px;
@@ -62,13 +57,13 @@ display: none;
 <div id="app">
 <div id="question"></div>
 <div id="choices"></div>
-<div id="result"></div>
 <button id="nextBtn">次の問題へ</button>
 </div>
 <script>
 let data;
 let currentSet = 0;
 let currentIndex = 0;
+let currentQuestion;
 fetch('./data/data.json')
 .then(res => res.json())
 .then(json => {
@@ -77,14 +72,9 @@ loadQuestion();
 });
 function loadQuestion() {
 const q = data.sets[currentSet].questions[currentIndex];
-// 問題文
-const lines = [
-q.kun[0].display,
-...q.on.map(o => o.display)
-];
-document.getElementById("question").innerHTML =
-lines.map(l => `<div>${l}</div>`).join("");
-// 選択肢ランダム化
+currentQuestion = q;
+renderQuestion(q, false);
+// 選択肢シャッフル
 const shuffled = [...q.choices].sort(() => Math.random() - 0.5);
 const choicesDiv = document.getElementById("choices");
 choicesDiv.innerHTML = "";
@@ -95,29 +85,32 @@ btn.innerHTML = `<span>${choice.char}</span>`;
 btn.onclick = () => handleAnswer(choice, q);
 choicesDiv.appendChild(btn);
 });
-document.getElementById("result").innerHTML = "";
 document.getElementById("nextBtn").style.display = "none";
+}
+function renderQuestion(q, isCorrect) {
+const kanji = q.kanji;
+const lines = [
+buildLine(q.kun[0], kanji, isCorrect),
+...q.on.map(o => buildLine(o, kanji, isCorrect))
+];
+document.getElementById("question").innerHTML =
+lines.map(l => `<div class="q-line">${l}</div>`).join("");
+}
+function buildLine(item, kanji, isCorrect) {
+const word = isCorrect
+? item.display.replace("◯", kanji)
+: item.display;
+return `${word}<span>（${item.text}）</span>`;
 }
 function handleAnswer(choice, q) {
 if (choice.type === "correct") {
-showResult(q);
+showCorrect(q);
 } else {
 playError();
 }
 }
-function showResult(q) {
-const kanji = q.kanji;
-const kun = q.kun[0];
-const kunWord = kun.display.replace("◯", kanji);
-const lines = [
-`${kunWord}<span>（${kun.text}）</span>`,
-...q.on.map(o => {
-const word = o.display.replace("◯", kanji);
-return `${word}<span>（${o.text}）</span>`;
-})
-];
-document.getElementById("result").innerHTML =
-lines.map(l => `<div class="result-line">${l}</div>`).join("");
+function showCorrect(q) {
+renderQuestion(q, true); // ←同じ位置で置換
 playVoice(q);
 document.getElementById("nextBtn").style.display = "block";
 }
