@@ -129,7 +129,7 @@
 "on": [
 { "text": "じかん", "display": "◯間" },
 { "text": "とけい", "display": "◯計" },
-{ "text": "じじつ", "display": "◯実" }
+{ "text": "にちじ", "display": "日◯" }
 ],
 "choices": [
 { "type": "correct", "char": "時" },
@@ -162,7 +162,7 @@
 "kun": [{ "text": "あいだ", "display": "◯" }],
 "on": [
 { "text": "じかん", "display": "時◯" },
-{ "text": "なまか", "display": "仲◯" },
+{ "text": "なかま", "display": "仲◯" },
 { "text": "まにあう", "display": "◯に合う" }
 ],
 "choices": [
@@ -220,7 +220,7 @@
 "on": [
 { "text": "さんかく", "display": "◯角" },
 { "text": "みっか", "display": "◯日" },
-{ "text": "さいぜん", "display": "◯ぜん" }
+{ "text": "さんひき", "display": "◯匹" }
 ],
 "choices": [
 { "type": "correct", "char": "三" },
@@ -587,7 +587,7 @@
 "kanji": "手",
 "kun": [{ "text": "て", "display": "◯" }],
 "on": [
-{ "text": "あしゅ", "display": "握◯" },
+{ "text": "あくしゅ", "display": "握◯" },
 { "text": "じょうず", "display": "上◯" },
 { "text": "てがみ", "display": "◯紙" }
 ],
@@ -714,7 +714,7 @@
 "on": [
 { "text": "かぞく", "display": "◯族" },
 { "text": "かてい", "display": "◯庭" },
-{ "text": "おうじょ", "display": "王◯" }
+{ "text": "かでん", "display": "◯電" }
 ],
 "choices": [
 { "type": "correct", "char": "家" },
@@ -765,7 +765,7 @@
 "on": [
 { "text": "せいもん", "display": "正◯" },
 { "text": "せんもん", "display": "専◯" },
-{ "text": "もんぴ", "display": "◯扉" }
+{ "text": "こうもん", "display": "校◯" }
 ],
 "choices": [
 { "type": "correct", "char": "門" },
@@ -781,8 +781,8 @@
 "kun": [{ "text": "と", "display": "◯" }],
 "on": [
 { "text": "あまど", "display": "雨◯" },
-{ "text": "こうじょ", "display": "◯外" },
-{ "text": "こべつ", "display": "◯別" }
+{ "text": "こだて", "display": "◯建て" },
+{ "text": "とだな", "display": "◯棚" }
 ],
 "choices": [
 { "type": "correct", "char": "戸" },
@@ -798,7 +798,7 @@
 "kun": [{ "text": "みせ", "display": "◯" }],
 "on": [
 { "text": "てんいん", "display": "◯員" },
-{ "text": "しょうてん", "display": "商店" },
+{ "text": "しょうてん", "display": "商◯" },
 { "text": "かいてん", "display": "開◯" }
 ],
 "choices": [
@@ -816,7 +816,7 @@
 "on": [
 { "text": "こうえん", "display": "公◯" },
 { "text": "どうぶつえん", "display": "動物◯" },
-{ "text": "かえん", "display": "花◯" }
+{ "text": "ほいくえん", "display": "保育◯" }
 ],
 "choices": [
 { "type": "correct", "char": "園" },
@@ -832,7 +832,7 @@
 "kun": [{ "text": "みち", "display": "◯" }],
 "on": [
 { "text": "ほどう", "display": "歩◯" },
-{ "text": "さどう", "display": "茶◯" },
+{ "text": "じゅうどう", "display": "柔◯" },
 { "text": "どうろ", "display": "◯路" }
 ],
 "choices": [
@@ -907,7 +907,7 @@
 "on": [
 { "text": "たいふう", "display": "台◯" },
 { "text": "ふうせん", "display": "◯船" },
-{ "text": "ようふう", "display": "洋◯" }
+{ "text": "ふうりょく", "display": "◯力" }
 ],
 "choices": [
 { "type": "correct", "char": "風" },
@@ -924,7 +924,7 @@
 "on": [
 { "text": "あまぐも", "display": "雨◯" },
 { "text": "せきらんうん", "display": "積乱◯" },
-{ "text": "うんかい", "display": "◯海" }
+{ "text": "にゅうどうぐも", "display": "入道◯" }
 ],
 "choices": [
 { "type": "correct", "char": "雲" },
@@ -992,7 +992,7 @@
 "on": [
 { "text": "なつやすみ", "display": "◯休み" },
 { "text": "げし", "display": "◯至" },
-{ "text": "しゅか", "display": "初◯" }
+{ "text": "しょか", "display": "初◯" }
 ],
 "choices": [
 { "type": "correct", "char": "夏" },
@@ -1008,7 +1008,7 @@
 "kun": [{ "text": "あき", "display": "◯" }],
 "on": [
 { "text": "しゅうぶん", "display": "◯分" },
-{ "text": "しゅうかく", "display": "◯穫" },
+{ "text": "しゅんかしゅうとう", "display": "春夏◯冬" },
 { "text": "ばんしゅう", "display": "晩◯" }
 ],
 "choices": [
@@ -1134,7 +1134,7 @@
 "on": [
 { "text": "きょうと", "display": "◯都" },
 { "text": "じょうきょう", "display": "上◯" },
-{ "text": "きょうしき", "display": "◯式" }
+{ "text": "けいようせん", "display": "◯葉線" }
 ],
 "choices": [
 { "type": "correct", "char": "京" },
@@ -1276,7 +1276,7 @@
 "on": [
 { "text": "ちしき", "display": "◯識" },
 { "text": "ちじん", "display": "◯人" },
-{ "text": "しらせ", "display": "◯らせ" }
+{ "text": "ちのう", "display": "◯能" }
 ],
 "choices": [
 { "type": "correct", "char": "知" },
@@ -1293,7 +1293,7 @@
 "on": [
 { "text": "げんご", "display": "◯語" },
 { "text": "でんげん", "display": "伝◯" },
-{ "text": "げんどう", "display": "◯動" }
+{ "text": "ことば", "display": "◯葉" }
 ],
 "choices": [
 { "type": "correct", "char": "言" },
@@ -1343,7 +1343,7 @@
 "kun": [{ "text": "よむ", "display": "◯む" }],
 "on": [
 { "text": "どくしょ", "display": "◯書" },
-{ "text": "おんよみ", "display": "音◯み" },
+{ "text": "おんどく", "display": "音◯" },
 { "text": "どくしゃ", "display": "◯者" }
 ],
 "choices": [
@@ -1378,7 +1378,7 @@
 "on": [
 { "text": "しんぶん", "display": "新◯" },
 { "text": "ききとり", "display": "◯き取り" },
-{ "text": "ぶんがく", "display": "◯学" }
+{ "text": "きこえ", "display": "◯こえ" }
 ],
 "choices": [
 { "type": "correct", "char": "聞" },
@@ -1435,7 +1435,7 @@
 "on": [
 { "text": "じぶん", "display": "自◯" },
 { "text": "はんぶん", "display": "半◯" },
-{ "text": "ふん", "display": "五◯" }
+{ "text": "ごふん", "display": "五◯" }
 ],
 "choices": [
 { "type": "correct", "char": "分" },
@@ -1486,7 +1486,7 @@
 "on": [
 { "text": "こうえん", "display": "◯園" },
 { "text": "こうりつ", "display": "◯立" },
-{ "text": "しゅこう", "display": "主◯" }
+{ "text": "こうみん", "display": "◯民" }
 ],
 "choices": [
 { "type": "correct", "char": "公" },
@@ -1503,7 +1503,7 @@
 "on": [
 { "text": "こうえん", "display": "公◯" },
 { "text": "どうぶつえん", "display": "動物◯" },
-{ "text": "かえん", "display": "花◯" }
+{ "text": "そのだ", "display": "◯田" }
 ],
 "choices": [
 { "type": "correct", "char": "園" },
@@ -1535,7 +1535,7 @@
 "kanji": "社",
 "kun": [{ "text": "やしろ", "display": "◯" }],
 "on": [
-{ "text": "かい会社", "display": "会◯" },
+{ "text": "かいしゃ", "display": "会◯" },
 { "text": "じんじゃ", "display": "神◯" },
 { "text": "しゃかい", "display": "◯会" }
 ],
@@ -1593,7 +1593,7 @@
 "kun": [{ "text": "まなぶ", "display": "◯ぶ" }],
 "on": [
 { "text": "がっこう", "display": "◯校" },
-{ "text": "いちねんせい", "display": "一年◯" },
+{ "text": "がくねん", "display": "◯年" },
 { "text": "ぶんがく", "display": "文◯" }
 ],
 "choices": [
@@ -1679,7 +1679,7 @@
 "on": [
 { "text": "れんしゅう", "display": "◯習" },
 { "text": "くんれん", "display": "訓◯" },
-{ "text": "しゅくれん", "display": "熟◯" }
+{ "text": "じゅくれん", "display": "熟◯" }
 ],
 "choices": [
 { "type": "correct", "char": "練" },
@@ -1696,7 +1696,7 @@
 "on": [
 { "text": "べんきょう", "display": "◯強" },
 { "text": "きんべん", "display": "勤◯" },
-{ "text": "がいべん", "display": "外◯" }
+{ "text": "べんがく", "display": "◯学" }
 ],
 "choices": [
 { "type": "correct", "char": "勉" },
@@ -1746,7 +1746,7 @@
 "kun": [{ "text": "わずかに", "display": "◯かに" }],
 "on": [
 { "text": "てんさい", "display": "天◯" },
-{ "text": "はっさい", "display": "八◯" },
+{ "text": "ぶんさい", "display": "文◯" },
 { "text": "さいのう", "display": "◯能" }
 ],
 "choices": [
@@ -1785,7 +1785,7 @@
 "kanji": "低",
 "kun": [{ "text": "ひくい", "display": "◯い" }],
 "on": [
-{ "text": "ていたい", "display": "◯滞" },
+{ "text": "ていけつあつ", "display": "◯けつあつ" },
 { "text": "ていおん", "display": "◯温" },
 { "text": "ていきあつ", "display": "◯気圧" }
 ],
@@ -1945,7 +1945,7 @@
 "kun": [{ "text": "あるく", "display": "◯く" }],
 "on": [
 { "text": "さんぽ", "display": "散◯" },
-{ "text": "こうしん", "display": "進◯" },
+{ "text": "ほすうけい", "display": "◯数計" },
 { "text": "ほどう", "display": "◯道" }
 ],
 "choices": [
@@ -2014,7 +2014,7 @@
 "on": [
 { "text": "らいげつ", "display": "◯月" },
 { "text": "みらい", "display": "未◯" },
-{ "text": "らいにち", "display": "◯日" }
+{ "text": "らいねん", "display": "◯年" }
 ],
 "choices": [
 { "type": "correct", "char": "来" },
@@ -2063,7 +2063,7 @@
 "kanji": "立",
 "kun": [{ "text": "たつ", "display": "◯つ" }],
 "on": [
-{ "text": "くりつ", "display": "公◯" },
+{ "text": "くりつ", "display": "区◯" },
 { "text": "こくりつ", "display": "国◯" },
 { "text": "りったい", "display": "◯体" }
 ],
@@ -2139,7 +2139,7 @@
 "on": [
 { "text": "ふぼ", "display": "◯母" },
 { "text": "そふ", "display": "祖◯" },
-{ "text": "じち", "display": "実◯" }
+{ "text": "ちちおや", "display": "◯親" }
 ],
 "choices": [
 { "type": "correct", "char": "父" },
@@ -2172,7 +2172,7 @@
 "kun": [{ "text": "あに", "display": "◯" }],
 "on": [
 { "text": "きょうだい", "display": "◯弟" },
-{ "text": "じけい", "display": "実◯" },
+{ "text": "あにうえ", "display": "◯上" },
 { "text": "ちょうけい", "display": "長◯" }
 ],
 "choices": [
@@ -2206,7 +2206,7 @@
 "kun": [{ "text": "あね", "display": "◯" }],
 "on": [
 { "text": "しまい", "display": "◯妹" },
-{ "text": "じし", "display": "実◯" },
+{ "text": "じっし", "display": "実◯" },
 { "text": "ぎし", "display": "義◯" }
 ],
 "choices": [
@@ -2223,7 +2223,7 @@
 "kun": [{ "text": "いもうと", "display": "◯" }],
 "on": [
 { "text": "しまい", "display": "姉◯" },
-{ "text": "じまい", "display": "実◯" },
+{ "text": "じつまい", "display": "実◯" },
 { "text": "ぎまい", "display": "義◯" }
 ],
 "choices": [
@@ -2298,7 +2298,7 @@
 "on": [
 { "text": "けしき", "display": "景◯" },
 { "text": "しきさい", "display": "◯彩" },
-{ "text": "しょくぜん", "display": "◯ぜん" }
+{ "text": "ちゃくしょく", "display": "着◯" }
 ],
 "choices": [
 { "type": "correct", "char": "色" },
@@ -2315,7 +2315,7 @@
 "on": [
 { "text": "おうごん", "display": "◯金" },
 { "text": "きいろ", "display": "◯色" },
-{ "text": "おうだん", "display": "◯断" }
+{ "text": "こがね", "display": "◯金" }
 ],
 "choices": [
 { "type": "correct", "char": "黄" },
@@ -2381,7 +2381,7 @@
 "kanji": "青",
 "kun": [{ "text": "あお", "display": "◯" }],
 "on": [
-{ "text": "せいしゅん", "display": "少◯" },
+{ "text": "せいしゅん", "display": "◯春" },
 { "text": "あおぞら", "display": "◯空" },
 { "text": "せいねん", "display": "◯年" }
 ],
@@ -2451,7 +2451,7 @@
 "on": [
 { "text": "ちゅうしょく", "display": "◯食" },
 { "text": "ひるね", "display": "◯寝" },
-{ "text": "ちゅうかん", "display": "◯間" }
+{ "text": "ひるやすみ", "display": "◯休み" }
 ],
 "choices": [
 { "type": "correct", "char": "昼" },
@@ -2576,7 +2576,7 @@
 "on": [
 { "text": "けいしょく", "display": "◯食" },
 { "text": "けいりょう", "display": "◯量" },
-{ "text": "けいそつ", "display": "◯率" }
+{ "text": "けいかい", "display": "◯快" }
 ],
 "choices": [
 { "type": "correct", "char": "軽" },
@@ -2593,7 +2593,7 @@
 "on": [
 { "text": "しんぶん", "display": "◯聞" },
 { "text": "しんかんせん", "display": "◯幹線" },
-{ "text": "いっしん", "display": "一◯" }
+{ "text": "しんはつばい", "display": "◯発売" }
 ],
 "choices": [
 { "type": "correct", "char": "新" },
@@ -2609,8 +2609,8 @@
 "kun": [{ "text": "ふるい", "display": "◯い" }],
 "on": [
 { "text": "ちゅうこ", "display": "中古" },
-{ "text": "こだい", "display": "◯代" },
-{ "text": "ふる本の", "display": "◯本" }
+{ "text": "こだいせいぶつ", "display": "◯代生物" },
+{ "text": "こてん", "display": "◯典" }
 ],
 "choices": [
 { "type": "correct", "char": "古" },
@@ -2785,7 +2785,7 @@
 "kun": [{ "text": "みぜ", "display": "◯" }],
 "on": [
 { "text": "てんいん", "display": "◯員" },
-{ "text": "しょうてん", "display": "商店" },
+{ "text": "しょうてん", "display": "商◯" },
 { "text": "かいてん", "display": "開◯" }
 ],
 "choices": [
