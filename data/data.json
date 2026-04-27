@@ -1,916 +1,2820 @@
 {
-  "sets": [
-    {
-      "id": 1,
-      "title": "〜月",
-      "questions": [
-        {
-          "kanji": "月",
-          "kun": [{ "text": "つき", "display": "◯" }],
-          "on": [
-            { "text": "いちがつ", "display": "一◯" },
-            { "text": "げつようび", "display": "◯曜日" },
-            { "text": "こんげつ", "display": "今◯" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "月" },
-            { "type": "synonym", "char": "太" },
-            { "type": "antonym", "char": "日" },
-            { "type": "homophone", "char": "目" },
-            { "type": "similar_shape", "char": "用" },
-            { "type": "same_radical", "char": "有" }
-          ]
-        },
-        {
-          "kanji": "火",
-          "kun": [{ "text": "ひ", "display": "◯" }],
-          "on": [
-            { "text": "かようび", "display": "◯曜日" },
-            { "text": "かざん", "display": "◯山" },
-            { "text": "かじ", "display": "◯事" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "火" },
-            { "type": "synonym", "char": "炎" },
-            { "type": "antonym", "char": "水" },
-            { "type": "homophone", "char": "科" },
-            { "type": "similar_shape", "char": "人" },
-            { "type": "same_radical", "char": "灯" }
-          ]
-        },
-        {
-          "kanji": "水",
-          "kun": [{ "text": "みず", "display": "◯" }],
-          "on": [
-            { "text": "すいようび", "display": "◯曜日" },
-            { "text": "すいえい", "display": "◯泳" },
-            { "text": "かいすい", "display": "海◯" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "水" },
-            { "type": "synonym", "char": "液" },
-            { "type": "antonym", "char": "火" },
-            { "type": "homophone", "char": "数" },
-            { "type": "similar_shape", "char": "氷" },
-            { "type": "same_radical", "char": "永" }
-          ]
-        },
-        {
-          "kanji": "木",
-          "kun": [{ "text": "き", "display": "◯" }],
-          "on": [
-            { "text": "もくようび", "display": "◯曜日" },
-            { "text": "たいぼく", "display": "大◯" },
-            { "text": "もくざい", "display": "◯材" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "木" },
-            { "type": "synonym", "char": "樹" },
-            { "type": "antonym", "char": "金" },
-            { "type": "homophone", "char": "気" },
-            { "type": "similar_shape", "char": "本" },
-            { "type": "same_radical", "char": "林" }
-          ]
-        },
-        {
-          "kanji": "金",
-          "kun": [{ "text": "かね", "display": "お◯" }],
-          "on": [
-            { "text": "きんようび", "display": "◯曜日" },
-            { "text": "きんメダル", "display": "◯メダル" },
-            { "text": "だいきん", "display": "代◯" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "金" },
-            { "type": "synonym", "char": "財" },
-            { "type": "antonym", "char": "銀" },
-            { "type": "homophone", "char": "近" },
-            { "type": "similar_shape", "char": "全" },
-            { "type": "same_radical", "char": "銀" }
-          ]
-        },
-        {
-          "kanji": "土",
-          "kun": [{ "text": "つち", "display": "◯" }],
-          "on": [
-            { "text": "どようび", "display": "◯曜日" },
-            { "text": "とち", "display": "◯地" },
-            { "text": "どぼく", "display": "◯木" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "土" },
-            { "type": "synonym", "char": "地" },
-            { "type": "antonym", "char": "空" },
-            { "type": "homophone", "char": "度" },
-            { "type": "similar_shape", "char": "士" },
-            { "type": "same_radical", "char": "均" }
-          ]
-        },
-        {
-          "kanji": "日",
-          "kun": [{ "text": "ひ", "display": "◯" }],
-          "on": [
-            { "text": "にちようび", "display": "◯曜日" },
-            { "text": "きょう", "display": "今◯" },
-            { "text": "にっき", "display": "◯記" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "日" },
-            { "type": "synonym", "char": "太陽" },
-            { "type": "antonym", "char": "月" },
-            { "type": "homophone", "char": "二" },
-            { "type": "similar_shape", "char": "目" },
-            { "type": "same_radical", "char": "時" }
-          ]
-        },
-        {
-          "kanji": "時",
-          "kun": [{ "text": "とき", "display": "◯" }],
-          "on": [
-            { "text": "じかん", "display": "◯間" },
-            { "text": "とけい", "display": "◯計" },
-            { "text": "じじつ", "display": "◯実" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "時" },
-            { "type": "synonym", "char": "頃" },
-            { "type": "antonym", "char": "空" },
-            { "type": "homophone", "char": "字" },
-            { "type": "similar_shape", "char": "持" },
-            { "type": "same_radical", "char": "明" }
-          ]
-        },
-        {
-          "kanji": "分",
-          "kun": [{ "text": "わかる", "display": "◯かる" }],
-          "on": [
-            { "text": "じゅっぷん", "display": "十◯" },
-            { "text": "はんぶん", "display": "半◯" },
-            { "text": "きぶん", "display": "気◯" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "分" },
-            { "type": "synonym", "char": "別" },
-            { "type": "antonym", "char": "合" },
-            { "type": "homophone", "char": "文" },
-            { "type": "similar_shape", "char": "公" },
-            { "type": "same_radical", "char": "切" }
-          ]
-        },
-        {
-          "kanji": "間",
-          "kun": [{ "text": "あいだ", "display": "◯" }],
-          "on": [
-            { "text": "じかん", "display": "時◯" },
-            { "text": "なまか", "display": "仲◯" },
-            { "text": "まにあう", "display": "◯に合う" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "間" },
-            { "type": "synonym", "char": "中" },
-            { "type": "antonym", "char": "外" },
-            { "type": "homophone", "char": "漢" },
-            { "type": "similar_shape", "char": "問" },
-            { "type": "same_radical", "char": "開" }
-          ]
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "title": "〜一",
-      "questions": [
-        {
-          "kanji": "一",
-          "kun": [{ "text": "ひとつ", "display": "◯つ" }],
-          "on": [
-            { "text": "いちねんせい", "display": "◯年生" },
-            { "text": "ついたち", "display": "◯日" },
-            { "text": "いっしょ", "display": "◯緒" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "一" },
-            { "type": "synonym", "char": "壱" },
-            { "type": "antonym", "char": "全" },
-            { "type": "homophone", "char": "位" },
-            { "type": "similar_shape", "char": "二" },
-            { "type": "same_radical", "char": "丁" }
-          ]
-        },
-        {
-          "kanji": "二",
-          "kun": [{ "text": "ふたつ", "display": "◯つ" }],
-          "on": [
-            { "text": "にがつ", "display": "◯月" },
-            { "text": "ふつか", "display": "◯日" },
-            { "text": "にじゅう", "display": "◯重" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "二" },
-            { "type": "synonym", "char": "弐" },
-            { "type": "antonym", "char": "一" },
-            { "type": "homophone", "char": "荷" },
-            { "type": "similar_shape", "char": "三" },
-            { "type": "same_radical", "char": "井" }
-          ]
-        },
-        {
-          "kanji": "三",
-          "kun": [{ "text": "みっつ", "display": "◯つ" }],
-          "on": [
-            { "text": "さんかく", "display": "◯角" },
-            { "text": "みっか", "display": "◯日" },
-            { "text": "さいぜん", "display": "◯ぜん" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "三" },
-            { "type": "synonym", "char": "参" },
-            { "type": "antonym", "char": "零" },
-            { "type": "homophone", "char": "山" },
-            { "type": "similar_shape", "char": "川" },
-            { "type": "same_radical", "char": "王" }
-          ]
-        },
-        {
-          "kanji": "四",
-          "kun": [{ "text": "よっつ", "display": "◯つ" }],
-          "on": [
-            { "text": "しがつ", "display": "◯月" },
-            { "text": "よっか", "display": "◯日" },
-            { "text": "よにん", "display": "◯人" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "四" },
-            { "type": "synonym", "char": "肆" },
-            { "type": "antonym", "char": "八" },
-            { "type": "homophone", "char": "死" },
-            { "type": "similar_shape", "char": "西" },
-            { "type": "same_radical", "char": "図" }
-          ]
-        },
-        {
-          "kanji": "五",
-          "kun": [{ "text": "いつつ", "display": "◯つ" }],
-          "on": [
-            { "text": "ごがつ", "display": "◯月" },
-            { "text": "いつか", "display": "◯日" },
-            { "text": "ごかん", "display": "◯感" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "五" },
-            { "type": "synonym", "char": "伍" },
-            { "type": "antonym", "char": "十" },
-            { "type": "homophone", "char": "語" },
-            { "type": "similar_shape", "char": "互" },
-            { "type": "same_radical", "char": "丑" }
-          ]
-        },
-        {
-          "kanji": "六",
-          "kun": [{ "text": "むっつ", "display": "◯つ" }],
-          "on": [
-            { "text": "ろくがつ", "display": "◯月" },
-            { "text": "むいか", "display": "◯日" },
-            { "text": "ろっぴゃく", "display": "◯百" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "六" },
-            { "type": "synonym", "char": "陸" },
-            { "type": "antonym", "char": "三" },
-            { "type": "homophone", "char": "録" },
-            { "type": "similar_shape", "char": "穴" },
-            { "type": "same_radical", "char": "共" }
-          ]
-        },
-        {
-          "kanji": "七",
-          "kun": [{ "text": "ななつ", "display": "◯つ" }],
-          "on": [
-            { "text": "しちがつ", "display": "◯月" },
-            { "text": "なのか", "display": "◯日" },
-            { "text": "しちにん", "display": "◯人" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "七" },
-            { "type": "synonym", "char": "漆" },
-            { "type": "antonym", "char": "一" },
-            { "type": "homophone", "char": "質" },
-            { "type": "similar_shape", "char": "比" },
-            { "type": "same_radical", "char": "切" }
-          ]
-        },
-        {
-          "kanji": "八",
-          "kun": [{ "text": "やっつ", "display": "◯つ" }],
-          "on": [
-            { "text": "はちがつ", "display": "◯月" },
-            { "text": "ようか", "display": "◯日" },
-            { "text": "はっぽう", "display": "◯方" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "八" },
-            { "type": "synonym", "char": "捌" },
-            { "type": "antonym", "char": "四" },
-            { "type": "homophone", "char": "鉢" },
-            { "type": "similar_shape", "char": "人" },
-            { "type": "same_radical", "char": "公" }
-          ]
-        },
-        {
-          "kanji": "九",
-          "kun": [{ "text": "ここのつ", "display": "◯つ" }],
-          "on": [
-            { "text": "くがつ", "display": "◯月" },
-            { "text": "ここのか", "display": "◯日" },
-            { "text": "きゅうしゅう", "display": "◯州" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "九" },
-            { "type": "synonym", "char": "玖" },
-            { "type": "antonym", "char": "一" },
-            { "type": "homophone", "char": "球" },
-            { "type": "similar_shape", "char": "丸" },
-            { "type": "same_radical", "char": "軌" }
-          ]
-        },
-        {
-          "kanji": "十",
-          "kun": [{ "text": "とお", "display": "◯" }],
-          "on": [
-            { "text": "じゅうがつ", "display": "◯月" },
-            { "text": "とおか", "display": "◯日" },
-            { "text": "じゅうぶん", "display": "◯分" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "十" },
-            { "type": "synonym", "char": "拾" },
-            { "type": "antonym", "char": "一" },
-            { "type": "homophone", "char": "住" },
-            { "type": "similar_shape", "char": "士" },
-            { "type": "same_radical", "char": "千" }
-          ]
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "title": "〜丸",
-      "questions": [
-        {
-          "kanji": "丸",
-          "kun": [{ "text": "まる", "display": "◯" }],
-          "on": [
-            { "text": "がんやく", "display": "◯薬" },
-            { "text": "まるい", "display": "◯い" },
-            { "text": "ひのまる", "display": "日の◯" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "丸" },
-            { "type": "synonym", "char": "円" },
-            { "type": "antonym", "char": "角" },
-            { "type": "homophone", "char": "画" },
-            { "type": "similar_shape", "char": "九" },
-            { "type": "same_radical", "char": "執" }
-          ]
-        },
-        {
-          "kanji": "円",
-          "kun": [{ "text": "まるい", "display": "◯い" }],
-          "on": [
-            { "text": "ひゃくえん", "display": "百◯" },
-            { "text": "だえん", "display": "楕◯" },
-            { "text": "えんまん", "display": "◯満" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "円" },
-            { "type": "synonym", "char": "丸" },
-            { "type": "antonym", "char": "角" },
-            { "type": "homophone", "char": "宴" },
-            { "type": "similar_shape", "char": "内" },
-            { "type": "same_radical", "char": "再" }
-          ]
-        },
-        {
-          "kanji": "角",
-          "kun": [{ "text": "かど", "display": "◯" }],
-          "on": [
-            { "text": "しかく", "display": "四◯" },
-            { "text": "かくど", "display": "◯度" },
-            { "text": "つの", "display": "◯" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "角" },
-            { "type": "synonym", "char": "隅" },
-            { "type": "antonym", "char": "丸" },
-            { "type": "homophone", "char": "格" },
-            { "type": "similar_shape", "char": "解" },
-            { "type": "same_radical", "char": "触" }
-          ]
-        },
-        {
-          "kanji": "正",
-          "kun": [{ "text": "ただしい", "display": "◯しい" }],
-          "on": [
-            { "text": "しょうがつ", "display": "◯月" },
-            { "text": "せいかい", "display": "◯解" },
-            { "text": "しょうじき", "display": "◯直" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "正" },
-            { "type": "synonym", "char": "真" },
-            { "type": "antonym", "char": "誤" },
-            { "type": "homophone", "char": "生" },
-            { "type": "similar_shape", "char": "止" },
-            { "type": "same_radical", "char": "武" }
-          ]
-        },
-        {
-          "kanji": "直",
-          "kun": [{ "text": "なおす", "display": "◯す" }],
-          "on": [
-            { "text": "ちょくせん", "display": "◯線" },
-            { "text": "しょうじき", "display": "正◯" },
-            { "text": "ちょくせつ", "display": "◯接" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "直" },
-            { "type": "synonym", "char": "修" },
-            { "type": "antonym", "char": "曲" },
-            { "type": "homophone", "char": "値" },
-            { "type": "similar_shape", "char": "真" },
-            { "type": "same_radical", "char": "置" }
-          ]
-        },
-        {
-          "kanji": "長",
-          "kun": [{ "text": "ながい", "display": "◯い" }],
-          "on": [
-            { "text": "えんちょう", "display": "延◯" },
-            { "text": "こうちょう", "display": "校◯" },
-            { "text": "しちょう", "display": "市◯" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "長" },
-            { "type": "synonym", "char": "永" },
-            { "type": "antonym", "char": "短" },
-            { "type": "homophone", "char": "帳" },
-            { "type": "similar_shape", "char": "張" },
-            { "type": "same_radical", "char": "髪" }
-          ]
-        },
-        {
-          "kanji": "短",
-          "kun": [{ "text": "みじかい", "display": "◯い" }],
-          "on": [
-            { "text": "たんしょ", "display": "◯所" },
-            { "text": "たんき", "display": "◯気" },
-            { "text": "たんじかん", "display": "◯時間" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "短" },
-            { "type": "synonym", "char": "欠" },
-            { "type": "antonym", "char": "長" },
-            { "type": "homophone", "char": "端" },
-            { "type": "similar_shape", "char": "知" },
-            { "type": "same_radical", "char": "矢" }
-          ]
-        },
-        {
-          "kanji": "太",
-          "kun": [{ "text": "ふとい", "display": "◯い" }],
-          "on": [
-            { "text": "たいよう", "display": "◯陽" },
-            { "text": "まるた", "display": "丸◯" },
-            { "text": "ふともも", "display": "◯もも" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "太" },
-            { "type": "synonym", "char": "厚" },
-            { "type": "antonym", "char": "細" },
-            { "type": "homophone", "char": "他" },
-            { "type": "similar_shape", "char": "大" },
-            { "type": "same_radical", "char": "犬" }
-          ]
-        },
-        {
-          "kanji": "細",
-          "kun": [{ "text": "ほそい", "display": "◯い" }],
-          "on": [
-            { "text": "さいぶ", "display": "◯部" },
-            { "text": "こまかい", "display": "◯かい" },
-            { "text": "さいぼう", "display": "◯胞" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "細" },
-            { "type": "synonym", "char": "薄" },
-            { "type": "antonym", "char": "太" },
-            { "type": "homophone", "char": "際" },
-            { "type": "similar_shape", "char": "組" },
-            { "type": "same_radical", "char": "紙" }
-          ]
-        },
-        {
-          "kanji": "形",
-          "kun": [{ "text": "かたち", "display": "◯" }],
-          "on": [
-            { "text": "にんぎょう", "display": "人◯" },
-            { "text": "けいしき", "display": "◯式" },
-            { "text": "ずけい", "display": "図◯" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "形" },
-            { "type": "synonym", "char": "様" },
-            { "type": "antonym", "char": "影" },
-            { "type": "homophone", "char": "兄" },
-            { "type": "similar_shape", "char": "刑" },
-            { "type": "same_radical", "char": "彩" }
-          ]
-        }
-      ]
-    },
-    {
-      "id": 4,
-      "title": "〜頭",
-      "questions": [
-        {
-          "kanji": "頭",
-          "kun": [{ "text": "あたま", "display": "◯" }],
-          "on": [
-            { "text": "ずのう", "display": "◯脳" },
-            { "text": "せんとう", "display": "先◯" },
-            { "text": "あたまかず", "display": "◯数" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "頭" },
-            { "type": "synonym", "char": "首" },
-            { "type": "antonym", "char": "足" },
-            { "type": "homophone", "char": "投" },
-            { "type": "similar_shape", "char": "願" },
-            { "type": "same_radical", "char": "顔" }
-          ]
-        },
-        {
-          "kanji": "顔",
-          "kun": [{ "text": "かお", "display": "◯" }],
-          "on": [
-            { "text": "がんめん", "display": "◯面" },
-            { "text": "えがお", "display": "笑◯" },
-            { "text": "せんがん", "display": "洗◯" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "顔" },
-            { "type": "synonym", "char": "面" },
-            { "type": "antonym", "char": "背" },
-            { "type": "homophone", "char": "頑" },
-            { "type": "similar_shape", "char": "願" },
-            { "type": "same_radical", "char": "頭" }
-          ]
-        },
-        {
-          "kanji": "首",
-          "kun": [{ "text": "くび", "display": "◯" }],
-          "on": [
-            { "text": "しゅと", "display": "◯都" },
-            { "text": "あしくび", "display": "足◯" },
-            { "text": "しゅしょう", "display": "◯相" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "首" },
-            { "type": "synonym", "char": "長" },
-            { "type": "antonym", "char": "胴" },
-            { "type": "homophone", "char": "手" },
-            { "type": "similar_shape", "char": "道" },
-            { "type": "same_radical", "char": "馬" }
-          ]
-        },
-        {
-          "kanji": "手",
-          "kun": [{ "text": "て", "display": "◯" }],
-          "on": [
-            { "text": "あしゅ", "display": "握◯" },
-            { "text": "じょうず", "display": "上◯" },
-            { "text": "てがみ", "display": "◯紙" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "手" },
-            { "type": "synonym", "char": "腕" },
-            { "type": "antonym", "char": "足" },
-            { "type": "homophone", "char": "守" },
-            { "type": "similar_shape", "char": "毛" },
-            { "type": "same_radical", "char": "承" }
-          ]
-        },
-        {
-          "kanji": "足",
-          "kun": [{ "text": "あし", "display": "◯" }],
-          "on": [
-            { "text": "えんそく", "display": "遠◯" },
-            { "text": "たりる", "display": "◯りる" },
-            { "text": "ふそく", "display": "不◯" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "足" },
-            { "type": "synonym", "char": "脚" },
-            { "type": "antonym", "char": "手" },
-            { "type": "homophone", "char": "味" },
-            { "type": "similar_shape", "char": "是" },
-            { "type": "same_radical", "char": "走" }
-          ]
-        },
-        {
-          "kanji": "心",
-          "kun": [{ "text": "こころ", "display": "◯" }],
-          "on": [
-            { "text": "しんぞう", "display": "◯臓" },
-            { "text": "あんしん", "display": "安◯" },
-            { "text": "ちゅうしん", "display": "中◯" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "心" },
-            { "type": "synonym", "char": "情" },
-            { "type": "antonym", "char": "身" },
-            { "type": "homophone", "char": "新" },
-            { "type": "similar_shape", "char": "必" },
-            { "type": "same_radical", "char": "思" }
-          ]
-        },
-        {
-          "kanji": "体",
-          "kun": [{ "text": "からだ", "display": "◯" }],
-          "on": [
-            { "text": "たいいく", "display": "◯育" },
-            { "text": "だんたい", "display": "団◯" },
-            { "text": "じったい", "display": "実◯" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "体" },
-            { "type": "synonym", "char": "身" },
-            { "type": "antonym", "char": "心" },
-            { "type": "homophone", "char": "退" },
-            { "type": "similar_shape", "char": "休" },
-            { "type": "same_radical", "char": "作" }
-          ]
-        },
-        {
-          "kanji": "身",
-          "kun": [{ "text": "み", "display": "◯" }],
-          "on": [
-            { "text": "しんちょう", "display": "◯長" },
-            { "text": "しゅっしん", "display": "出◯" },
-            { "text": "みぢか", "display": "◯近" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "身" },
-            { "type": "synonym", "char": "体" },
-            { "type": "antonym", "char": "物" },
-            { "type": "homophone", "char": "新" },
-            { "type": "similar_shape", "char": "自" },
-            { "type": "same_radical", "char": "射" }
-          ]
-        },
-        {
-          "kanji": "毛",
-          "kun": [{ "text": "け", "display": "◯" }],
-          "on": [
-            { "text": "もうひつ", "display": "◯筆" },
-            { "text": "まゆげ", "display": "眉◯" },
-            { "text": "もうふ", "display": "◯布" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "毛" },
-            { "type": "synonym", "char": "髪" },
-            { "type": "antonym", "char": "皮" },
-            { "type": "homophone", "char": "猛" },
-            { "type": "similar_shape", "char": "手" },
-            { "type": "same_radical", "char": "尾" }
-          ]
-        },
-        {
-          "kanji": "肉",
-          "kun": [{ "text": "にく", "display": "◯" }],
-          "on": [
-            { "text": "ぎゅうにく", "display": "牛◯" },
-            { "text": "にくがん", "display": "◯眼" },
-            { "text": "きんにく", "display": "筋◯" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "肉" },
-            { "type": "synonym", "char": "筋" },
-            { "type": "antonym", "char": "骨" },
-            { "type": "homophone", "char": "煮" },
-            { "type": "similar_shape", "char": "内" },
-            { "type": "same_radical", "char": "肌" }
-          ]
-        }
-      ]
-    },
-    {
-      "id": 5,
-      "title": "〜家",
-      "questions": [
-        {
-          "kanji": "家",
-          "kun": [{ "text": "いえ", "display": "◯" }],
-          "on": [
-            { "text": "かぞく", "display": "◯族" },
-            { "text": "かてい", "display": "◯庭" },
-            { "text": "おうじょ", "display": "王◯" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "家" },
-            { "type": "synonym", "char": "宅" },
-            { "type": "antonym", "char": "外" },
-            { "type": "homophone", "char": "科" },
-            { "type": "similar_shape", "char": "塚" },
-            { "type": "same_radical", "char": "室" }
-          ]
-        },
-        {
-          "kanji": "庭",
-          "kun": [{ "text": "にわ", "display": "◯" }],
-          "on": [
-            { "text": "こうてい", "display": "校◯" },
-            { "text": "かてい", "display": "家◯" },
-            { "text": "にわさき", "display": "◯先" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "庭" },
-            { "type": "synonym", "char": "園" },
-            { "type": "antonym", "char": "道" },
-            { "type": "homophone", "char": "停" },
-            { "type": "similar_shape", "char": "底" },
-            { "type": "same_radical", "char": "庫" }
-          ]
-        },
-        {
-          "kanji": "室",
-          "kun": [{ "text": "むろ", "display": "◯" }],
-          "on": [
-            { "text": "きょうしつ", "display": "教◯" },
-            { "text": "しつない", "display": "◯内" },
-            { "text": "わしつ", "display": "和◯" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "室" },
-            { "type": "synonym", "char": "間" },
-            { "type": "antonym", "char": "野" },
-            { "type": "homophone", "char": "失" },
-            { "type": "similar_shape", "char": "至" },
-            { "type": "same_radical", "char": "家" }
-          ]
-        },
-        {
-          "kanji": "門",
-          "kun": [{ "text": "かど", "display": "◯" }],
-          "on": [
-            { "text": "せいもん", "display": "正◯" },
-            { "text": "せんもん", "display": "専◯" },
-            { "text": "もんぴ", "display": "◯扉" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "門" },
-            { "type": "synonym", "char": "戸" },
-            { "type": "antonym", "char": "奥" },
-            { "type": "homophone", "char": "問" },
-            { "type": "similar_shape", "char": "間" },
-            { "type": "same_radical", "char": "開" }
-          ]
-        },
-        {
-          "kanji": "戸",
-          "kun": [{ "text": "と", "display": "◯" }],
-          "on": [
-            { "text": "あまど", "display": "雨◯" },
-            { "text": "こうじょ", "display": "◯外" },
-            { "text": "こべつ", "display": "◯別" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "戸" },
-            { "type": "synonym", "char": "門" },
-            { "type": "antonym", "char": "壁" },
-            { "type": "homophone", "char": "徒" },
-            { "type": "similar_shape", "char": "所" },
-            { "type": "same_radical", "char": "肩" }
-          ]
-        },
-        {
-          "kanji": "店",
-          "kun": [{ "text": "みせ", "display": "◯" }],
-          "on": [
-            { "text": "てんいん", "display": "◯員" },
-            { "text": "しょうてん", "display": "商店" },
-            { "text": "かいてん", "display": "開◯" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "店" },
-            { "type": "synonym", "char": "舗" },
-            { "type": "antonym", "char": "家" },
-            { "type": "homophone", "char": "点" },
-            { "type": "similar_shape", "char": "広" },
-            { "type": "same_radical", "char": "庫" }
-          ]
-        },
-        {
-          "kanji": "園",
-          "kun": [{ "text": "その", "display": "◯" }],
-          "on": [
-            { "text": "こうえん", "display": "公◯" },
-            { "text": "どうぶつえん", "display": "動物◯" },
-            { "text": "かえん", "display": "花◯" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "園" },
-            { "type": "synonym", "char": "苑" },
-            { "type": "antonym", "char": "野" },
-            { "type": "homophone", "char": "遠" },
-            { "type": "similar_shape", "char": "圏" },
-            { "type": "same_radical", "char": "図" }
-          ]
-        },
-        {
-          "kanji": "道",
-          "kun": [{ "text": "みち", "display": "◯" }],
-          "on": [
-            { "text": "ほどう", "display": "歩◯" },
-            { "text": "さどう", "display": "茶◯" },
-            { "text": "どうろ", "display": "◯路" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "道" },
-            { "type": "synonym", "char": "路" },
-            { "type": "antonym", "char": "壁" },
-            { "type": "homophone", "char": "動" },
-            { "type": "similar_shape", "char": "首" },
-            { "type": "same_radical", "char": "通" }
-          ]
-        },
-        {
-          "kanji": "所",
-          "kun": [{ "text": "ところ", "display": "◯" }],
-          "on": [
-            { "text": "ばしょ", "display": "場◯" },
-            { "text": "じゅうしょ", "display": "住◯" },
-            { "text": "きんじょ", "display": "近◯" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "所" },
-            { "type": "synonym", "char": "場" },
-            { "type": "antonym", "char": "辺" },
-            { "type": "homophone", "char": "諸" },
-            { "type": "similar_shape", "char": "戸" },
-            { "type": "same_radical", "char": "房" }
-          ]
-        },
-        {
-          "kanji": "場",
-          "kun": [{ "text": "ば", "display": "◯" }],
-          "on": [
-            { "text": "かいじょう", "display": "会◯" },
-            { "text": "こうじょう", "display": "工◯" },
-            { "text": "ばしょ", "display": "◯所" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "場" },
-            { "type": "synonym", "char": "所" },
-            { "type": "antonym", "char": "空" },
-            { "type": "homophone", "char": "城" },
-            { "type": "similar_shape", "char": "堀" },
-            { "type": "same_radical", "char": "地" }
-          ]
-        }
-      ]
-    },
-    {
-      "id": 6,
-      "title": "〜光",
-      "questions": [
-        {
-          "kanji": "光",
-          "kun": [{ "text": "ひかり", "display": "◯" }],
-          "on": [
-            { "text": "にっこう", "display": "日◯" },
-            { "text": "でんこう", "display": "電◯" },
-            { "text": "こうせん", "display": "◯線" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "光" },
-            { "type": "synonym", "char": "輝" },
-            { "type": "antonym", "char": "影" },
-            { "type": "homophone", "char": "工" },
-            { "type": "similar_shape", "char": "先" },
-            { "type": "same_radical", "char": "晃" }
-          ]
-        },
-        {
-          "kanji": "風",
-          "kun": [{ "text": "かぜ", "display": "◯" }],
-          "on": [
-            { "text": "たいふう", "display": "台◯" },
-            { "text": "ふうせん", "display": "◯船" },
-            { "text": "ようふう", "display": "洋◯" }
-          ],
-          "choices": [
-            { "type": "correct", "char": "風" },
-            { "type": "synonym", "char": "嵐" },
-            { "type": "antonym", "char": "凪" },
-            { "type": "homophone", "char":
+"sets": [
+{
+"id": 1,
+"title": "〜月",
+"questions": [
+{
+"kanji": "月",
+"kun": [{ "text": "つき", "display": "◯" }],
+"on": [
+{ "text": "いちがつ", "display": "一◯" },
+{ "text": "げつようび", "display": "◯曜日" },
+{ "text": "こんげつ", "display": "今◯" }
+],
+"choices": [
+{ "type": "correct", "char": "月" },
+{ "type": "synonym", "char": "太" },
+{ "type": "antonym", "char": "日" },
+{ "type": "homophone", "char": "目" },
+{ "type": "similar_shape", "char": "用" },
+{ "type": "same_radical", "char": "有" }
+]
+},
+{
+"kanji": "火",
+"kun": [{ "text": "ひ", "display": "◯" }],
+"on": [
+{ "text": "かようび", "display": "◯曜日" },
+{ "text": "かざん", "display": "◯山" },
+{ "text": "かじ", "display": "◯事" }
+],
+"choices": [
+{ "type": "correct", "char": "火" },
+{ "type": "synonym", "char": "炎" },
+{ "type": "antonym", "char": "水" },
+{ "type": "homophone", "char": "科" },
+{ "type": "similar_shape", "char": "人" },
+{ "type": "same_radical", "char": "灯" }
+]
+},
+{
+"kanji": "水",
+"kun": [{ "text": "みず", "display": "◯" }],
+"on": [
+{ "text": "すいようび", "display": "◯曜日" },
+{ "text": "すいえい", "display": "◯泳" },
+{ "text": "かいすい", "display": "海◯" }
+],
+"choices": [
+{ "type": "correct", "char": "水" },
+{ "type": "synonym", "char": "液" },
+{ "type": "antonym", "char": "火" },
+{ "type": "homophone", "char": "数" },
+{ "type": "similar_shape", "char": "氷" },
+{ "type": "same_radical", "char": "永" }
+]
+},
+{
+"kanji": "木",
+"kun": [{ "text": "き", "display": "◯" }],
+"on": [
+{ "text": "もくようび", "display": "◯曜日" },
+{ "text": "たいぼく", "display": "大◯" },
+{ "text": "もくざい", "display": "◯材" }
+],
+"choices": [
+{ "type": "correct", "char": "木" },
+{ "type": "synonym", "char": "樹" },
+{ "type": "antonym", "char": "金" },
+{ "type": "homophone", "char": "気" },
+{ "type": "similar_shape", "char": "本" },
+{ "type": "same_radical", "char": "林" }
+]
+},
+{
+"kanji": "金",
+"kun": [{ "text": "かね", "display": "お◯" }],
+"on": [
+{ "text": "きんようび", "display": "◯曜日" },
+{ "text": "きんメダル", "display": "◯メダル" },
+{ "text": "だいきん", "display": "代◯" }
+],
+"choices": [
+{ "type": "correct", "char": "金" },
+{ "type": "synonym", "char": "財" },
+{ "type": "antonym", "char": "銀" },
+{ "type": "homophone", "char": "近" },
+{ "type": "similar_shape", "char": "全" },
+{ "type": "same_radical", "char": "銀" }
+]
+},
+{
+"kanji": "土",
+"kun": [{ "text": "つち", "display": "◯" }],
+"on": [
+{ "text": "どようび", "display": "◯曜日" },
+{ "text": "とち", "display": "◯地" },
+{ "text": "どぼく", "display": "◯木" }
+],
+"choices": [
+{ "type": "correct", "char": "土" },
+{ "type": "synonym", "char": "地" },
+{ "type": "antonym", "char": "空" },
+{ "type": "homophone", "char": "度" },
+{ "type": "similar_shape", "char": "士" },
+{ "type": "same_radical", "char": "均" }
+]
+},
+{
+"kanji": "日",
+"kun": [{ "text": "ひ", "display": "◯" }],
+"on": [
+{ "text": "にちようび", "display": "◯曜日" },
+{ "text": "きょう", "display": "今◯" },
+{ "text": "にっき", "display": "◯記" }
+],
+"choices": [
+{ "type": "correct", "char": "日" },
+{ "type": "synonym", "char": "太陽" },
+{ "type": "antonym", "char": "月" },
+{ "type": "homophone", "char": "二" },
+{ "type": "similar_shape", "char": "目" },
+{ "type": "same_radical", "char": "時" }
+]
+},
+{
+"kanji": "時",
+"kun": [{ "text": "とき", "display": "◯" }],
+"on": [
+{ "text": "じかん", "display": "◯間" },
+{ "text": "とけい", "display": "◯計" },
+{ "text": "じじつ", "display": "◯実" }
+],
+"choices": [
+{ "type": "correct", "char": "時" },
+{ "type": "synonym", "char": "頃" },
+{ "type": "antonym", "char": "空" },
+{ "type": "homophone", "char": "字" },
+{ "type": "similar_shape", "char": "持" },
+{ "type": "same_radical", "char": "明" }
+]
+},
+{
+"kanji": "分",
+"kun": [{ "text": "わかる", "display": "◯かる" }],
+"on": [
+{ "text": "じゅっぷん", "display": "十◯" },
+{ "text": "はんぶん", "display": "半◯" },
+{ "text": "きぶん", "display": "気◯" }
+],
+"choices": [
+{ "type": "correct", "char": "分" },
+{ "type": "synonym", "char": "別" },
+{ "type": "antonym", "char": "合" },
+{ "type": "homophone", "char": "文" },
+{ "type": "similar_shape", "char": "公" },
+{ "type": "same_radical", "char": "切" }
+]
+},
+{
+"kanji": "間",
+"kun": [{ "text": "あいだ", "display": "◯" }],
+"on": [
+{ "text": "じかん", "display": "時◯" },
+{ "text": "なまか", "display": "仲◯" },
+{ "text": "まにあう", "display": "◯に合う" }
+],
+"choices": [
+{ "type": "correct", "char": "間" },
+{ "type": "synonym", "char": "中" },
+{ "type": "antonym", "char": "外" },
+{ "type": "homophone", "char": "漢" },
+{ "type": "similar_shape", "char": "問" },
+{ "type": "same_radical", "char": "開" }
+]
+}
+]
+},
+{
+"id": 2,
+"title": "〜一",
+"questions": [
+{
+"kanji": "一",
+"kun": [{ "text": "ひとつ", "display": "◯つ" }],
+"on": [
+{ "text": "いちねんせい", "display": "◯年生" },
+{ "text": "ついたち", "display": "◯日" },
+{ "text": "いっしょ", "display": "◯緒" }
+],
+"choices": [
+{ "type": "correct", "char": "一" },
+{ "type": "synonym", "char": "壱" },
+{ "type": "antonym", "char": "全" },
+{ "type": "homophone", "char": "位" },
+{ "type": "similar_shape", "char": "二" },
+{ "type": "same_radical", "char": "丁" }
+]
+},
+{
+"kanji": "二",
+"kun": [{ "text": "ふたつ", "display": "◯つ" }],
+"on": [
+{ "text": "にがつ", "display": "◯月" },
+{ "text": "ふつか", "display": "◯日" },
+{ "text": "にじゅう", "display": "◯重" }
+],
+"choices": [
+{ "type": "correct", "char": "二" },
+{ "type": "synonym", "char": "弐" },
+{ "type": "antonym", "char": "一" },
+{ "type": "homophone", "char": "荷" },
+{ "type": "similar_shape", "char": "三" },
+{ "type": "same_radical", "char": "井" }
+]
+},
+{
+"kanji": "三",
+"kun": [{ "text": "みっつ", "display": "◯つ" }],
+"on": [
+{ "text": "さんかく", "display": "◯角" },
+{ "text": "みっか", "display": "◯日" },
+{ "text": "さいぜん", "display": "◯ぜん" }
+],
+"choices": [
+{ "type": "correct", "char": "三" },
+{ "type": "synonym", "char": "参" },
+{ "type": "antonym", "char": "零" },
+{ "type": "homophone", "char": "山" },
+{ "type": "similar_shape", "char": "川" },
+{ "type": "same_radical", "char": "王" }
+]
+},
+{
+"kanji": "四",
+"kun": [{ "text": "よっつ", "display": "◯つ" }],
+"on": [
+{ "text": "しがつ", "display": "◯月" },
+{ "text": "よっか", "display": "◯日" },
+{ "text": "よにん", "display": "◯人" }
+],
+"choices": [
+{ "type": "correct", "char": "四" },
+{ "type": "synonym", "char": "肆" },
+{ "type": "antonym", "char": "八" },
+{ "type": "homophone", "char": "死" },
+{ "type": "similar_shape", "char": "西" },
+{ "type": "same_radical", "char": "図" }
+]
+},
+{
+"kanji": "五",
+"kun": [{ "text": "いつつ", "display": "◯つ" }],
+"on": [
+{ "text": "ごがつ", "display": "◯月" },
+{ "text": "いつか", "display": "◯日" },
+{ "text": "ごかん", "display": "◯感" }
+],
+"choices": [
+{ "type": "correct", "char": "五" },
+{ "type": "synonym", "char": "伍" },
+{ "type": "antonym", "char": "十" },
+{ "type": "homophone", "char": "語" },
+{ "type": "similar_shape", "char": "互" },
+{ "type": "same_radical", "char": "丑" }
+]
+},
+{
+"kanji": "六",
+"kun": [{ "text": "むっつ", "display": "◯つ" }],
+"on": [
+{ "text": "ろくがつ", "display": "◯月" },
+{ "text": "むいか", "display": "◯日" },
+{ "text": "ろっぴゃく", "display": "◯百" }
+],
+"choices": [
+{ "type": "correct", "char": "六" },
+{ "type": "synonym", "char": "陸" },
+{ "type": "antonym", "char": "三" },
+{ "type": "homophone", "char": "録" },
+{ "type": "similar_shape", "char": "穴" },
+{ "type": "same_radical", "char": "共" }
+]
+},
+{
+"kanji": "七",
+"kun": [{ "text": "ななつ", "display": "◯つ" }],
+"on": [
+{ "text": "しちがつ", "display": "◯月" },
+{ "text": "なのか", "display": "◯日" },
+{ "text": "しちにん", "display": "◯人" }
+],
+"choices": [
+{ "type": "correct", "char": "七" },
+{ "type": "synonym", "char": "漆" },
+{ "type": "antonym", "char": "一" },
+{ "type": "homophone", "char": "質" },
+{ "type": "similar_shape", "char": "比" },
+{ "type": "same_radical", "char": "切" }
+]
+},
+{
+"kanji": "八",
+"kun": [{ "text": "やっつ", "display": "◯つ" }],
+"on": [
+{ "text": "はちがつ", "display": "◯月" },
+{ "text": "ようか", "display": "◯日" },
+{ "text": "はっぽう", "display": "◯方" }
+],
+"choices": [
+{ "type": "correct", "char": "八" },
+{ "type": "synonym", "char": "捌" },
+{ "type": "antonym", "char": "四" },
+{ "type": "homophone", "char": "鉢" },
+{ "type": "similar_shape", "char": "人" },
+{ "type": "same_radical", "char": "公" }
+]
+},
+{
+"kanji": "九",
+"kun": [{ "text": "ここのつ", "display": "◯つ" }],
+"on": [
+{ "text": "くがつ", "display": "◯月" },
+{ "text": "ここのか", "display": "◯日" },
+{ "text": "きゅうしゅう", "display": "◯州" }
+],
+"choices": [
+{ "type": "correct", "char": "九" },
+{ "type": "synonym", "char": "玖" },
+{ "type": "antonym", "char": "一" },
+{ "type": "homophone", "char": "球" },
+{ "type": "similar_shape", "char": "丸" },
+{ "type": "same_radical", "char": "軌" }
+]
+},
+{
+"kanji": "十",
+"kun": [{ "text": "とお", "display": "◯" }],
+"on": [
+{ "text": "じゅうがつ", "display": "◯月" },
+{ "text": "とおか", "display": "◯日" },
+{ "text": "じゅうぶん", "display": "◯分" }
+],
+"choices": [
+{ "type": "correct", "char": "十" },
+{ "type": "synonym", "char": "拾" },
+{ "type": "antonym", "char": "一" },
+{ "type": "homophone", "char": "住" },
+{ "type": "similar_shape", "char": "士" },
+{ "type": "same_radical", "char": "千" }
+]
+}
+]
+},
+{
+"id": 3,
+"title": "〜丸",
+"questions": [
+{
+"kanji": "丸",
+"kun": [{ "text": "まる", "display": "◯" }],
+"on": [
+{ "text": "がんやく", "display": "◯薬" },
+{ "text": "まるい", "display": "◯い" },
+{ "text": "ひのまる", "display": "日の◯" }
+],
+"choices": [
+{ "type": "correct", "char": "丸" },
+{ "type": "synonym", "char": "円" },
+{ "type": "antonym", "char": "角" },
+{ "type": "homophone", "char": "画" },
+{ "type": "similar_shape", "char": "九" },
+{ "type": "same_radical", "char": "執" }
+]
+},
+{
+"kanji": "円",
+"kun": [{ "text": "まるい", "display": "◯い" }],
+"on": [
+{ "text": "ひゃくえん", "display": "百◯" },
+{ "text": "だえん", "display": "楕◯" },
+{ "text": "えんまん", "display": "◯満" }
+],
+"choices": [
+{ "type": "correct", "char": "円" },
+{ "type": "synonym", "char": "丸" },
+{ "type": "antonym", "char": "角" },
+{ "type": "homophone", "char": "宴" },
+{ "type": "similar_shape", "char": "内" },
+{ "type": "same_radical", "char": "再" }
+]
+},
+{
+"kanji": "角",
+"kun": [{ "text": "かど", "display": "◯" }],
+"on": [
+{ "text": "しかく", "display": "四◯" },
+{ "text": "かくど", "display": "◯度" },
+{ "text": "つの", "display": "◯" }
+],
+"choices": [
+{ "type": "correct", "char": "角" },
+{ "type": "synonym", "char": "隅" },
+{ "type": "antonym", "char": "丸" },
+{ "type": "homophone", "char": "格" },
+{ "type": "similar_shape", "char": "解" },
+{ "type": "same_radical", "char": "触" }
+]
+},
+{
+"kanji": "正",
+"kun": [{ "text": "ただしい", "display": "◯しい" }],
+"on": [
+{ "text": "しょうがつ", "display": "◯月" },
+{ "text": "せいかい", "display": "◯解" },
+{ "text": "しょうじき", "display": "◯直" }
+],
+"choices": [
+{ "type": "correct", "char": "正" },
+{ "type": "synonym", "char": "真" },
+{ "type": "antonym", "char": "誤" },
+{ "type": "homophone", "char": "生" },
+{ "type": "similar_shape", "char": "止" },
+{ "type": "same_radical", "char": "武" }
+]
+},
+{
+"kanji": "直",
+"kun": [{ "text": "なおす", "display": "◯す" }],
+"on": [
+{ "text": "ちょくせん", "display": "◯線" },
+{ "text": "しょうじき", "display": "正◯" },
+{ "text": "ちょくせつ", "display": "◯接" }
+],
+"choices": [
+{ "type": "correct", "char": "直" },
+{ "type": "synonym", "char": "修" },
+{ "type": "antonym", "char": "曲" },
+{ "type": "homophone", "char": "値" },
+{ "type": "similar_shape", "char": "真" },
+{ "type": "same_radical", "char": "置" }
+]
+},
+{
+"kanji": "長",
+"kun": [{ "text": "ながい", "display": "◯い" }],
+"on": [
+{ "text": "えんちょう", "display": "延◯" },
+{ "text": "こうちょう", "display": "校◯" },
+{ "text": "しちょう", "display": "市◯" }
+],
+"choices": [
+{ "type": "correct", "char": "長" },
+{ "type": "synonym", "char": "永" },
+{ "type": "antonym", "char": "短" },
+{ "type": "homophone", "char": "帳" },
+{ "type": "similar_shape", "char": "張" },
+{ "type": "same_radical", "char": "髪" }
+]
+},
+{
+"kanji": "短",
+"kun": [{ "text": "みじかい", "display": "◯い" }],
+"on": [
+{ "text": "たんしょ", "display": "◯所" },
+{ "text": "たんき", "display": "◯気" },
+{ "text": "たんじかん", "display": "◯時間" }
+],
+"choices": [
+{ "type": "correct", "char": "短" },
+{ "type": "synonym", "char": "欠" },
+{ "type": "antonym", "char": "長" },
+{ "type": "homophone", "char": "端" },
+{ "type": "similar_shape", "char": "知" },
+{ "type": "same_radical", "char": "矢" }
+]
+},
+{
+"kanji": "太",
+"kun": [{ "text": "ふとい", "display": "◯い" }],
+"on": [
+{ "text": "たいよう", "display": "◯陽" },
+{ "text": "まるた", "display": "丸◯" },
+{ "text": "ふともも", "display": "◯もも" }
+],
+"choices": [
+{ "type": "correct", "char": "太" },
+{ "type": "synonym", "char": "厚" },
+{ "type": "antonym", "char": "細" },
+{ "type": "homophone", "char": "他" },
+{ "type": "similar_shape", "char": "大" },
+{ "type": "same_radical", "char": "犬" }
+]
+},
+{
+"kanji": "細",
+"kun": [{ "text": "ほそい", "display": "◯い" }],
+"on": [
+{ "text": "さいぶ", "display": "◯部" },
+{ "text": "こまかい", "display": "◯かい" },
+{ "text": "さいぼう", "display": "◯胞" }
+],
+"choices": [
+{ "type": "correct", "char": "細" },
+{ "type": "synonym", "char": "薄" },
+{ "type": "antonym", "char": "太" },
+{ "type": "homophone", "char": "際" },
+{ "type": "similar_shape", "char": "組" },
+{ "type": "same_radical", "char": "紙" }
+]
+},
+{
+"kanji": "形",
+"kun": [{ "text": "かたち", "display": "◯" }],
+"on": [
+{ "text": "にんぎょう", "display": "人◯" },
+{ "text": "けいしき", "display": "◯式" },
+{ "text": "ずけい", "display": "図◯" }
+],
+"choices": [
+{ "type": "correct", "char": "形" },
+{ "type": "synonym", "char": "様" },
+{ "type": "antonym", "char": "影" },
+{ "type": "homophone", "char": "兄" },
+{ "type": "similar_shape", "char": "刑" },
+{ "type": "same_radical", "char": "彩" }
+]
+}
+]
+},
+{
+"id": 4,
+"title": "〜頭",
+"questions": [
+{
+"kanji": "頭",
+"kun": [{ "text": "あたま", "display": "◯" }],
+"on": [
+{ "text": "ずのう", "display": "◯脳" },
+{ "text": "せんとう", "display": "先◯" },
+{ "text": "あたまかず", "display": "◯数" }
+],
+"choices": [
+{ "type": "correct", "char": "頭" },
+{ "type": "synonym", "char": "首" },
+{ "type": "antonym", "char": "足" },
+{ "type": "homophone", "char": "投" },
+{ "type": "similar_shape", "char": "願" },
+{ "type": "same_radical", "char": "顔" }
+]
+},
+{
+"kanji": "顔",
+"kun": [{ "text": "かお", "display": "◯" }],
+"on": [
+{ "text": "がんめん", "display": "◯面" },
+{ "text": "えがお", "display": "笑◯" },
+{ "text": "せんがん", "display": "洗◯" }
+],
+"choices": [
+{ "type": "correct", "char": "顔" },
+{ "type": "synonym", "char": "面" },
+{ "type": "antonym", "char": "背" },
+{ "type": "homophone", "char": "頑" },
+{ "type": "similar_shape", "char": "願" },
+{ "type": "same_radical", "char": "頭" }
+]
+},
+{
+"kanji": "首",
+"kun": [{ "text": "くび", "display": "◯" }],
+"on": [
+{ "text": "しゅと", "display": "◯都" },
+{ "text": "あしくび", "display": "足◯" },
+{ "text": "しゅしょう", "display": "◯相" }
+],
+"choices": [
+{ "type": "correct", "char": "首" },
+{ "type": "synonym", "char": "長" },
+{ "type": "antonym", "char": "胴" },
+{ "type": "homophone", "char": "手" },
+{ "type": "similar_shape", "char": "道" },
+{ "type": "same_radical", "char": "馬" }
+]
+},
+{
+"kanji": "手",
+"kun": [{ "text": "て", "display": "◯" }],
+"on": [
+{ "text": "あしゅ", "display": "握◯" },
+{ "text": "じょうず", "display": "上◯" },
+{ "text": "てがみ", "display": "◯紙" }
+],
+"choices": [
+{ "type": "correct", "char": "手" },
+{ "type": "synonym", "char": "腕" },
+{ "type": "antonym", "char": "足" },
+{ "type": "homophone", "char": "守" },
+{ "type": "similar_shape", "char": "毛" },
+{ "type": "same_radical", "char": "承" }
+]
+},
+{
+"kanji": "足",
+"kun": [{ "text": "あし", "display": "◯" }],
+"on": [
+{ "text": "えんそく", "display": "遠◯" },
+{ "text": "たりる", "display": "◯りる" },
+{ "text": "ふそく", "display": "不◯" }
+],
+"choices": [
+{ "type": "correct", "char": "足" },
+{ "type": "synonym", "char": "脚" },
+{ "type": "antonym", "char": "手" },
+{ "type": "homophone", "char": "味" },
+{ "type": "similar_shape", "char": "是" },
+{ "type": "same_radical", "char": "走" }
+]
+},
+{
+"kanji": "心",
+"kun": [{ "text": "こころ", "display": "◯" }],
+"on": [
+{ "text": "しんぞう", "display": "◯臓" },
+{ "text": "あんしん", "display": "安◯" },
+{ "text": "ちゅうしん", "display": "中◯" }
+],
+"choices": [
+{ "type": "correct", "char": "心" },
+{ "type": "synonym", "char": "情" },
+{ "type": "antonym", "char": "身" },
+{ "type": "homophone", "char": "新" },
+{ "type": "similar_shape", "char": "必" },
+{ "type": "same_radical", "char": "思" }
+]
+},
+{
+"kanji": "体",
+"kun": [{ "text": "からだ", "display": "◯" }],
+"on": [
+{ "text": "たいいく", "display": "◯育" },
+{ "text": "だんたい", "display": "団◯" },
+{ "text": "じったい", "display": "実◯" }
+],
+"choices": [
+{ "type": "correct", "char": "体" },
+{ "type": "synonym", "char": "身" },
+{ "type": "antonym", "char": "心" },
+{ "type": "homophone", "char": "退" },
+{ "type": "similar_shape", "char": "休" },
+{ "type": "same_radical", "char": "作" }
+]
+},
+{
+"kanji": "身",
+"kun": [{ "text": "み", "display": "◯" }],
+"on": [
+{ "text": "しんちょう", "display": "◯長" },
+{ "text": "しゅっしん", "display": "出◯" },
+{ "text": "みぢか", "display": "◯近" }
+],
+"choices": [
+{ "type": "correct", "char": "身" },
+{ "type": "synonym", "char": "体" },
+{ "type": "antonym", "char": "物" },
+{ "type": "homophone", "char": "新" },
+{ "type": "similar_shape", "char": "自" },
+{ "type": "same_radical", "char": "射" }
+]
+},
+{
+"kanji": "毛",
+"kun": [{ "text": "け", "display": "◯" }],
+"on": [
+{ "text": "もうひつ", "display": "◯筆" },
+{ "text": "まゆげ", "display": "眉◯" },
+{ "text": "もうふ", "display": "◯布" }
+],
+"choices": [
+{ "type": "correct", "char": "毛" },
+{ "type": "synonym", "char": "髪" },
+{ "type": "antonym", "char": "皮" },
+{ "type": "homophone", "char": "猛" },
+{ "type": "similar_shape", "char": "手" },
+{ "type": "same_radical", "char": "尾" }
+]
+},
+{
+"kanji": "肉",
+"kun": [{ "text": "にく", "display": "◯" }],
+"on": [
+{ "text": "ぎゅうにく", "display": "牛◯" },
+{ "text": "にくがん", "display": "◯眼" },
+{ "text": "きんにく", "display": "筋◯" }
+],
+"choices": [
+{ "type": "correct", "char": "肉" },
+{ "type": "synonym", "char": "筋" },
+{ "type": "antonym", "char": "骨" },
+{ "type": "homophone", "char": "煮" },
+{ "type": "similar_shape", "char": "内" },
+{ "type": "same_radical", "char": "肌" }
+]
+}
+]
+},
+{
+"id": 5,
+"title": "〜家",
+"questions": [
+{
+"kanji": "家",
+"kun": [{ "text": "いえ", "display": "◯" }],
+"on": [
+{ "text": "かぞく", "display": "◯族" },
+{ "text": "かてい", "display": "◯庭" },
+{ "text": "おうじょ", "display": "王◯" }
+],
+"choices": [
+{ "type": "correct", "char": "家" },
+{ "type": "synonym", "char": "宅" },
+{ "type": "antonym", "char": "外" },
+{ "type": "homophone", "char": "科" },
+{ "type": "similar_shape", "char": "塚" },
+{ "type": "same_radical", "char": "室" }
+]
+},
+{
+"kanji": "庭",
+"kun": [{ "text": "にわ", "display": "◯" }],
+"on": [
+{ "text": "こうてい", "display": "校◯" },
+{ "text": "かてい", "display": "家◯" },
+{ "text": "にわさき", "display": "◯先" }
+],
+"choices": [
+{ "type": "correct", "char": "庭" },
+{ "type": "synonym", "char": "園" },
+{ "type": "antonym", "char": "道" },
+{ "type": "homophone", "char": "停" },
+{ "type": "similar_shape", "char": "底" },
+{ "type": "same_radical", "char": "庫" }
+]
+},
+{
+"kanji": "室",
+"kun": [{ "text": "むろ", "display": "◯" }],
+"on": [
+{ "text": "きょうしつ", "display": "教◯" },
+{ "text": "しつない", "display": "◯内" },
+{ "text": "わしつ", "display": "和◯" }
+],
+"choices": [
+{ "type": "correct", "char": "室" },
+{ "type": "synonym", "char": "間" },
+{ "type": "antonym", "char": "野" },
+{ "type": "homophone", "char": "失" },
+{ "type": "similar_shape", "char": "至" },
+{ "type": "same_radical", "char": "家" }
+]
+},
+{
+"kanji": "門",
+"kun": [{ "text": "かど", "display": "◯" }],
+"on": [
+{ "text": "せいもん", "display": "正◯" },
+{ "text": "せんもん", "display": "専◯" },
+{ "text": "もんぴ", "display": "◯扉" }
+],
+"choices": [
+{ "type": "correct", "char": "門" },
+{ "type": "synonym", "char": "戸" },
+{ "type": "antonym", "char": "奥" },
+{ "type": "homophone", "char": "問" },
+{ "type": "similar_shape", "char": "間" },
+{ "type": "same_radical", "char": "開" }
+]
+},
+{
+"kanji": "戸",
+"kun": [{ "text": "と", "display": "◯" }],
+"on": [
+{ "text": "あまど", "display": "雨◯" },
+{ "text": "こうじょ", "display": "◯外" },
+{ "text": "こべつ", "display": "◯別" }
+],
+"choices": [
+{ "type": "correct", "char": "戸" },
+{ "type": "synonym", "char": "門" },
+{ "type": "antonym", "char": "壁" },
+{ "type": "homophone", "char": "徒" },
+{ "type": "similar_shape", "char": "所" },
+{ "type": "same_radical", "char": "肩" }
+]
+},
+{
+"kanji": "店",
+"kun": [{ "text": "みせ", "display": "◯" }],
+"on": [
+{ "text": "てんいん", "display": "◯員" },
+{ "text": "しょうてん", "display": "商店" },
+{ "text": "かいてん", "display": "開◯" }
+],
+"choices": [
+{ "type": "correct", "char": "店" },
+{ "type": "synonym", "char": "舗" },
+{ "type": "antonym", "char": "家" },
+{ "type": "homophone", "char": "点" },
+{ "type": "similar_shape", "char": "広" },
+{ "type": "same_radical", "char": "庫" }
+]
+},
+{
+"kanji": "園",
+"kun": [{ "text": "その", "display": "◯" }],
+"on": [
+{ "text": "こうえん", "display": "公◯" },
+{ "text": "どうぶつえん", "display": "動物◯" },
+{ "text": "かえん", "display": "花◯" }
+],
+"choices": [
+{ "type": "correct", "char": "園" },
+{ "type": "synonym", "char": "苑" },
+{ "type": "antonym", "char": "野" },
+{ "type": "homophone", "char": "遠" },
+{ "type": "similar_shape", "char": "圏" },
+{ "type": "same_radical", "char": "図" }
+]
+},
+{
+"kanji": "道",
+"kun": [{ "text": "みち", "display": "◯" }],
+"on": [
+{ "text": "ほどう", "display": "歩◯" },
+{ "text": "さどう", "display": "茶◯" },
+{ "text": "どうろ", "display": "◯路" }
+],
+"choices": [
+{ "type": "correct", "char": "道" },
+{ "type": "synonym", "char": "路" },
+{ "type": "antonym", "char": "壁" },
+{ "type": "homophone", "char": "動" },
+{ "type": "similar_shape", "char": "首" },
+{ "type": "same_radical", "char": "通" }
+]
+},
+{
+"kanji": "所",
+"kun": [{ "text": "ところ", "display": "◯" }],
+"on": [
+{ "text": "ばしょ", "display": "場◯" },
+{ "text": "じゅうしょ", "display": "住◯" },
+{ "text": "きんじょ", "display": "近◯" }
+],
+"choices": [
+{ "type": "correct", "char": "所" },
+{ "type": "synonym", "char": "場" },
+{ "type": "antonym", "char": "辺" },
+{ "type": "homophone", "char": "諸" },
+{ "type": "similar_shape", "char": "戸" },
+{ "type": "same_radical", "char": "房" }
+]
+},
+{
+"kanji": "場",
+"kun": [{ "text": "ば", "display": "◯" }],
+"on": [
+{ "text": "かいじょう", "display": "会◯" },
+{ "text": "こうじょう", "display": "工◯" },
+{ "text": "ばしょ", "display": "◯所" }
+],
+"choices": [
+{ "type": "correct", "char": "場" },
+{ "type": "synonym", "char": "所" },
+{ "type": "antonym", "char": "空" },
+{ "type": "homophone", "char": "城" },
+{ "type": "similar_shape", "char": "堀" },
+{ "type": "same_radical", "char": "地" }
+]
+}
+]
+},
+{
+"id": 6,
+"title": "〜光",
+"questions": [
+{
+"kanji": "光",
+"kun": [{ "text": "ひかり", "display": "◯" }],
+"on": [
+{ "text": "にっこう", "display": "日◯" },
+{ "text": "でんこう", "display": "電◯" },
+{ "text": "こうせん", "display": "◯線" }
+],
+"choices": [
+{ "type": "correct", "char": "光" },
+{ "type": "synonym", "char": "輝" },
+{ "type": "antonym", "char": "影" },
+{ "type": "homophone", "char": "工" },
+{ "type": "similar_shape", "char": "先" },
+{ "type": "same_radical", "char": "晃" }
+]
+},
+{
+"kanji": "風",
+"kun": [{ "text": "かぜ", "display": "◯" }],
+"on": [
+{ "text": "たいふう", "display": "台◯" },
+{ "text": "ふうせん", "display": "◯船" },
+{ "text": "ようふう", "display": "洋◯" }
+],
+"choices": [
+{ "type": "correct", "char": "風" },
+{ "type": "synonym", "char": "嵐" },
+{ "type": "antonym", "char": "凪" },
+{ "type": "homophone", "char": "封" },
+{ "type": "similar_shape", "char": "凪" },
+{ "type": "same_radical", "char": "飛" }
+]
+},
+{
+"kanji": "雲",
+"kun": [{ "text": "くも", "display": "◯" }],
+"on": [
+{ "text": "あまぐも", "display": "雨◯" },
+{ "text": "せきらんうん", "display": "積乱◯" },
+{ "text": "うんかい", "display": "◯海" }
+],
+"choices": [
+{ "type": "correct", "char": "雲" },
+{ "type": "synonym", "char": "霞" },
+{ "type": "antonym", "char": "晴" },
+{ "type": "homophone", "char": "運" },
+{ "type": "similar_shape", "char": "曇" },
+{ "type": "same_radical", "char": "電" }
+]
+},
+{
+"kanji": "星",
+"kun": [{ "text": "ほし", "display": "◯" }],
+"on": [
+{ "text": "こうせい", "display": "恒◯" },
+{ "text": "わくせい", "display": "惑◯" },
+{ "text": "せいざ", "display": "◯座" }
+],
+"choices": [
+{ "type": "correct", "char": "星" },
+{ "type": "synonym", "char": "天" },
+{ "type": "antonym", "char": "地" },
+{ "type": "homophone", "char": "清" },
+{ "type": "similar_shape", "char": "里" },
+{ "type": "same_radical", "char": "晴" }
+]
+},
+{
+"kanji": "雪",
+"kun": [{ "text": "ゆき", "display": "◯" }],
+"on": [
+{ "text": "しらゆき", "display": "白◯" },
+{ "text": "こうせつ", "display": "降◯" },
+{ "text": "せきせつ", "display": "積◯" }
+],
+"choices": [
+{ "type": "correct", "char": "雪" },
+{ "type": "synonym", "char": "霜" },
+{ "type": "antonym", "char": "炎" },
+{ "type": "homophone", "char": "節" },
+{ "type": "similar_shape", "char": "雷" },
+{ "type": "same_radical", "char": "雲" }
+]
+},
+{
+"kanji": "春",
+"kun": [{ "text": "はる", "display": "◯" }],
+"on": [
+{ "text": "しゅんぶん", "display": "◯分" },
+{ "text": "らいしゅん", "display": "来◯" },
+{ "text": "せいしゅん", "display": "青◯" }
+],
+"choices": [
+{ "type": "correct", "char": "春" },
+{ "type": "synonym", "char": "萌" },
+{ "type": "antonym", "char": "秋" },
+{ "type": "homophone", "char": "瞬" },
+{ "type": "similar_shape", "char": "泰" },
+{ "type": "same_radical", "char": "昼" }
+]
+},
+{
+"kanji": "夏",
+"kun": [{ "text": "なつ", "display": "◯" }],
+"on": [
+{ "text": "なつやすみ", "display": "◯休み" },
+{ "text": "げし", "display": "◯至" },
+{ "text": "しゅか", "display": "初◯" }
+],
+"choices": [
+{ "type": "correct", "char": "夏" },
+{ "type": "synonym", "char": "暑" },
+{ "type": "antonym", "char": "冬" },
+{ "type": "homophone", "char": "懐" },
+{ "type": "similar_shape", "char": "憂" },
+{ "type": "same_radical", "char": "変" }
+]
+},
+{
+"kanji": "秋",
+"kun": [{ "text": "あき", "display": "◯" }],
+"on": [
+{ "text": "しゅうぶん", "display": "◯分" },
+{ "text": "しゅうかく", "display": "◯穫" },
+{ "text": "ばんしゅう", "display": "晩◯" }
+],
+"choices": [
+{ "type": "correct", "char": "秋" },
+{ "type": "synonym", "char": "涼" },
+{ "type": "antonym", "char": "春" },
+{ "type": "homophone", "char": "終" },
+{ "type": "similar_shape", "char": "和" },
+{ "type": "same_radical", "char": "科" }
+]
+},
+{
+"kanji": "冬",
+"kun": [{ "text": "ふゆ", "display": "◯" }],
+"on": [
+{ "text": "とうみん", "display": "◯眠" },
+{ "text": "ふゆやすみ", "display": "◯休み" },
+{ "text": "りっとう", "display": "立◯" }
+],
+"choices": [
+{ "type": "correct", "char": "冬" },
+{ "type": "synonym", "char": "寒" },
+{ "type": "antonym", "char": "夏" },
+{ "type": "homophone", "char": "父" },
+{ "type": "similar_shape", "char": "各" },
+{ "type": "same_radical", "char": "寒" }
+]
+},
+{
+"kanji": "天",
+"kun": [{ "text": "あま", "display": "◯" }],
+"on": [
+{ "text": "てんき", "display": "◯気" },
+{ "text": "てんごく", "display": "◯国" },
+{ "text": "てんさい", "display": "◯才" }
+],
+"choices": [
+{ "type": "correct", "char": "天" },
+{ "type": "synonym", "char": "空" },
+{ "type": "antonym", "char": "地" },
+{ "type": "homophone", "char": "展" },
+{ "type": "similar_shape", "char": "夫" },
+{ "type": "same_radical", "char": "大" }
+]
+}
+]
+},
+{
+"id": 7,
+"title": "〜東",
+"questions": [
+{
+"kanji": "東",
+"kun": [{ "text": "ひがし", "display": "◯" }],
+"on": [
+{ "text": "とうきょう", "display": "◯京" },
+{ "text": "かんとう", "display": "関◯" },
+{ "text": "とうよう", "display": "◯洋" }
+],
+"choices": [
+{ "type": "correct", "char": "東" },
+{ "type": "synonym", "char": "右" },
+{ "type": "antonym", "char": "西" },
+{ "type": "homophone", "char": "塔" },
+{ "type": "similar_shape", "char": "束" },
+{ "type": "same_radical", "char": "木" }
+]
+},
+{
+"kanji": "西",
+"kun": [{ "text": "にし", "display": "◯" }],
+"on": [
+{ "text": "かんさい", "display": "関◯" },
+{ "text": "せいよう", "display": "◯洋" },
+{ "text": "ほくせい", "display": "北◯" }
+],
+"choices": [
+{ "type": "correct", "char": "西" },
+{ "type": "synonym", "char": "左" },
+{ "type": "antonym", "char": "東" },
+{ "type": "homophone", "char": "清" },
+{ "type": "similar_shape", "char": "酉" },
+{ "type": "same_radical", "char": "四" }
+]
+},
+{
+"kanji": "南",
+"kun": [{ "text": "みなみ", "display": "◯" }],
+"on": [
+{ "text": "なんきょく", "display": "◯極" },
+{ "text": "なんなんとう", "display": "◯◯東" },
+{ "text": "とうなん", "display": "東◯" }
+],
+"choices": [
+{ "type": "correct", "char": "南" },
+{ "type": "synonym", "char": "下" },
+{ "type": "antonym", "char": "北" },
+{ "type": "homophone", "char": "難" },
+{ "type": "similar_shape", "char": "幸" },
+{ "type": "same_radical", "char": "単" }
+]
+},
+{
+"kanji": "北",
+"kun": [{ "text": "きた", "display": "◯" }],
+"on": [
+{ "text": "ほっきょく", "display": "◯極" },
+{ "text": "ほっかいどう", "display": "◯海道" },
+{ "text": "とうほく", "display": "東◯" }
+],
+"choices": [
+{ "type": "correct", "char": "北" },
+{ "type": "synonym", "char": "上" },
+{ "type": "antonym", "char": "南" },
+{ "type": "homophone", "char": "来" },
+{ "type": "similar_shape", "char": "比" },
+{ "type": "same_radical", "char": "化" }
+]
+},
+{
+"kanji": "京",
+"kun": [{ "text": "みやこ", "display": "◯" }],
+"on": [
+{ "text": "きょうと", "display": "◯都" },
+{ "text": "じょうきょう", "display": "上◯" },
+{ "text": "きょうしき", "display": "◯式" }
+],
+"choices": [
+{ "type": "correct", "char": "京" },
+{ "type": "synonym", "char": "都" },
+{ "type": "antonym", "char": "田" },
+{ "type": "homophone", "char": "教" },
+{ "type": "similar_shape", "char": "景" },
+{ "type": "same_radical", "char": "高" }
+]
+},
+{
+"kanji": "都",
+"kun": [{ "text": "みやこ", "display": "◯" }],
+"on": [
+{ "text": "きょうと", "display": "京◯" },
+{ "text": "つごう", "display": "◯合" },
+{ "text": "とかい", "display": "◯会" }
+],
+"choices": [
+{ "type": "correct", "char": "都" },
+{ "type": "synonym", "char": "京" },
+{ "type": "antonym", "char": "村" },
+{ "type": "homophone", "char": "徒" },
+{ "type": "similar_shape", "char": "部" },
+{ "type": "same_radical", "char": "郡" }
+]
+},
+{
+"kanji": "元",
+"kun": [{ "text": "もと", "display": "◯" }],
+"on": [
+{ "text": "がんじつ", "display": "◯日" },
+{ "text": "げんき", "display": "◯気" },
+{ "text": "もとどおり", "display": "◯通り" }
+],
+"choices": [
+{ "type": "correct", "char": "元" },
+{ "type": "synonym", "char": "始" },
+{ "type": "antonym", "char": "末" },
+{ "type": "homophone", "char": "原" },
+{ "type": "similar_shape", "char": "充" },
+{ "type": "same_radical", "char": "兄" }
+]
+},
+{
+"kanji": "首",
+"kun": [{ "text": "くび", "display": "◯" }],
+"on": [
+{ "text": "しゅと", "display": "◯都" },
+{ "text": "しゅしょう", "display": "◯相" },
+{ "text": "あしくび", "display": "足◯" }
+],
+"choices": [
+{ "type": "correct", "char": "首" },
+{ "type": "synonym", "char": "長" },
+{ "type": "antonym", "char": "尾" },
+{ "type": "homophone", "char": "手" },
+{ "type": "similar_shape", "char": "道" },
+{ "type": "same_radical", "char": "馬" }
+]
+},
+{
+"kanji": "国",
+"kun": [{ "text": "くに", "display": "◯" }],
+"on": [
+{ "text": "がいこく", "display": "外◯" },
+{ "text": "こくご", "display": "◯語" },
+{ "text": "こくりつ", "display": "◯立" }
+],
+"choices": [
+{ "type": "correct", "char": "国" },
+{ "type": "synonym", "char": "邦" },
+{ "type": "antonym", "char": "野" },
+{ "type": "homophone", "char": "刻" },
+{ "type": "similar_shape", "char": "図" },
+{ "type": "same_radical", "char": "団" }
+]
+},
+{
+"kanji": "多",
+"kun": [{ "text": "おおい", "display": "◯い" }],
+"on": [
+{ "text": "たぶん", "display": "◯分" },
+{ "text": "たしょう", "display": "◯少" },
+{ "text": "たすう", "display": "◯数" }
+],
+"choices": [
+{ "type": "correct", "char": "多" },
+{ "type": "synonym", "char": "豊" },
+{ "type": "antonym", "char": "少" },
+{ "type": "homophone", "char": "他" },
+{ "type": "similar_shape", "char": "名" },
+{ "type": "same_radical", "char": "外" }
+]
+}
+]
+},
+{
+"id": 8,
+"title": "〜考",
+"questions": [
+{
+"kanji": "考",
+"kun": [{ "text": "かんがえる", "display": "◯える" }],
+"on": [
+{ "text": "しこう", "display": "思◯" },
+{ "text": "さんこう", "display": "参◯" },
+{ "text": "こうりょ", "display": "◯慮" }
+],
+"choices": [
+{ "type": "correct", "char": "考" },
+{ "type": "synonym", "char": "思" },
+{ "type": "antonym", "char": "盲" },
+{ "type": "homophone", "char": "工" },
+{ "type": "similar_shape", "char": "老" },
+{ "type": "same_radical", "char": "者" }
+]
+},
+{
+"kanji": "思",
+"kun": [{ "text": "おもう", "display": "◯う" }],
+"on": [
+{ "text": "おもいだす", "display": "◯い出す" },
+{ "text": "いし", "display": "意◯" },
+{ "text": "しこう", "display": "◯考" }
+],
+"choices": [
+{ "type": "correct", "char": "思" },
+{ "type": "synonym", "char": "考" },
+{ "type": "antonym", "char": "忘" },
+{ "type": "homophone", "char": "師" },
+{ "type": "similar_shape", "char": "恩" },
+{ "type": "same_radical", "char": "急" }
+]
+},
+{
+"kanji": "知",
+"kun": [{ "text": "しる", "display": "◯る" }],
+"on": [
+{ "text": "ちしき", "display": "◯識" },
+{ "text": "ちじん", "display": "◯人" },
+{ "text": "しらせ", "display": "◯らせ" }
+],
+"choices": [
+{ "type": "correct", "char": "知" },
+{ "type": "synonym", "char": "解" },
+{ "type": "antonym", "char": "疑" },
+{ "type": "homophone", "char": "血" },
+{ "type": "similar_shape", "char": "和" },
+{ "type": "same_radical", "char": "短" }
+]
+},
+{
+"kanji": "言",
+"kun": [{ "text": "いう", "display": "◯う" }],
+"on": [
+{ "text": "げんご", "display": "◯語" },
+{ "text": "でんげん", "display": "伝◯" },
+{ "text": "げんどう", "display": "◯動" }
+],
+"choices": [
+{ "type": "correct", "char": "言" },
+{ "type": "synonym", "char": "話" },
+{ "type": "antonym", "char": "黙" },
+{ "type": "homophone", "char": "現" },
+{ "type": "similar_shape", "char": "信" },
+{ "type": "same_radical", "char": "語" }
+]
+},
+{
+"kanji": "話",
+"kun": [{ "text": "はなす", "display": "◯す" }],
+"on": [
+{ "text": "でんわ", "display": "電◯" },
+{ "text": "かいわ", "display": "会◯" },
+{ "text": "どうわ", "display": "童◯" }
+],
+"choices": [
+{ "type": "correct", "char": "話" },
+{ "type": "synonym", "char": "説" },
+{ "type": "antonym", "char": "聞" },
+{ "type": "homophone", "char": "輪" },
+{ "type": "similar_shape", "char": "活" },
+{ "type": "same_radical", "char": "読" }
+]
+},
+{
+"kanji": "語",
+"kun": [{ "text": "かたる", "display": "◯る" }],
+"on": [
+{ "text": "こくご", "display": "国◯" },
+{ "text": "えいご", "display": "英◯" },
+{ "text": "ようご", "display": "用◯" }
+],
+"choices": [
+{ "type": "correct", "char": "語" },
+{ "type": "synonym", "char": "言" },
+{ "type": "antonym", "char": "沈" },
+{ "type": "homophone", "char": "午" },
+{ "type": "similar_shape", "char": "誤" },
+{ "type": "same_radical", "char": "説" }
+]
+},
+{
+"kanji": "読",
+"kun": [{ "text": "よむ", "display": "◯む" }],
+"on": [
+{ "text": "どくしょ", "display": "◯書" },
+{ "text": "おんよみ", "display": "音◯み" },
+{ "text": "どくしゃ", "display": "◯者" }
+],
+"choices": [
+{ "type": "correct", "char": "読" },
+{ "type": "synonym", "char": "覧" },
+{ "type": "antonym", "char": "書" },
+{ "type": "homophone", "char": "毒" },
+{ "type": "similar_shape", "char": "続" },
+{ "type": "same_radical", "char": "話" }
+]
+},
+{
+"kanji": "書",
+"kun": [{ "text": "かく", "display": "◯く" }],
+"on": [
+{ "text": "しょどう", "display": "◯道" },
+{ "text": "としょかん", "display": "図◯館" },
+{ "text": "じしょ", "display": "辞◯" }
+],
+"choices": [
+{ "type": "correct", "char": "書" },
+{ "type": "synonym", "char": "記" },
+{ "type": "antonym", "char": "読" },
+{ "type": "homophone", "char": "初" },
+{ "type": "similar_shape", "char": "昼" },
+{ "type": "same_radical", "char": "最" }
+]
+},
+{
+"kanji": "聞",
+"kun": [{ "text": "きく", "display": "◯く" }],
+"on": [
+{ "text": "しんぶん", "display": "新◯" },
+{ "text": "ききとり", "display": "◯き取り" },
+{ "text": "ぶんがく", "display": "◯学" }
+],
+"choices": [
+{ "type": "correct", "char": "聞" },
+{ "type": "synonym", "char": "聴" },
+{ "type": "antonym", "char": "言" },
+{ "type": "homophone", "char": "文" },
+{ "type": "similar_shape", "char": "門" },
+{ "type": "same_radical", "char": "問" }
+]
+},
+{
+"kanji": "記",
+"kun": [{ "text": "しるす", "display": "◯す" }],
+"on": [
+{ "text": "にっき", "display": "日◯" },
+{ "text": "きしゃ", "display": "◯者" },
+{ "text": "あんき", "display": "暗◯" }
+],
+"choices": [
+{ "type": "correct", "char": "記" },
+{ "type": "synonym", "char": "録" },
+{ "type": "antonym", "char": "忘" },
+{ "type": "homophone", "char": "気" },
+{ "type": "similar_shape", "char": "己" },
+{ "type": "same_radical", "char": "計" }
+]
+}
+]
+},
+{
+"id": 9,
+"title": "〜自",
+"questions": [
+{
+"kanji": "自",
+"kun": [{ "text": "みずから", "display": "◯ら" }],
+"on": [
+{ "text": "じぶん", "display": "◯分" },
+{ "text": "じどうしゃ", "display": "◯動車" },
+{ "text": "じゆう", "display": "◯由" }
+],
+"choices": [
+{ "type": "correct", "char": "自" },
+{ "type": "synonym", "char": "己" },
+{ "type": "antonym", "char": "他" },
+{ "type": "homophone", "char": "字" },
+{ "type": "similar_shape", "char": "目" },
+{ "type": "same_radical", "char": "臭" }
+]
+},
+{
+"kanji": "分",
+"kun": [{ "text": "わかる", "display": "◯かる" }],
+"on": [
+{ "text": "じぶん", "display": "自◯" },
+{ "text": "はんぶん", "display": "半◯" },
+{ "text": "ふん", "display": "五◯" }
+],
+"choices": [
+{ "type": "correct", "char": "分" },
+{ "type": "synonym", "char": "別" },
+{ "type": "antonym", "char": "合" },
+{ "type": "homophone", "char": "文" },
+{ "type": "similar_shape", "char": "公" },
+{ "type": "same_radical", "char": "切" }
+]
+},
+{
+"kanji": "合",
+"kun": [{ "text": "あう", "display": "◯う" }],
+"on": [
+{ "text": "ごうけい", "display": "◯計" },
+{ "text": "にあう", "display": "似◯う" },
+{ "text": "しあい", "display": "試◯" }
+],
+"choices": [
+{ "type": "correct", "char": "合" },
+{ "type": "synonym", "char": "同" },
+{ "type": "antonym", "char": "分" },
+{ "type": "homophone", "char": "号" },
+{ "type": "similar_shape", "char": "台" },
+{ "type": "same_radical", "char": "名" }
+]
+},
+{
+"kanji": "同",
+"kun": [{ "text": "おなじ", "display": "◯じ" }],
+"on": [
+{ "text": "どうじ", "display": "◯時" },
+{ "text": "どうきゅうせい", "display": "◯級生" },
+{ "text": "どうい", "display": "◯意" }
+],
+"choices": [
+{ "type": "correct", "char": "同" },
+{ "type": "synonym", "char": "等" },
+{ "type": "antonym", "char": "異" },
+{ "type": "homophone", "char": "堂" },
+{ "type": "similar_shape", "char": "回" },
+{ "type": "same_radical", "char": "向" }
+]
+},
+{
+"kanji": "公",
+"kun": [{ "text": "おおやけ", "display": "◯" }],
+"on": [
+{ "text": "こうえん", "display": "◯園" },
+{ "text": "こうりつ", "display": "◯立" },
+{ "text": "しゅこう", "display": "主◯" }
+],
+"choices": [
+{ "type": "correct", "char": "公" },
+{ "type": "synonym", "char": "共" },
+{ "type": "antonym", "char": "私" },
+{ "type": "homophone", "char": "工" },
+{ "type": "similar_shape", "char": "分" },
+{ "type": "same_radical", "char": "六" }
+]
+},
+{
+"kanji": "園",
+"kun": [{ "text": "その", "display": "◯" }],
+"on": [
+{ "text": "こうえん", "display": "公◯" },
+{ "text": "どうぶつえん", "display": "動物◯" },
+{ "text": "かえん", "display": "花◯" }
+],
+"choices": [
+{ "type": "correct", "char": "園" },
+{ "type": "synonym", "char": "庭" },
+{ "type": "antonym", "char": "野" },
+{ "type": "homophone", "char": "遠" },
+{ "type": "similar_shape", "char": "圏" },
+{ "type": "same_radical", "char": "図" }
+]
+},
+{
+"kanji": "会",
+"kun": [{ "text": "あう", "display": "◯う" }],
+"on": [
+{ "text": "かいわ", "display": "◯話" },
+{ "text": "うんどうかい", "display": "運動◯" },
+{ "text": "かいじょう", "display": "◯場" }
+],
+"choices": [
+{ "type": "correct", "char": "会" },
+{ "type": "synonym", "char": "集" },
+{ "type": "antonym", "char": "別" },
+{ "type": "homophone", "char": "回" },
+{ "type": "similar_shape", "char": "合" },
+{ "type": "same_radical", "char": "今" }
+]
+},
+{
+"kanji": "社",
+"kun": [{ "text": "やしろ", "display": "◯" }],
+"on": [
+{ "text": "かい会社", "display": "会◯" },
+{ "text": "じんじゃ", "display": "神◯" },
+{ "text": "しゃかい", "display": "◯会" }
+],
+"choices": [
+{ "type": "correct", "char": "社" },
+{ "type": "synonym", "char": "団" },
+{ "type": "antonym", "char": "個" },
+{ "type": "homophone", "char": "車" },
+{ "type": "similar_shape", "char": "杜" },
+{ "type": "same_radical", "char": "神" }
+]
+},
+{
+"kanji": "店",
+"kun": [{ "text": "みせ", "display": "◯" }],
+"on": [
+{ "text": "しょうてん", "display": "商店" },
+{ "text": "てんいん", "display": "◯員" },
+{ "text": "かいてん", "display": "開◯" }
+],
+"choices": [
+{ "type": "correct", "char": "店" },
+{ "type": "synonym", "char": "商" },
+{ "type": "antonym", "char": "家" },
+{ "type": "homophone", "char": "点" },
+{ "type": "similar_shape", "char": "広" },
+{ "type": "same_radical", "char": "庫" }
+]
+},
+{
+"kanji": "場",
+"kun": [{ "text": "ば", "display": "◯" }],
+"on": [
+{ "text": "こうじょう", "display": "工◯" },
+{ "text": "かいじょう", "display": "会◯" },
+{ "text": "ばしょ", "display": "◯所" }
+],
+"choices": [
+{ "type": "correct", "char": "場" },
+{ "type": "synonym", "char": "所" },
+{ "type": "antonym", "char": "空" },
+{ "type": "homophone", "char": "城" },
+{ "type": "similar_shape", "char": "堀" },
+{ "type": "same_radical", "char": "地" }
+]
+}
+]
+},
+{
+"id": 10,
+"title": "〜学",
+"questions": [
+{
+"kanji": "学",
+"kun": [{ "text": "まなぶ", "display": "◯ぶ" }],
+"on": [
+{ "text": "がっこう", "display": "◯校" },
+{ "text": "いちねんせい", "display": "一年◯" },
+{ "text": "ぶんがく", "display": "文◯" }
+],
+"choices": [
+{ "type": "correct", "char": "学" },
+{ "type": "synonym", "char": "習" },
+{ "type": "antonym", "char": "遊" },
+{ "type": "homophone", "char": "楽" },
+{ "type": "similar_shape", "char": "字" },
+{ "type": "same_radical", "char": "子" }
+]
+},
+{
+"kanji": "校",
+"kun": [{ "text": "かせ", "display": "◯" }],
+"on": [
+{ "text": "こうてい", "display": "◯庭" },
+{ "text": "がっこう", "display": "学◯" },
+{ "text": "こうちょう", "display": "◯長" }
+],
+"choices": [
+{ "type": "correct", "char": "校" },
+{ "type": "synonym", "char": "園" },
+{ "type": "antonym", "char": "家" },
+{ "type": "homophone", "char": "考" },
+{ "type": "similar_shape", "char": "絞" },
+{ "type": "same_radical", "char": "村" }
+]
+},
+{
+"kanji": "室",
+"kun": [{ "text": "むろ", "display": "◯" }],
+"on": [
+{ "text": "きょうしつ", "display": "教◯" },
+{ "text": "しつない", "display": "◯内" },
+{ "text": "わしつ", "display": "和◯" }
+],
+"choices": [
+{ "type": "correct", "char": "室" },
+{ "type": "synonym", "char": "部屋" },
+{ "type": "antonym", "char": "外" },
+{ "type": "homophone", "char": "失" },
+{ "type": "similar_shape", "char": "至" },
+{ "type": "same_radical", "char": "家" }
+]
+},
+{
+"kanji": "教",
+"kun": [{ "text": "おしえる", "display": "◯える" }],
+"on": [
+{ "text": "きょうしつ", "display": "◯室" },
+{ "text": "きょうかい", "display": "◯会" },
+{ "text": "きょうかしょ", "display": "◯科書" }
+],
+"choices": [
+{ "type": "correct", "char": "教" },
+{ "type": "synonym", "char": "導" },
+{ "type": "antonym", "char": "習" },
+{ "type": "homophone", "char": "京" },
+{ "type": "similar_shape", "char": "数" },
+{ "type": "same_radical", "char": "放" }
+]
+},
+{
+"kanji": "習",
+"kun": [{ "text": "ならう", "display": "◯う" }],
+"on": [
+{ "text": "じしゅう", "display": "自◯" },
+{ "text": "ふくしゅう", "display": "復◯" },
+{ "text": "しゅうかん", "display": "◯慣" }
+],
+"choices": [
+{ "type": "correct", "char": "習" },
+{ "type": "synonym", "char": "学" },
+{ "type": "antonym", "char": "教" },
+{ "type": "homophone", "char": "集" },
+{ "type": "similar_shape", "char": "羽" },
+{ "type": "same_radical", "char": "翌" }
+]
+},
+{
+"kanji": "練",
+"kun": [{ "text": "ねる", "display": "◯る" }],
+"on": [
+{ "text": "れんしゅう", "display": "◯習" },
+{ "text": "くんれん", "display": "訓◯" },
+{ "text": "しゅくれん", "display": "熟◯" }
+],
+"choices": [
+{ "type": "correct", "char": "練" },
+{ "type": "synonym", "char": "磨" },
+{ "type": "antonym", "char": "怠" },
+{ "type": "homophone", "char": "連" },
+{ "type": "similar_shape", "char": "棟" },
+{ "type": "same_radical", "char": "終" }
+]
+},
+{
+"kanji": "勉",
+"kun": [{ "text": "つとめる", "display": "◯める" }],
+"on": [
+{ "text": "べんきょう", "display": "◯強" },
+{ "text": "きんべん", "display": "勤◯" },
+{ "text": "がいべん", "display": "外◯" }
+],
+"choices": [
+{ "type": "correct", "char": "勉" },
+{ "type": "synonym", "char": "励" },
+{ "type": "antonym", "char": "怠" },
+{ "type": "homophone", "char": "免" },
+{ "type": "similar_shape", "char": "免" },
+{ "type": "same_radical", "char": "強" }
+]
+},
+{
+"kanji": "強",
+"kun": [{ "text": "つよい", "display": "◯い" }],
+"on": [
+{ "text": "きょうりょく", "display": "◯力" },
+{ "text": "べんきょう", "display": "勉◯" },
+{ "text": "きょうじゃく", "display": "◯弱" }
+],
+"choices": [
+{ "type": "correct", "char": "強" },
+{ "type": "synonym", "char": "剛" },
+{ "type": "antonym", "char": "弱" },
+{ "type": "homophone", "char": "京" },
+{ "type": "similar_shape", "char": "強" },
+{ "type": "same_radical", "char": "引" }
+]
+},
+{
+"kanji": "弱",
+"kun": [{ "text": "よわい", "display": "◯い" }],
+"on": [
+{ "text": "じゃくてん", "display": "◯点" },
+{ "text": "きょうじゃく", "display": "強◯" },
+{ "text": "じゃくしゃ", "display": "◯者" }
+],
+"choices": [
+{ "type": "correct", "char": "弱" },
+{ "type": "synonym", "char": "脆" },
+{ "type": "antonym", "char": "強" },
+{ "type": "homophone", "char": "若" },
+{ "type": "similar_shape", "char": "羽" },
+{ "type": "same_radical", "char": "引" }
+]
+},
+{
+"kanji": "才",
+"kun": [{ "text": "わずかに", "display": "◯かに" }],
+"on": [
+{ "text": "てんさい", "display": "天◯" },
+{ "text": "はっさい", "display": "八◯" },
+{ "text": "さいのう", "display": "◯能" }
+],
+"choices": [
+{ "type": "correct", "char": "才" },
+{ "type": "synonym", "char": "能" },
+{ "type": "antonym", "char": "拙" },
+{ "type": "homophone", "char": "再" },
+{ "type": "similar_shape", "char": "寸" },
+{ "type": "same_radical", "char": "万" }
+]
+}
+]
+},
+{
+"id": 11,
+"title": "〜高",
+"questions": [
+{
+"kanji": "高",
+"kun": [{ "text": "たかい", "display": "◯い" }],
+"on": [
+{ "text": "こうこう", "display": "◯校" },
+{ "text": "さいこう", "display": "最◯" },
+{ "text": "こうそく", "display": "◯速" }
+],
+"choices": [
+{ "type": "correct", "char": "高" },
+{ "type": "synonym", "char": "崇" },
+{ "type": "antonym", "char": "低" },
+{ "type": "homophone", "char": "考" },
+{ "type": "similar_shape", "char": "亭" },
+{ "type": "same_radical", "char": "京" }
+]
+},
+{
+"kanji": "低",
+"kun": [{ "text": "ひくい", "display": "◯い" }],
+"on": [
+{ "text": "ていたい", "display": "◯滞" },
+{ "text": "ていおん", "display": "◯温" },
+{ "text": "ていきあつ", "display": "◯気圧" }
+],
+"choices": [
+{ "type": "correct", "char": "低" },
+{ "type": "synonym", "char": "卑" },
+{ "type": "antonym", "char": "高" },
+{ "type": "homophone", "char": "底" },
+{ "type": "similar_shape", "char": "底" },
+{ "type": "same_radical", "char": "住" }
+]
+},
+{
+"kanji": "長",
+"kun": [{ "text": "ながい", "display": "◯い" }],
+"on": [
+{ "text": "えんちょう", "display": "延◯" },
+{ "text": "こうちょう", "display": "校◯" },
+{ "text": "しちょう", "display": "市◯" }
+],
+"choices": [
+{ "type": "correct", "char": "長" },
+{ "type": "synonym", "char": "永" },
+{ "type": "antonym", "char": "短" },
+{ "type": "homophone", "char": "帳" },
+{ "type": "similar_shape", "char": "張" },
+{ "type": "same_radical", "char": "髪" }
+]
+},
+{
+"kanji": "短",
+"kun": [{ "text": "みじかい", "display": "◯い" }],
+"on": [
+{ "text": "たんしょ", "display": "◯所" },
+{ "text": "たんき", "display": "◯気" },
+{ "text": "たんじかん", "display": "◯時間" }
+],
+"choices": [
+{ "type": "correct", "char": "短" },
+{ "type": "synonym", "char": "欠" },
+{ "type": "antonym", "char": "長" },
+{ "type": "homophone", "char": "端" },
+{ "type": "similar_shape", "char": "知" },
+{ "type": "same_radical", "char": "矢" }
+]
+},
+{
+"kanji": "広",
+"kun": [{ "text": "ひろい", "display": "◯い" }],
+"on": [
+{ "text": "こうこく", "display": "◯告" },
+{ "text": "ひろしま", "display": "◯島" },
+{ "text": "こうだい", "display": "◯大" }
+],
+"choices": [
+{ "type": "correct", "char": "広" },
+{ "type": "synonym", "char": "博" },
+{ "type": "antonym", "char": "狭" },
+{ "type": "homophone", "char": "浩" },
+{ "type": "similar_shape", "char": "店" },
+{ "type": "same_radical", "char": "床" }
+]
+},
+{
+"kanji": "大",
+"kun": [{ "text": "おおきい", "display": "◯きい" }],
+"on": [
+{ "text": "だいじ", "display": "◯事" },
+{ "text": "たいせつ", "display": "◯切" },
+{ "text": "だいがく", "display": "◯学" }
+],
+"choices": [
+{ "type": "correct", "char": "大" },
+{ "type": "synonym", "char": "巨" },
+{ "type": "antonym", "char": "小" },
+{ "type": "homophone", "char": "第" },
+{ "type": "similar_shape", "char": "太" },
+{ "type": "same_radical", "char": "犬" }
+]
+},
+{
+"kanji": "小",
+"kun": [{ "text": "ちいさい", "display": "◯さい" }],
+"on": [
+{ "text": "しょうがっこう", "display": "◯学校" },
+{ "text": "こづつみ", "display": "◯包み" },
+{ "text": "こや", "display": "◯屋" }
+],
+"choices": [
+{ "type": "correct", "char": "小" },
+{ "type": "synonym", "char": "微" },
+{ "type": "antonym", "char": "大" },
+{ "type": "homophone", "char": "少" },
+{ "type": "similar_shape", "char": "少" },
+{ "type": "same_radical", "char": "尖" }
+]
+},
+{
+"kanji": "太",
+"kun": [{ "text": "ふとい", "display": "◯い" }],
+"on": [
+{ "text": "たいよう", "display": "◯陽" },
+{ "text": "まるた", "display": "丸◯" },
+{ "text": "ふともも", "display": "◯もも" }
+],
+"choices": [
+{ "type": "correct", "char": "太" },
+{ "type": "synonym", "char": "厚" },
+{ "type": "antonym", "char": "細" },
+{ "type": "homophone", "char": "他" },
+{ "type": "similar_shape", "char": "大" },
+{ "type": "same_radical", "char": "犬" }
+]
+},
+{
+"kanji": "細",
+"kun": [{ "text": "ほそい", "display": "◯い" }],
+"on": [
+{ "text": "さいぶ", "display": "◯部" },
+{ "text": "こまかい", "display": "◯かい" },
+{ "text": "さいぼう", "display": "◯胞" }
+],
+"choices": [
+{ "type": "correct", "char": "細" },
+{ "type": "synonym", "char": "薄" },
+{ "type": "antonym", "char": "太" },
+{ "type": "homophone", "char": "際" },
+{ "type": "similar_shape", "char": "組" },
+{ "type": "same_radical", "char": "紙" }
+]
+},
+{
+"kanji": "遠",
+"kun": [{ "text": "とおい", "display": "◯い" }],
+"on": [
+{ "text": "えんそく", "display": "◯足" },
+{ "text": "ぼうえんきょう", "display": "望◯鏡" },
+{ "text": "えんりょ", "display": "◯慮" }
+],
+"choices": [
+{ "type": "correct", "char": "遠" },
+{ "type": "synonym", "char": "遥" },
+{ "type": "antonym", "char": "近" },
+{ "type": "homophone", "char": "園" },
+{ "type": "similar_shape", "char": "園" },
+{ "type": "same_radical", "char": "通" }
+]
+}
+]
+},
+{
+"id": 12,
+"title": "〜歩",
+"questions": [
+{
+"kanji": "歩",
+"kun": [{ "text": "あるく", "display": "◯く" }],
+"on": [
+{ "text": "さんぽ", "display": "散◯" },
+{ "text": "こうしん", "display": "進◯" },
+{ "text": "ほどう", "display": "◯道" }
+],
+"choices": [
+{ "type": "correct", "char": "歩" },
+{ "type": "synonym", "char": "進" },
+{ "type": "antonym", "char": "止" },
+{ "type": "homophone", "char": "保" },
+{ "type": "similar_shape", "char": "渉" },
+{ "type": "same_radical", "char": "止" }
+]
+},
+{
+"kanji": "走",
+"kun": [{ "text": "はしる", "display": "◯る" }],
+"on": [
+{ "text": "きょうそう", "display": "競◯" },
+{ "text": "そうこう", "display": "◯行" },
+{ "text": "だっそう", "display": "脱◯" }
+],
+"choices": [
+{ "type": "correct", "char": "走" },
+{ "type": "synonym", "char": "駆" },
+{ "type": "antonym", "char": "止" },
+{ "type": "homophone", "char": "層" },
+{ "type": "similar_shape", "char": "徒" },
+{ "type": "same_radical", "char": "起" }
+]
+},
+{
+"kanji": "止",
+"kun": [{ "text": "とまる", "display": "◯まる" }],
+"on": [
+{ "text": "ちゅうし", "display": "中◯" },
+{ "text": "ていし", "display": "停◯" },
+{ "text": "きんし", "display": "禁◯" }
+],
+"choices": [
+{ "type": "correct", "char": "止" },
+{ "type": "synonym", "char": "廃" },
+{ "type": "antonym", "char": "動" },
+{ "type": "homophone", "char": "市" },
+{ "type": "similar_shape", "char": "正" },
+{ "type": "same_radical", "char": "歩" }
+]
+},
+{
+"kanji": "行",
+"kun": [{ "text": "いく", "display": "◯く" }],
+"on": [
+{ "text": "ぎょうれつ", "display": "◯列" },
+{ "text": "こうどう", "display": "◯動" },
+{ "text": "ゆきさき", "display": "◯き先" }
+],
+"choices": [
+{ "type": "correct", "char": "行" },
+{ "type": "synonym", "char": "往" },
+{ "type": "antonym", "char": "来" },
+{ "type": "homophone", "char": "項" },
+{ "type": "similar_shape", "char": "待" },
+{ "type": "same_radical", "char": "役" }
+]
+},
+{
+"kanji": "来",
+"kun": [{ "text": "くる", "display": "◯る" }],
+"on": [
+{ "text": "らいげつ", "display": "◯月" },
+{ "text": "みらい", "display": "未◯" },
+{ "text": "らいにち", "display": "◯日" }
+],
+"choices": [
+{ "type": "correct", "char": "来" },
+{ "type": "synonym", "char": "至" },
+{ "type": "antonym", "char": "去" },
+{ "type": "homophone", "char": "礼" },
+{ "type": "similar_shape", "char": "末" },
+{ "type": "same_radical", "char": "東" }
+]
+},
+{
+"kanji": "出",
+"kun": [{ "text": "でる", "display": "◯る" }],
+"on": [
+{ "text": "がいしゅつ", "display": "外◯" },
+{ "text": "しゅっぱつ", "display": "◯ぱつ" },
+{ "text": "でぐち", "display": "◯口" }
+],
+"choices": [
+{ "type": "correct", "char": "出" },
+{ "type": "synonym", "char": "現" },
+{ "type": "antonym", "char": "入" },
+{ "type": "homophone", "char": "俊" },
+{ "type": "similar_shape", "char": "山" },
+{ "type": "same_radical", "char": "画" }
+]
+},
+{
+"kanji": "入",
+"kun": [{ "text": "はいる", "display": "◯いる" }],
+"on": [
+{ "text": "いりぐち", "display": "◯口" },
+{ "text": "にゅうがく", "display": "◯学" },
+{ "text": "しんにゅう", "display": "侵◯" }
+],
+"choices": [
+{ "type": "correct", "char": "入" },
+{ "type": "synonym", "char": "込" },
+{ "type": "antonym", "char": "出" },
+{ "type": "homophone", "char": "乳" },
+{ "type": "similar_shape", "char": "人" },
+{ "type": "same_radical", "char": "全" }
+]
+},
+{
+"kanji": "立",
+"kun": [{ "text": "たつ", "display": "◯つ" }],
+"on": [
+{ "text": "くりつ", "display": "公◯" },
+{ "text": "こくりつ", "display": "国◯" },
+{ "text": "りったい", "display": "◯体" }
+],
+"choices": [
+{ "type": "correct", "char": "立" },
+{ "type": "synonym", "char": "建" },
+{ "type": "antonym", "char": "座" },
+{ "type": "homophone", "char": "律" },
+{ "type": "similar_shape", "char": "位" },
+{ "type": "same_radical", "char": "音" }
+]
+},
+{
+"kanji": "座",
+"kun": [{ "text": "すわる", "display": "◯わる" }],
+"on": [
+{ "text": "せいざ", "display": "正◯" },
+{ "text": "こうざ", "display": "口◯" },
+{ "text": "ざせき", "display": "◯席" }
+],
+"choices": [
+{ "type": "correct", "char": "座" },
+{ "type": "synonym", "char": "席" },
+{ "type": "antonym", "char": "立" },
+{ "type": "homophone", "char": "差" },
+{ "type": "similar_shape", "char": "庫" },
+{ "type": "same_radical", "char": "広" }
+]
+},
+{
+"kanji": "帰",
+"kun": [{ "text": "かえる", "display": "◯える" }],
+"on": [
+{ "text": "きこく", "display": "◯国" },
+{ "text": "きたく", "display": "◯宅" },
+{ "text": "ふっき", "display": "復◯" }
+],
+"choices": [
+{ "type": "correct", "char": "帰" },
+{ "type": "synonym", "char": "復" },
+{ "type": "antonym", "char": "行" },
+{ "type": "homophone", "char": "器" },
+{ "type": "similar_shape", "char": "師" },
+{ "type": "same_radical", "char": "帳" }
+]
+}
+]
+},
+{
+"id": 13,
+"title": "〜親",
+"questions": [
+{
+"kanji": "親",
+"kun": [{ "text": "おや", "display": "◯" }],
+"on": [
+{ "text": "りょうしん", "display": "両◯" },
+{ "text": "しんせつ", "display": "◯切" },
+{ "text": "したしい", "display": "◯しい" }
+],
+"choices": [
+{ "type": "correct", "char": "親" },
+{ "type": "synonym", "char": "睦" },
+{ "type": "antonym", "char": "疎" },
+{ "type": "homophone", "char": "新" },
+{ "type": "similar_shape", "char": "新" },
+{ "type": "same_radical", "char": "顔" }
+]
+},
+{
+"kanji": "父",
+"kun": [{ "text": "ちち", "display": "◯" }],
+"on": [
+{ "text": "ふぼ", "display": "◯母" },
+{ "text": "そふ", "display": "祖◯" },
+{ "text": "じち", "display": "実◯" }
+],
+"choices": [
+{ "type": "correct", "char": "父" },
+{ "type": "synonym", "char": "翁" },
+{ "type": "antonym", "char": "母" },
+{ "type": "homophone", "char": "冬" },
+{ "type": "similar_shape", "char": "交" },
+{ "type": "same_radical", "char": "釜" }
+]
+},
+{
+"kanji": "母",
+"kun": [{ "text": "はは", "display": "◯" }],
+"on": [
+{ "text": "ふぼ", "display": "父◯" },
+{ "text": "そぼ", "display": "祖◯" },
+{ "text": "ぼこう", "display": "◯校" }
+],
+"choices": [
+{ "type": "correct", "char": "母" },
+{ "type": "synonym", "char": "嫗" },
+{ "type": "antonym", "char": "父" },
+{ "type": "homophone", "char": "簿" },
+{ "type": "similar_shape", "char": "毎" },
+{ "type": "same_radical", "char": "毒" }
+]
+},
+{
+"kanji": "兄",
+"kun": [{ "text": "あに", "display": "◯" }],
+"on": [
+{ "text": "きょうだい", "display": "◯弟" },
+{ "text": "じけい", "display": "実◯" },
+{ "text": "ちょうけい", "display": "長◯" }
+],
+"choices": [
+{ "type": "correct", "char": "兄" },
+{ "type": "synonym", "char": "長" },
+{ "type": "antonym", "char": "弟" },
+{ "type": "homophone", "char": "形" },
+{ "type": "similar_shape", "char": "完" },
+{ "type": "same_radical", "char": "党" }
+]
+},
+{
+"kanji": "弟",
+"kun": [{ "text": "おとうと", "display": "◯" }],
+"on": [
+{ "text": "きょうだい", "display": "兄◯" },
+{ "text": "してい", "display": "子◯" },
+{ "text": "でし", "display": "◯子" }
+],
+"choices": [
+{ "type": "correct", "char": "弟" },
+{ "type": "synonym", "char": "次" },
+{ "type": "antonym", "char": "兄" },
+{ "type": "homophone", "char": "梯" },
+{ "type": "similar_shape", "char": "第" },
+{ "type": "same_radical", "char": "引" }
+]
+},
+{
+"kanji": "姉",
+"kun": [{ "text": "あね", "display": "◯" }],
+"on": [
+{ "text": "しまい", "display": "◯妹" },
+{ "text": "じし", "display": "実◯" },
+{ "text": "ぎし", "display": "義◯" }
+],
+"choices": [
+{ "type": "correct", "char": "姉" },
+{ "type": "synonym", "char": "長" },
+{ "type": "antonym", "char": "妹" },
+{ "type": "homophone", "char": "市" },
+{ "type": "similar_shape", "char": "柿" },
+{ "type": "same_radical", "char": "妹" }
+]
+},
+{
+"kanji": "妹",
+"kun": [{ "text": "いもうと", "display": "◯" }],
+"on": [
+{ "text": "しまい", "display": "姉◯" },
+{ "text": "じまい", "display": "実◯" },
+{ "text": "ぎまい", "display": "義◯" }
+],
+"choices": [
+{ "type": "correct", "char": "妹" },
+{ "type": "synonym", "char": "次" },
+{ "type": "antonym", "char": "姉" },
+{ "type": "homophone", "char": "舞" },
+{ "type": "similar_shape", "char": "味" },
+{ "type": "same_radical", "char": "姉" }
+]
+},
+{
+"kanji": "首",
+"kun": [{ "text": "くび", "display": "◯" }],
+"on": [
+{ "text": "しゅと", "display": "◯都" },
+{ "text": "しゅしょう", "display": "◯相" },
+{ "text": "あしくび", "display": "足◯" }
+],
+"choices": [
+{ "type": "correct", "char": "首" },
+{ "type": "synonym", "char": "長" },
+{ "type": "antonym", "char": "尾" },
+{ "type": "homophone", "char": "手" },
+{ "type": "similar_shape", "char": "道" },
+{ "type": "same_radical", "char": "馬" }
+]
+},
+{
+"kanji": "友",
+"kun": [{ "text": "とも", "display": "◯" }],
+"on": [
+{ "text": "ゆうじん", "display": "◯人" },
+{ "text": "ゆうじょう", "display": "◯情" },
+{ "text": "しんゆう", "display": "親◯" }
+],
+"choices": [
+{ "type": "correct", "char": "友" },
+{ "type": "synonym", "char": "朋" },
+{ "type": "antonym", "char": "敵" },
+{ "type": "homophone", "char": "遊" },
+{ "type": "similar_shape", "char": "反" },
+{ "type": "same_radical", "char": "支" }
+]
+},
+{
+"kanji": "組",
+"kun": [{ "text": "くむ", "display": "◯む" }],
+"on": [
+{ "text": "ばんぐみ", "display": "番◯" },
+{ "text": "そしき", "display": "◯織" },
+{ "text": "くみたてる", "display": "◯み立てる" }
+],
+"choices": [
+{ "type": "correct", "char": "組" },
+{ "type": "synonym", "char": "班" },
+{ "type": "antonym", "char": "個" },
+{ "type": "homophone", "char": "久" },
+{ "type": "similar_shape", "char": "細" },
+{ "type": "same_radical", "char": "紙" }
+]
+}
+]
+},
+{
+"id": 14,
+"title": "〜色",
+"questions": [
+{
+"kanji": "色",
+"kun": [{ "text": "いろ", "display": "◯" }],
+"on": [
+{ "text": "けしき", "display": "景◯" },
+{ "text": "しきさい", "display": "◯彩" },
+{ "text": "しょくぜん", "display": "◯ぜん" }
+],
+"choices": [
+{ "type": "correct", "char": "色" },
+{ "type": "synonym", "char": "彩" },
+{ "type": "antonym", "char": "形" },
+{ "type": "homophone", "char": "拭" },
+{ "type": "similar_shape", "char": "邑" },
+{ "type": "same_radical", "char": "絶" }
+]
+},
+{
+"kanji": "黄",
+"kun": [{ "text": "き", "display": "◯" }],
+"on": [
+{ "text": "おうごん", "display": "◯金" },
+{ "text": "きいろ", "display": "◯色" },
+{ "text": "おうだん", "display": "◯断" }
+],
+"choices": [
+{ "type": "correct", "char": "黄" },
+{ "type": "synonym", "char": "金" },
+{ "type": "antonym", "char": "紫" },
+{ "type": "homophone", "char": "王" },
+{ "type": "similar_shape", "char": "共" },
+{ "type": "same_radical", "char": "黒" }
+]
+},
+{
+"kanji": "黒",
+"kun": [{ "text": "くろ", "display": "◯" }],
+"on": [
+{ "text": "こくばん", "display": "◯板" },
+{ "text": "あんこく", "display": "暗◯" },
+{ "text": "くろずみ", "display": "◯ずみ" }
+],
+"choices": [
+{ "type": "correct", "char": "黒" },
+{ "type": "synonym", "char": "墨" },
+{ "type": "antonym", "char": "白" },
+{ "type": "homophone", "char": "刻" },
+{ "type": "similar_shape", "char": "里" },
+{ "type": "same_radical", "char": "点" }
+]
+},
+{
+"kanji": "白",
+"kun": [{ "text": "しろ", "display": "◯" }],
+"on": [
+{ "text": "しろい", "display": "◯い" },
+{ "text": "はくじょう", "display": "◯状" },
+{ "text": "こくはく", "display": "告◯" }
+],
+"choices": [
+{ "type": "correct", "char": "白" },
+{ "type": "synonym", "char": "素" },
+{ "type": "antonym", "char": "黒" },
+{ "type": "homophone", "char": "吐" },
+{ "type": "similar_shape", "char": "百" },
+{ "type": "same_radical", "char": "的な" }
+]
+},
+{
+"kanji": "赤",
+"kun": [{ "text": "あか", "display": "◯" }],
+"on": [
+{ "text": "あかい", "display": "◯い" },
+{ "text": "せきどう", "display": "◯道" },
+{ "text": "あかちゃん", "display": "◯ちゃん" }
+],
+"choices": [
+{ "type": "correct", "char": "赤" },
+{ "type": "synonym", "char": "紅" },
+{ "type": "antonym", "char": "青" },
+{ "type": "homophone", "char": "席" },
+{ "type": "similar_shape", "char": "亦" },
+{ "type": "same_radical", "char": "走" }
+]
+},
+{
+"kanji": "青",
+"kun": [{ "text": "あお", "display": "◯" }],
+"on": [
+{ "text": "せいしゅん", "display": "少◯" },
+{ "text": "あおぞら", "display": "◯空" },
+{ "text": "せいねん", "display": "◯年" }
+],
+"choices": [
+{ "type": "correct", "char": "青" },
+{ "type": "synonym", "char": "蒼" },
+{ "type": "antonym", "char": "赤" },
+{ "type": "homophone", "char": "精" },
+{ "type": "similar_shape", "char": "昔" },
+{ "type": "same_radical", "char": "静" }
+]
+},
+{
+"kanji": "明",
+"kun": [{ "text": "あかるい", "display": "◯るい" }],
+"on": [
+{ "text": "せつめい", "display": "説◯" },
+{ "text": "あした", "display": "◯日" },
+{ "text": "めいじ", "display": "◯治" }
+],
+"choices": [
+{ "type": "correct", "char": "明" },
+{ "type": "synonym", "char": "光" },
+{ "type": "antonym", "char": "暗" },
+{ "type": "homophone", "char": "名" },
+{ "type": "similar_shape", "char": "朋" },
+{ "type": "same_radical", "char": "晴" }
+]
+},
+{
+"kanji": "暗",
+"kun": [{ "text": "くらい", "display": "◯い" }],
+"on": [
+{ "text": "あんき", "display": "◯記" },
+{ "text": "まっくら", "display": "真っ◯" },
+{ "text": "めいあん", "display": "明◯" }
+],
+"choices": [
+{ "type": "correct", "char": "暗" },
+{ "type": "synonym", "char": "闇" },
+{ "type": "antonym", "char": "明" },
+{ "type": "homophone", "char": "案" },
+{ "type": "similar_shape", "char": "音" },
+{ "type": "same_radical", "char": "晴" }
+]
+},
+{
+"kanji": "朝",
+"kun": [{ "text": "あさ", "display": "◯" }],
+"on": [
+{ "text": "ちょうしょく", "display": "◯食" },
+{ "text": "けさ", "display": "今◯" },
+{ "text": "あさがお", "display": "◯顔" }
+],
+"choices": [
+{ "type": "correct", "char": "朝" },
+{ "type": "synonym", "char": "旦" },
+{ "type": "antonym", "char": "晩" },
+{ "type": "homophone", "char": "超" },
+{ "type": "similar_shape", "char": "潮" },
+{ "type": "same_radical", "char": "期" }
+]
+},
+{
+"kanji": "昼",
+"kun": [{ "text": "ひる", "display": "◯" }],
+"on": [
+{ "text": "ちゅうしょく", "display": "◯食" },
+{ "text": "ひるね", "display": "◯寝" },
+{ "text": "ちゅうかん", "display": "◯間" }
+],
+"choices": [
+{ "type": "correct", "char": "昼" },
+{ "type": "synonym", "char": "正午" },
+{ "type": "antonym", "char": "夜" },
+{ "type": "homophone", "char": "注" },
+{ "type": "similar_shape", "char": "書" },
+{ "type": "same_radical", "char": "春" }
+]
+}
+]
+},
+{
+"id": 15,
+"title": "〜夜",
+"questions": [
+{
+"kanji": "夜",
+"kun": [{ "text": "よる", "display": "◯" }],
+"on": [
+{ "text": "こんや", "display": "今◯" },
+{ "text": "よなか", "display": "◯中" },
+{ "text": "やかん", "display": "◯間" }
+],
+"choices": [
+{ "type": "correct", "char": "夜" },
+{ "type": "synonym", "char": "晩" },
+{ "type": "antonym", "char": "昼" },
+{ "type": "homophone", "char": "野" },
+{ "type": "similar_shape", "char": "液" },
+{ "type": "same_radical", "char": "夕" }
+]
+},
+{
+"kanji": "多",
+"kun": [{ "text": "おおい", "display": "◯い" }],
+"on": [
+{ "text": "たぶん", "display": "◯分" },
+{ "text": "たしょう", "display": "◯少" },
+{ "text": "たすう", "display": "◯数" }
+],
+"choices": [
+{ "type": "correct", "char": "多" },
+{ "type": "synonym", "char": "豊" },
+{ "type": "antonym", "char": "少" },
+{ "type": "homophone", "char": "他" },
+{ "type": "similar_shape", "char": "名" },
+{ "type": "same_radical", "char": "外" }
+]
+},
+{
+"kanji": "少",
+"kun": [{ "text": "すくない", "display": "◯ない" }],
+"on": [
+{ "text": "しょうねん", "display": "◯年" },
+{ "text": "すこし", "display": "◯し" },
+{ "text": "げんしょう", "display": "減◯" }
+],
+"choices": [
+{ "type": "correct", "char": "少" },
+{ "type": "synonym", "char": "微" },
+{ "type": "antonym", "char": "多" },
+{ "type": "homophone", "char": "小" },
+{ "type": "similar_shape", "char": "小" },
+{ "type": "same_radical", "char": "省" }
+]
+},
+{
+"kanji": "長",
+"kun": [{ "text": "ながい", "display": "◯い" }],
+"on": [
+{ "text": "こうちょう", "display": "校◯" },
+{ "text": "えんちょう", "display": "延◯" },
+{ "text": "しちょう", "display": "市◯" }
+],
+"choices": [
+{ "type": "correct", "char": "長" },
+{ "type": "synonym", "char": "永" },
+{ "type": "antonym", "char": "短" },
+{ "type": "homophone", "char": "帳" },
+{ "type": "similar_shape", "char": "張" },
+{ "type": "same_radical", "char": "髪" }
+]
+},
+{
+"kanji": "短",
+"kun": [{ "text": "みじかい", "display": "◯い" }],
+"on": [
+{ "text": "たんき", "display": "◯気" },
+{ "text": "たんしょ", "display": "◯所" },
+{ "text": "たんじかん", "display": "◯時間" }
+],
+"choices": [
+{ "type": "correct", "char": "短" },
+{ "type": "synonym", "char": "欠" },
+{ "type": "antonym", "char": "長" },
+{ "type": "homophone", "char": "端" },
+{ "type": "similar_shape", "char": "知" },
+{ "type": "same_radical", "char": "矢" }
+]
+},
+{
+"kanji": "重",
+"kun": [{ "text": "おもい", "display": "◯い" }],
+"on": [
+{ "text": "たいじゅう", "display": "体◯" },
+{ "text": "かさねる", "display": "◯ねる" },
+{ "text": "じゅうよう", "display": "◯要" }
+],
+"choices": [
+{ "type": "correct", "char": "重" },
+{ "type": "synonym", "char": "厚" },
+{ "type": "antonym", "char": "軽" },
+{ "type": "homophone", "char": "住" },
+{ "type": "similar_shape", "char": "里" },
+{ "type": "same_radical", "char": "動" }
+]
+},
+{
+"kanji": "軽",
+"kun": [{ "text": "かるい", "display": "◯い" }],
+"on": [
+{ "text": "けいしょく", "display": "◯食" },
+{ "text": "けいりょう", "display": "◯量" },
+{ "text": "けいそつ", "display": "◯率" }
+],
+"choices": [
+{ "type": "correct", "char": "軽" },
+{ "type": "synonym", "char": "浅" },
+{ "type": "antonym", "char": "重" },
+{ "type": "homophone", "char": "刑" },
+{ "type": "similar_shape", "char": "聖" },
+{ "type": "same_radical", "char": "車" }
+]
+},
+{
+"kanji": "新",
+"kun": [{ "text": "あたらしい", "display": "◯らしい" }],
+"on": [
+{ "text": "しんぶん", "display": "◯聞" },
+{ "text": "しんかんせん", "display": "◯幹線" },
+{ "text": "いっしん", "display": "一◯" }
+],
+"choices": [
+{ "type": "correct", "char": "新" },
+{ "type": "synonym", "char": "鮮" },
+{ "type": "antonym", "char": "古" },
+{ "type": "homophone", "char": "親" },
+{ "type": "similar_shape", "char": "親" },
+{ "type": "same_radical", "char": "断" }
+]
+},
+{
+"kanji": "古",
+"kun": [{ "text": "ふるい", "display": "◯い" }],
+"on": [
+{ "text": "ちゅうこ", "display": "中古" },
+{ "text": "こだい", "display": "◯代" },
+{ "text": "ふる本の", "display": "◯本" }
+],
+"choices": [
+{ "type": "correct", "char": "古" },
+{ "type": "synonym", "char": "老" },
+{ "type": "antonym", "char": "新" },
+{ "type": "homophone", "char": "鼓" },
+{ "type": "similar_shape", "char": "舌" },
+{ "type": "same_radical", "char": "台" }
+]
+},
+{
+"kanji": "心",
+"kun": [{ "text": "こころ", "display": "◯" }],
+"on": [
+{ "text": "あんしん", "display": "安◯" },
+{ "text": "しんぞう", "display": "◯臓" },
+{ "text": "ちゅうしん", "display": "中◯" }
+],
+"choices": [
+{ "type": "correct", "char": "心" },
+{ "type": "synonym", "char": "情" },
+{ "type": "antonym", "char": "体" },
+{ "type": "homophone", "char": "新" },
+{ "type": "similar_shape", "char": "必" },
+{ "type": "same_radical", "char": "思" }
+]
+}
+]
+},
+{
+"id": 16,
+"title": "〜結",
+"questions": [
+{
+"kanji": "思",
+"kun": [{ "text": "おもう", "display": "◯う" }],
+"on": [
+{ "text": "おもいだす", "display": "◯い出す" },
+{ "text": "いし", "display": "意◯" },
+{ "text": "しこう", "display": "◯考" }
+],
+"choices": [
+{ "type": "correct", "char": "思" },
+{ "type": "synonym", "char": "考" },
+{ "type": "antonym", "char": "忘" },
+{ "type": "homophone", "char": "師" },
+{ "type": "similar_shape", "char": "恩" },
+{ "type": "same_radical", "char": "急" }
+]
+},
+{
+"kanji": "考",
+"kun": [{ "text": "かんがえる", "display": "◯える" }],
+"on": [
+{ "text": "さんこう", "display": "参◯" },
+{ "text": "しこう", "display": "思◯" },
+{ "text": "こうりょ", "display": "◯慮" }
+],
+"choices": [
+{ "type": "correct", "char": "考" },
+{ "type": "synonym", "char": "思" },
+{ "type": "antonym", "char": "盲" },
+{ "type": "homophone", "char": "工" },
+{ "type": "similar_shape", "char": "老" },
+{ "type": "same_radical", "char": "者" }
+]
+},
+{
+"kanji": "知",
+"kun": [{ "text": "しる", "display": "◯る" }],
+"on": [
+{ "text": "ちしき", "display": "◯識" },
+{ "text": "しらせ", "display": "◯らせ" },
+{ "text": "ちじん", "display": "◯人" }
+],
+"choices": [
+{ "type": "correct", "char": "知" },
+{ "type": "synonym", "char": "解" },
+{ "type": "antonym", "char": "疑" },
+{ "type": "homophone", "char": "血" },
+{ "type": "similar_shape", "char": "和" },
+{ "type": "same_radical", "char": "短" }
+]
+},
+{
+"kanji": "合",
+"kun": [{ "text": "あう", "display": "◯う" }],
+"on": [
+{ "text": "ごうけい", "display": "◯計" },
+{ "text": "にあう", "display": "似◯う" },
+{ "text": "しあい", "display": "試◯" }
+],
+"choices": [
+{ "type": "correct", "char": "合" },
+{ "type": "synonym", "char": "同" },
+{ "type": "antonym", "char": "分" },
+{ "type": "homophone", "char": "号" },
+{ "type": "similar_shape", "char": "台" },
+{ "type": "same_radical", "char": "名" }
+]
+},
+{
+"kanji": "同",
+"kun": [{ "text": "おなじ", "display": "◯じ" }],
+"on": [
+{ "text": "どうじ", "display": "◯時" },
+{ "text": "どうきゅうせい", "display": "◯級生" },
+{ "text": "どうい", "display": "◯意" }
+],
+"choices": [
+{ "type": "correct", "char": "同" },
+{ "type": "synonym", "char": "等" },
+{ "type": "antonym", "char": "異" },
+{ "type": "homophone", "char": "堂" },
+{ "type": "similar_shape", "char": "回" },
+{ "type": "same_radical", "char": "向" }
+]
+},
+{
+"kanji": "元",
+"kun": [{ "text": "もと", "display": "◯" }],
+"on": [
+{ "text": "げんき", "display": "◯気" },
+{ "text": "がんじつ", "display": "◯日" },
+{ "text": "もとどおり", "display": "◯通り" }
+],
+"choices": [
+{ "type": "correct", "char": "元" },
+{ "type": "synonym", "char": "始" },
+{ "type": "antonym", "char": "末" },
+{ "type": "homophone", "char": "原" },
+{ "type": "similar_shape", "char": "充" },
+{ "type": "same_radical", "char": "兄" }
+]
+},
+{
+"kanji": "会",
+"kun": [{ "text": "あう", "display": "◯う" }],
+"on": [
+{ "text": "かいわ", "display": "◯話" },
+{ "text": "うんどうかい", "display": "運動◯" },
+{ "text": "かいじょう", "display": "◯場" }
+],
+"choices": [
+{ "type": "correct", "char": "会" },
+{ "type": "synonym", "char": "集" },
+{ "type": "antonym", "char": "別" },
+{ "type": "homophone", "char": "回" },
+{ "type": "similar_shape", "char": "合" },
+{ "type": "same_radical", "char": "今" }
+]
+},
+{
+"kanji": "社",
+"kun": [{ "text": "やしろ", "display": "◯" }],
+"on": [
+{ "text": "かいしゃ", "display": "会◯" },
+{ "text": "しゃかい", "display": "◯会" },
+{ "text": "じんじゃ", "display": "神◯" }
+],
+"choices": [
+{ "type": "correct", "char": "社" },
+{ "type": "synonym", "char": "団" },
+{ "type": "antonym", "char": "個" },
+{ "type": "homophone", "char": "車" },
+{ "type": "similar_shape", "char": "杜" },
+{ "type": "same_radical", "char": "神" }
+]
+},
+{
+"kanji": "店",
+"kun": [{ "text": "みぜ", "display": "◯" }],
+"on": [
+{ "text": "てんいん", "display": "◯員" },
+{ "text": "しょうてん", "display": "商店" },
+{ "text": "かいてん", "display": "開◯" }
+],
+"choices": [
+{ "type": "correct", "char": "店" },
+{ "type": "synonym", "char": "商" },
+{ "type": "antonym", "char": "家" },
+{ "type": "homophone", "char": "点" },
+{ "type": "similar_shape", "char": "広" },
+{ "type": "same_radical", "char": "庫" }
+]
+},
+{
+"kanji": "場",
+"kun": [{ "text": "ば", "display": "◯" }],
+"on": [
+{ "text": "ばしょ", "display": "◯所" },
+{ "text": "こうじょう", "display": "工◯" },
+{ "text": "かいじょう", "display": "会◯" }
+],
+"choices": [
+{ "type": "correct", "char": "場" },
+{ "type": "synonym", "char": "所" },
+{ "type": "antonym", "char": "空" },
+{ "type": "homophone", "char": "城" },
+{ "type": "similar_shape", "char": "堀" },
+{ "type": "same_radical", "char": "地" }
+]
+}
+]
+}
+]
+}
