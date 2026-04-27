@@ -14,21 +14,32 @@ background: #f5f5f5;
 max-width: 900px;
 margin: auto;
 padding: 20px;
-text-align: center; /* ←中央寄せ */
+text-align: center;
 }
-/* 問題文 */
+/* ===== メニュー ===== */
+#menu {
+display: flex;
+flex-wrap: wrap;
+gap: 10px;
+justify-content: center;
+}
+#menu button {
+padding: 12px 16px;
+font-size: 1rem;
+}
+/* ===== 問題 ===== */
 #question {
 font-size: 2.2rem;
-margin-bottom: 20px;
+margin: 20px 0;
 }
 .q-line {
-margin: 6px 0;
+margin: 8px 0;
 }
 .q-line span {
 font-size: 1.4rem;
 color: #666;
 }
-/* 選択肢 */
+/* ===== 選択肢 ===== */
 #choices {
 display: grid;
 grid-template-columns: repeat(3, 1fr);
@@ -44,7 +55,7 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 .choice-btn span {
 font-size: 2.4rem;
 }
-/* 次へボタン */
+/* ===== 次へ ===== */
 #nextBtn {
 margin-top: 20px;
 padding: 12px 20px;
@@ -55,6 +66,7 @@ display: none;
 </head>
 <body>
 <div id="app">
+<div id="menu"></div>
 <div id="question"></div>
 <div id="choices"></div>
 <button id="nextBtn">次の問題へ</button>
@@ -63,18 +75,39 @@ display: none;
 let data;
 let currentSet = 0;
 let currentIndex = 0;
-let currentQuestion;
+/* ===== 初期ロード ===== */
 fetch('./data/data.json')
 .then(res => res.json())
 .then(json => {
 data = json;
-loadQuestion();
+initMenu();
+})
+.catch(err => {
+alert("JSON読み込みエラー");
+console.error(err);
 });
+/* ===== メニュー生成 ===== */
+function initMenu() {
+const menu = document.getElementById("menu");
+menu.innerHTML = "";
+data.sets.forEach((set, index) => {
+const btn = document.createElement("button");
+btn.textContent = `セット${index + 1}（${set.title}）`;
+btn.onclick = () => startSet(index);
+menu.appendChild(btn);
+});
+}
+/* ===== セット開始 ===== */
+function startSet(index) {
+currentSet = index;
+currentIndex = 0;
+document.getElementById("menu").style.display = "none";
+loadQuestion();
+}
+/* ===== 問題ロード ===== */
 function loadQuestion() {
 const q = data.sets[currentSet].questions[currentIndex];
-currentQuestion = q;
 renderQuestion(q, false);
-// 選択肢シャッフル
 const shuffled = [...q.choices].sort(() => Math.random() - 0.5);
 const choicesDiv = document.getElementById("choices");
 choicesDiv.innerHTML = "";
@@ -87,6 +120,7 @@ choicesDiv.appendChild(btn);
 });
 document.getElementById("nextBtn").style.display = "none";
 }
+/* ===== 問題表示 ===== */
 function renderQuestion(q, isCorrect) {
 const kanji = q.kanji;
 const lines = [
@@ -102,6 +136,7 @@ const word = isCorrect
 : item.display;
 return `${word}<span>（${item.text}）</span>`;
 }
+/* ===== 回答処理 ===== */
 function handleAnswer(choice, q) {
 if (choice.type === "correct") {
 showCorrect(q);
@@ -109,11 +144,13 @@ showCorrect(q);
 playError();
 }
 }
+/* ===== 正解 ===== */
 function showCorrect(q) {
-renderQuestion(q, true); // ←同じ位置で置換
+renderQuestion(q, true);
 playVoice(q);
 document.getElementById("nextBtn").style.display = "block";
 }
+/* ===== 音声 ===== */
 function playVoice(q) {
 const texts = [
 q.kun[0].text,
@@ -128,10 +165,12 @@ const utter = new SpeechSynthesisUtterance("ブー");
 speechSynthesis.cancel();
 speechSynthesis.speak(utter);
 }
+/* ===== 次へ ===== */
 document.getElementById("nextBtn").onclick = () => {
 currentIndex++;
 if (currentIndex >= 10) {
 alert("セット終了");
+location.reload(); // メニューに戻る
 return;
 }
 loadQuestion();
