@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>漢字選択アプリ（GW復習モード）</title>
+
+<style>
+body {
+margin: 0;
+font-family: sans-serif;
+background: #f5f5f5;
+}
+
+#app {
+max-width: 900px;
+margin: auto;
+padding: 20px;
+text-align: center;
+}
+
+/* ===== 問題 ===== */
+#question {
+font-size: 2.2rem;
+margin: 20px 0;
+}
+
+.q-line {
+margin: 8px 0;
+}
+
+.q-line span {
+font-size: 1.4rem;
+color: #666;
+}
+
+/* ===== 選択肢 ===== */
+#choices {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 15px;
+}
+
+.choice-btn {
+height: 80px;
+border: none;
+border-radius: 10px;
+background: white;
+box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.choice-btn span {
+font-size: 2.4rem;
+}
+
+/* ===== 次へ ===== */
+#nextBtn {
+margin-top: 20px;
+padding: 12px 20px;
+font-size: 1.2rem;
+display: none;
+}
+</style>
+</head>
+
+<body>
+<div id="app">
+<div id="question"></div>
+<div id="choices"></div>
+<button id="nextBtn">次へ</button>
+</div>
+
+<script>
+let data;
+
+/* ===== 設定 ===== */
+const TARGET_KANJI = [
+"読","雪","声","言","行","南","図","書","方","絵",
+"知","春","思","記","曜","肉","話","聞","黄","色","黒","太"
+];
+
+const RETRY_DELAY = 3;
+
+/* ===== 状態 ===== */
+let allQuestions = [];
+let retryQueue = [];
+
+/* ===== 初期ロード ===== */
+fetch('./data/data.json')
+.then(res => res.json())
+.then(json => {
+data = json;
+initApp();
+})
+.catch(err => {
+alert("JSON読み込みエラー");
+console.error(err);
+});
+
+/* ===== 初期化 ===== */
+function initApp() {
+allQuestions = data.sets
+.flatMap(s => s.questions)
+.filter(q => TARGET_KANJI.includes(q.kanji));
+
+loadQuestion();
+}
+
+/* ===== 次の問題取得 ===== */
+function getNextQuestion() {
+
+/* リトライ優先 */
+for (let i = 0; i < retryQueue.length; i++) {
+if (retryQueue[i].delay <= 0) {
+const q = retryQueue.splice(i, 1)[0].q;
+return q;
+}
+}
+
+/* 通常ランダム */
+return allQuestions[Math.floor(Math.random() * allQuestions.length)];
+}
+
+/* ===== 問題ロード ===== */
+function loadQuestion() {
+
+/* delay減算 */
+retryQueue.forEach(r => r.delay--);
+
+const q = getNextQuestion();
+window.currentQ = q;
+
+renderQuestion(q, false);
+
+const shuffled = [...q.choices].sort(() => Math.random() - 0.5);
+
+const choicesDiv = document.getElementById("choices");
+choicesDiv.innerHTML = "";
+
+shuffled.forEach(choice => {
+const btn = document.createElement("button");
+btn.className = "choice-btn";
+btn.innerHTML = `<span>${choice.char}</span>`;
+btn.onclick = () => handleAnswer(choice, q);
+choicesDiv.appendChild(btn);
+});
+
+document.getElementById("nextBtn").style.display = "none";
+}
+
+/* ===== 表示 ===== */
+function renderQuestion(q, isCorrect) {
+const kanji = q.kanji;
+
+const lines = [
+buildLine(q.kun[0], kanji, isCorrect),
+...q.on.map(o => buildLine(o, kanji, isCorrect))
+];
+
+document.getElementById("question").innerHTML =
+lines.map(l => `<div class="q-line">${l}</div>`).join("");
+}
+
+function buildLine(item, kanji, isCorrect) {
+const word = isCorrect
+? item.display.replace("◯", kanji)
+: item.display;
+
+return `${word}<span>（${item.text}）</span>`;
+}
+
+/* ===== 回答処理 ===== */
+function handleAnswer(choice, q) {
+if (choice.type === "correct") {
+showCorrect(q);
+} else {
+registerRetry(q);
+playError();
+}
+}
+
+/* ===== リトライ登録 ===== */
+function registerRetry(q) {
+retryQueue.push({
+q: q,
+delay: RETRY_DELAY
+});
+}
+
+/* ===== 正解処理 ===== */
+function showCorrect(q) {
+renderQuestion(q, true);
+playVoice(q);
+document.getElementById("nextBtn").style.display = "block";
+}
+
+/* ===== 音声 ===== */
+function playVoice(q) {
+const texts = [
+q.kun[0].text,
+...q.on.map(o => o.text)
+];
+
+const utter = new SpeechSynthesisUtterance(texts.join("、"));
+speechSynthesis.cancel();
+speechSynthesis.speak(utter);
+}
+
+function playError() {
+const utter = new SpeechSynthesisUtterance("ブー");
+speechSynthesis.cancel();
+speechSynthesis.speak(utter);
+}
+
+/* ===== 次へ（無限） ===== */
+document.getElementById("nextBtn").onclick = () => {
+loadQuestion();
+};
+</script>
+
+</body>
+</html>
