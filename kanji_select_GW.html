@@ -19,7 +19,6 @@ padding: 20px;
 text-align: center;
 }
 
-/* ===== 問題 ===== */
 #question {
 font-size: 2.2rem;
 margin: 20px 0;
@@ -34,7 +33,6 @@ font-size: 1.4rem;
 color: #666;
 }
 
-/* ===== 選択肢 ===== */
 #choices {
 display: grid;
 grid-template-columns: repeat(3, 1fr);
@@ -53,7 +51,6 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 font-size: 2.4rem;
 }
 
-/* ===== 次へ ===== */
 #nextBtn {
 margin-top: 20px;
 padding: 12px 20px;
@@ -76,7 +73,8 @@ let data;
 /* ===== 設定 ===== */
 const TARGET_KANJI = [
 "読","雪","声","言","行","南","図","書","方","絵",
-"知","春","思","記","曜","肉","話","聞","黄","色","黒","太"
+"知","春","思","記","曜","肉","話","聞","黄","色","黒","太",
+"手","高","風","晴","多","新","考","毛"
 ];
 
 const RETRY_DELAY = 3;
@@ -124,7 +122,6 @@ return allQuestions[Math.floor(Math.random() * allQuestions.length)];
 /* ===== 問題ロード ===== */
 function loadQuestion() {
 
-/* delay減算 */
 retryQueue.forEach(r => r.delay--);
 
 const q = getNextQuestion();
