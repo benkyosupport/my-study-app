@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>九九・面積体感学習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* === デザイントークン ===================================== */
+    --bg:            #EEF4FB;   /* 方眼紙をイメージした淡い青灰色の背景 */
+    --panel:         #FFFFFF;
+    --ink:           #2B3A4A;   /* 濃紺グレーのテキスト */
+    --ink-soft:      #64758A;
+    --grid-line:     #C6D5E3;
+    --grid-line-soft:#DCE7F1;
+    --fill:          #4A90D9;   /* 塗りつぶし色（設計書 §34.7 確定） */
+    --fill-deep:     #2F72BE;
+    --accent:        #FFB447;   /* ボタン等のアクセント（太陽色） */
+    --accent-deep:   #F2932A;
+    --accent-ink:    #5A3B0A;
+    --danger:        #E2685A;
+    --danger-deep:   #C94F42;
+    --header-num:    #8FA3B8;
+    --radius-l: 22px;
+    --radius-m: 14px;
+    --radius-s: 8px;
+    --font-display: 'M PLUS Rounded 1c', sans-serif;
+    --cell-size: 32px;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+  html,body{
+    margin:0; padding:0; height:100%;
+    background:var(--bg);
+    font-family:var(--font-display);
+    color:var(--ink);
+    overflow:hidden;
+    touch-action:none;
+    user-select:none;
+    -webkit-user-select:none;
+  }
+  /* うっすら方眼紙テクスチャ */
+  body{
+    background-image:
+      linear-gradient(var(--grid-line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line-soft) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  #app{
+    position:relative;
+    width:100vw; height:100vh; height:100dvh;
+    display:flex; flex-direction:column;
+  }
+
+  /* ===== ヘッダー ============================================= */
+  header.app-header{
+    display:flex; align-items:flex-start; justify-content:space-between;
+    padding: max(10px, 1.4vh) 20px 6px;
+    flex-shrink:0;
+  }
+  .header-text{ display:flex; flex-direction:column; gap:2px; }
+  .problem-text{
+    font-size: clamp(1.3rem, 3.4vh, 2.3rem);
+    font-weight:800; letter-spacing:.02em;
+  }
+  .problem-text .eq{ color: var(--ink-soft); font-weight:700; }
+  .counter-text{
+    font-size: clamp(.95rem, 2.1vh, 1.35rem);
+    font-weight:700; color:var(--fill-deep);
+  }
+  .counter-num{ display:inline-block; min-width:1.6em; }
+
+  button{
+    font-family:var(--font-display);
+    border:none; cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .reset-button{
+    background:var(--panel);
+    color:var(--ink-soft);
+    font-weight:700;
+    font-size: clamp(.75rem, 1.6vh, .95rem);
+    padding: 8px 14px;
+    border-radius: 999px;
+    box-shadow: 0 2px 0 var(--grid-line);
+    border: 2px solid var(--grid-line);
+    display:flex; align-items:center; gap:6px;
+  }
+  .reset-button:active{ transform: translateY(2px); box-shadow:none; }
+  .reset-button::before{ content:"↺"; font-size:1.1em; }
+
+  /* ===== グリッド領域 ========================================= */
+  main.grid-stage{
+    flex:1; min-height:0;
+    display:flex; align-items:center; justify-content:center;
+    padding: 4px 16px;
+    position:relative;
+  }
+  .grid-wrap{
+    display:grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto;
+  }
+  .corner{ /* 左上の空白 */ }
+  .col-headers{ display:flex; }
+  .row-headers{ display:flex; flex-direction:column; }
+  .col-headers .num, .row-headers .num{
+    display:flex; align-items:center; justify-content:center;
+    color:var(--header-num); font-weight:700;
+    font-size: calc(var(--cell-size) * 0.42);
+    flex-shrink:0;
+  }
+  .col-headers .num{ width:var(--cell-size); height: calc(var(--cell-size)*0.62); }
+  .row-headers .num{ height:var(--cell-size); width: calc(var(--cell-size)*0.8); }
+
+  #grid{
+    position:relative;
+    display:grid;
+    grid-template-columns: repeat(20, var(--cell-size));
+    grid-template-rows: repeat(20, var(--cell-size));
+    background:var(--panel);
+    border-radius: var(--radius-s);
+    box-shadow: 0 6px 18px rgba(43,58,74,0.08);
+    transition: transform .12s ease;
+  }
+  #grid.complete-bounce{ animation: gridBounce var(--complete-bounce-ms, 520ms) ease; }
+  @keyframes gridBounce{
+    0%   { transform: scale(1); }
+    35%  { transform: scale(1.055); }
+    60%  { transform: scale(0.985); }
+    100% { transform: scale(1); }
+  }
+
+  .cell{
+    width:var(--cell-size); height:var(--cell-size);
+    border-right:1px solid var(--grid-line);
+    border-bottom:1px solid var(--grid-line);
+    background:transparent;
+  }
+  .cell.target-hint{ background: rgba(255,180,71,0.28); }
+  .cell.blink{ animation: blinkCell .4s ease 2; }
+  @keyframes blinkCell{
+    0%,100%{ background:rgba(255,180,71,0.15); }
+    50%{ background:rgba(255,180,71,0.65); }
+  }
+  .cell.filled{ background:var(--fill); }
+  .cell.filled.pop{ animation: popCell var(--bounce-ms, 170ms) ease; z-index:1; }
+  @keyframes popCell{
+    0%{ transform:scale(1); }
+    45%{ transform:scale(1.09); background:var(--fill-deep); }
+    100%{ transform:scale(1); }
+  }
+
+  /* ===== フッター ============================================ */
+  footer.app-footer{
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:flex-end;
+    padding: 10px 22px max(12px, 2vh);
+    min-height: 64px;
+  }
+  .section-end-text{
+    margin-right:auto;
+    font-weight:800;
+    font-size: clamp(1rem, 2.6vh, 1.6rem);
+    color:var(--accent-deep);
+  }
+  .next-button{
+    background:var(--accent);
+    color:var(--accent-ink);
+    font-weight:800;
+    font-size: clamp(1rem, 2.4vh, 1.4rem);
+    padding: 12px 34px;
+    border-radius: var(--radius-l);
+    box-shadow: 0 4px 0 var(--accent-deep);
+  }
+  .next-button:active{ transform:translateY(3px); box-shadow:none; }
+  .next-button[hidden]{ display:none; }
+
+  /* ===== モーダル共通 ========================================= */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(43,58,74,0.45);
+    display:flex; align-items:center; justify-content:center;
+    z-index: 40;
+  }
+  .modal-overlay[hidden]{ display:none; }
+  .modal-box{
+    background:var(--panel); border-radius:var(--radius-l);
+    padding: 28px 32px; text-align:center;
+    box-shadow: 0 12px 30px rgba(43,58,74,0.25);
+    max-width: 80vw;
+  }
+  .modal-box p{ font-size: clamp(1.1rem,2.6vh,1.5rem); font-weight:700; margin: 0 0 20px; }
+  .modal-actions{ display:flex; gap:16px; justify-content:center; }
+  .modal-actions button{
+    font-weight:800; font-size:1.05rem;
+    padding: 10px 26px; border-radius: 999px;
+  }
+  .btn-yes{ background:var(--fill); color:#fff; box-shadow:0 3px 0 var(--fill-deep); }
+  .btn-yes:active{ transform:translateY(3px); box-shadow:none; }
+  .btn-no{ background:#EEF1F5; color:var(--ink-soft); box-shadow:0 3px 0 var(--grid-line); }
+  .btn-no:active{ transform:translateY(3px); box-shadow:none; }
+
+  /* ===== 回転案内オーバーレイ (§34.5) ========================= */
+  #rotate-overlay{
+    position:fixed; inset:0; background:var(--bg); z-index:50;
+    display:none; align-items:center; justify-content:center;
+    flex-direction:column; gap:18px; text-align:center; padding:24px;
+  }
+  #rotate-overlay .icon{ font-size:3.4rem; }
+  #rotate-overlay p{ font-size:1.3rem; font-weight:800; margin:0; }
+  @media (orientation:portrait){
+    #rotate-overlay{ display:flex; }
+  }
+
+  /* ===== 全問完了画面 (§34.4) ================================= */
+  #all-complete{
+    position:fixed; inset:0; background:var(--fill); color:#fff;
+    z-index:45; display:none; align-items:center; justify-content:center;
+    flex-direction:column; gap:10px; text-align:center;
+  }
+  #all-complete.show{ display:flex; }
+  #all-complete .big{ font-size: clamp(2rem,7vh,4rem); font-weight:900; }
+  #all-complete .small{ font-size: clamp(1rem,2.4vh,1.3rem); font-weight:700; opacity:.9; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header class="app-header">
+    <div class="header-text">
+      <div class="problem-text" id="problem-text">2 × 1 = <span class="q">?</span></div>
+      <div class="counter-text">現在：<span class="counter-num" id="counter-num">0</span></div>
+    </div>
+    <button class="reset-button" id="reset-btn">やりなおす</button>
+  </header>
+
+  <main class="grid-stage">
+    <div class="grid-wrap">
+      <div class="corner"></div>
+      <div class="col-headers" id="col-headers"></div>
+      <div class="row-headers" id="row-headers"></div>
+      <div id="grid"></div>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="section-end-text" id="section-end-text" hidden></div>
+    <button class="next-button" id="next-btn" hidden>つぎへ</button>
+  </footer>
+
+  <div class="modal-overlay" id="reset-confirm" hidden>
+    <div class="modal-box">
+      <p>やりなおしますか？</p>
+      <div class="modal-actions">
+        <button class="btn-no" id="reset-no">いいえ</button>
+        <button class="btn-yes" id="reset-yes">はい</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="rotate-overlay">
+    <div class="icon">↻</div>
+    <p>たてむきに して ください</p>
+  </div>
+
+  <div id="all-complete">
+    <div class="big">ぜんぶ おわり！</div>
+    <div class="small">2のだんから 9のだんまで、よくがんばりました</div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* =========================================================
+   * 0. 設定値（実装パラメータ／設計書 §33, §34 準拠）
+   * ========================================================= */
+  const CONFIG = {
+    GRID_SIZE: 20,
+    OUT_OF_GRID_TOLERANCE_MULT: 1.5,   // §15.2 許容距離 = セルサイズ×係数
+    PITCH_BASE: 420,                    // §19.3 基準音程 Hz
+    PITCH_STEP: 14,                     // イベントごとの上昇幅
+    PITCH_MAX: 760,                     // 上限（不快な高音を避ける）
+    NOTE_DURATION: 0.11,                // 通常音の長さ(秒)
+    COMPLETE_NOTE_DURATION: 0.42,       // 完成音の長さ(秒)
+    NORMAL_BOUNCE_MS: 170,              // §34.1 通常バウンス
+    COMPLETE_BOUNCE_MS: 520,            // §34.1 完成バウンス
+    NORMAL_VIBRATE_MS: 30,
+    COMPLETE_VIBRATE_PATTERN: [40, 60, 60],
+    RESUME_ROW_TOLERANCE: 1,            // §14.2 現在位置 or 次の位置
+    RESUME_COL_TOLERANCE: 1,
+    FEEDBACK_TO_COMPLETE_DELAY: 260,    // 通常F/B→完成F/Bの間隔
+    COMPLETE_TO_ANSWER_DELAY: 620,      // 完成F/B→答え表示までの間隔
+    BLINK_DURATION: 800,
+  };
+
+  document.documentElement.style.setProperty('--bounce-ms', CONFIG.NORMAL_BOUNCE_MS + 'ms');
+  document.documentElement.style.setProperty('--complete-bounce-ms', CONFIG.COMPLETE_BOUNCE_MS + 'ms');
+
+  /* =========================================================
+   * 1. 問題データ（§5）
+   * ========================================================= */
+  function buildProblems(){
+    const list = [];
+    for (let dan = 2; dan <= 9; dan++){
+      for (let m = 1; m <= 9; m++){
+        list.push({ rows: dan, columns: m, dan, isLastInDan: m === 9 });
+      }
+    }
+    return list;
+  }
+  const PROBLEMS = buildProblems();
+
+  /* =========================================================
+   * 2. 状態（§28）
+   * ========================================================= */
+  const state = {
+    phase: 'READY',              // READY / VERTICAL / HORIZONTAL / COMPLETE_FEEDBACK / ANSWER_DISPLAY / SECTION_END / ALL_COMPLETE
+    problemIndex: 0,
+    rows: 0,
+    columns: 0,
+    counter: 0,
+    maxReachedRow: 0,
+    maxReachedColumn: 0,
+    pointerActive: false,
+    activePointerId: null,
+    eventCount: 0,
+    isComplete: false,
+  };
+
+  function currentProblem(){ return PROBLEMS[state.problemIndex]; }
+
+  function loadProblem(index){
+    const p = PROBLEMS[index];
+    state.phase = 'READY';
+    state.problemIndex = index;
+    state.rows = p.rows;
+    state.columns = p.columns;
+    state.counter = 0;
+    state.maxReachedRow = 0;
+    state.maxReachedColumn = 0;
+    state.pointerActive = false;
+    state.activePointerId = null;
+    state.eventCount = 0;
+    state.isComplete = false;
+    renderProblemHeader();
+    renderGrid();
+    renderCounter();
+    hideAnswerUI();
+  }
+
+  /* =========================================================
+   * 3. DOM構築（Phase 1：静的画面）
+   * ========================================================= */
+  const el = {
+    problemText: document.getElementById('problem-text'),
+    counterNum: document.getElementById('counter-num'),
+    resetBtn: document.getElementById('reset-btn'),
+    grid: document.getElementById('grid'),
+    colHeaders: document.getElementById('col-headers'),
+    rowHeaders: document.getElementById('row-headers'),
+    nextBtn: document.getElementById('next-btn'),
+    sectionEndText: document.getElementById('section-end-text'),
+    resetConfirm: document.getElementById('reset-confirm'),
+    resetYes: document.getElementById('reset-yes'),
+    resetNo: document.getElementById('reset-no'),
+    allComplete: document.getElementById('all-complete'),
+  };
+
+  // 20x20 セルを生成（HTML要素方式 §2.3）
+  const cellNodes = []; // cellNodes[row-1][col-1]
+  (function buildGridDOM(){
+    for (let r = 1; r <= CONFIG.GRID_SIZE; r++){
+      const rowArr = [];
+      for (let c = 1; c <= CONFIG.GRID_SIZE; c++){
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.row = r;
+        cell.dataset.col = c;
+        el.grid.appendChild(cell);
+        rowArr.push(cell);
+      }
+      cellNodes.push(rowArr);
+    }
+    for (let c = 1; c <= CONFIG.GRID_SIZE; c++){
+      const num = document.createElement('div');
+      num.className = 'num';
+      num.textContent = c;
+      el.colHeaders.appendChild(num);
+    }
+    for (let r = 1; r <= CONFIG.GRID_SIZE; r++){
+      const num = document.createElement('div');
+      num.className = 'num';
+      num.textContent = r;
+      el.rowHeaders.appendChild(num);
+    }
+  })();
+
+  function cellAt(row, col){ return cellNodes[row-1][col-1]; }
+
+  /* =========================================================
+   * 4. レスポンシブ：セルサイズ計算（§3.3）
+   * ========================================================= */
+  function recalcCellSize(){
+    const stage = document.querySelector('.grid-stage');
+    const rect = stage.getBoundingClientRect();
+    const rowHeaderW = rect.height > 0 ? Math.max(28, rect.width * 0.03) : 32;
+    const colHeaderH = Math.max(20, rect.height * 0.025);
+    const availW = rect.width - rowHeaderW - 32;   // 左余白確保
+    const availH = rect.height - colHeaderH - 16;
+    const size = Math.floor(Math.min(availW, availH) / CONFIG.GRID_SIZE);
+    const finalSize = Math.max(14, size);
+    document.documentElement.style.setProperty('--cell-size', finalSize + 'px');
+  }
+  window.addEventListener('resize', recalcCellSize);
+  window.addEventListener('orientationchange', () => setTimeout(recalcCellSize, 200));
+
+  /* =========================================================
+   * 5. 描画
+   * ========================================================= */
+  function renderProblemHeader(){
+    const p = currentProblem();
+    el.problemText.innerHTML = `${p.rows} × ${p.columns} = <span class="q">?</span>`;
+  }
+  function renderCounter(){
+    el.counterNum.textContent = state.counter;
+  }
+  function renderAnswer(){
+    const p = currentProblem();
+    el.problemText.textContent = `${p.rows} × ${p.columns} ＝ ${p.rows * p.columns}`;
+  }
+  function hideAnswerUI(){
+    el.nextBtn.hidden = true;
+    el.sectionEndText.hidden = true;
+    el.sectionEndText.textContent = '';
+  }
+  function renderGrid(){
+    // 全マスを未塗りに戻す（新しい問題 or リセット時）
+    for (let r = 1; r <= CONFIG.GRID_SIZE; r++){
+      for (let c = 1; c <= CONFIG.GRID_SIZE; c++){
+        const cell = cellAt(r, c);
+        cell.classList.remove('filled', 'pop', 'blink', 'target-hint');
+      }
+    }
+  }
+  /* =========================================================
+   * 6. 音（WebAudio / §19）
+   * ========================================================= */
+  let audioCtx = null;
+  function ensureAudio(){
+    if (!audioCtx){
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) audioCtx = new AC();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+  function pitchForEvent(eventIndex){
+    return Math.min(CONFIG.PITCH_MAX, CONFIG.PITCH_BASE + eventIndex * CONFIG.PITCH_STEP);
+  }
+  function playTone(freq, duration, type){
+    const ctx = ensureAudio();
+    if (!ctx) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.value = freq;
+    const now = ctx.currentTime;
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.32, now + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + duration + 0.02);
+  }
+  function playNormalSound(){
+    state.eventCount += 1;
+    playTone(pitchForEvent(state.eventCount), CONFIG.NOTE_DURATION, 'sine');
+  }
+  function playCompleteSound(){
+    const ctx = ensureAudio();
+    if (!ctx) return;
+    // 通常音と明確に区別：短い2音の上昇チャイム
+    playTone(720, CONFIG.COMPLETE_NOTE_DURATION * 0.5, 'triangle');
+    setTimeout(() => playTone(960, CONFIG.COMPLETE_NOTE_DURATION * 0.6, 'triangle'), 110);
+  }
+
+  /* =========================================================
+   * 7. 振動＋バウンド（§20, §34.1）
+   * ========================================================= */
+  function vibrate(pattern){
+    if ('vibrate' in navigator){
+      try { navigator.vibrate(pattern); } catch(e) {}
+    }
+  }
+  function bounceCells(cells, ms){
+    cells.forEach(cell => {
+      cell.classList.remove('pop');
+      // reflow で再アニメーションを許可
+      void cell.offsetWidth;
+      cell.classList.add('pop');
+    });
+    setTimeout(() => cells.forEach(c => c.classList.remove('pop')), ms + 30);
+  }
+  function bounceGridWhole(){
+    el.grid.classList.remove('complete-bounce');
+    void el.grid.offsetWidth;
+    el.grid.classList.add('complete-bounce');
+    setTimeout(() => el.grid.classList.remove('complete-bounce'), CONFIG.COMPLETE_BOUNCE_MS + 30);
+  }
+  function normalFeedback(affectedCells){
+    playNormalSound();
+    vibrate(CONFIG.NORMAL_VIBRATE_MS);
+    bounceCells(affectedCells, CONFIG.NORMAL_BOUNCE_MS);
+  }
+  function completeFeedback(){
+    playCompleteSound();
+    vibrate(CONFIG.COMPLETE_VIBRATE_PATTERN);
+    bounceGridWhole();
+  }
+
+  /* =========================================================
+   * 8. 幾何：ポインタ座標→行列変換（§3.3, §15）
+   * ========================================================= */
+  function pointerToRowCol(clientX, clientY){
+    const rect = el.grid.getBoundingClientRect();
+    const cellSize = rect.width / CONFIG.GRID_SIZE;
+    const tolerance = cellSize * CONFIG.OUT_OF_GRID_TOLERANCE_MULT;
+
+    const dxOut = clientX < rect.left ? rect.left - clientX
+                : clientX > rect.right ? clientX - rect.right : 0;
+    const dyOut = clientY < rect.top ? rect.top - clientY
+                : clientY > rect.bottom ? clientY - rect.bottom : 0;
+
+    if (dxOut > tolerance || dyOut > tolerance){
+      return null; // §15.3 許容距離を超えた → 無効（状態は保持）
+    }
+
+    let col = Math.floor((clientX - rect.left) / cellSize) + 1;
+    let row = Math.floor((clientY - rect.top) / cellSize) + 1;
+    col = Math.min(CONFIG.GRID_SIZE, Math.max(1, col));
+    row = Math.min(CONFIG.GRID_SIZE, Math.max(1, row));
+    return { row, col };
+  }
+
+  /* =========================================================
+   * 9. 塗り進行ロジック（§8〜§13, §29, §34.2）
+   * ========================================================= */
+  function tryStartFromReady(row, col){
+    if (row === 1 && col === 1){
+      state.maxReachedRow = 1;
+      state.counter = 1;
+      state.phase = 'VERTICAL';
+      cellAt(1,1).classList.add('filled');
+      renderCounter();
+      normalFeedback([cellAt(1,1)]);
+      checkVerticalComplete();
+    } else {
+      blinkStartCell();
+    }
+  }
+  function blinkStartCell(){
+    const c = cellAt(1,1);
+    c.classList.remove('blink');
+    void c.offsetWidth;
+    c.classList.add('blink');
+    setTimeout(() => c.classList.remove('blink'), CONFIG.BLINK_DURATION);
+  }
+
+  function checkVerticalComplete(){
+    if (state.maxReachedRow >= state.rows){
+      if (state.columns === 1){
+        goComplete();
+      } else {
+        state.phase = 'HORIZONTAL';
+        state.maxReachedColumn = 1; // 1列目（縦方向で作った列）は完成済み
+      }
+    }
+  }
+
+  // 縦方向：pointerの行位置が進むたびに、間の行を1つずつ追加（飛び越え防止 §34.2）
+  function advanceVertical(hoveredRow){
+    while (state.phase === 'VERTICAL' && state.maxReachedRow < state.rows && hoveredRow > state.maxReachedRow){
+      state.maxReachedRow += 1;
+      state.counter = state.maxReachedRow;
+      const cell = cellAt(state.maxReachedRow, 1);
+      cell.classList.add('filled');
+      renderCounter();
+      normalFeedback([cell]);
+      checkVerticalComplete();
+      if (state.phase !== 'VERTICAL') break;
+    }
+  }
+
+  // 横方向：pointerの列位置が進むたびに、間の列を1つずつ一括追加
+  function advanceHorizontal(hoveredCol){
+    while (state.phase === 'HORIZONTAL' && state.maxReachedColumn < state.columns && hoveredCol > state.maxReachedColumn){
+      state.maxReachedColumn += 1;
+      state.counter = state.rows * state.maxReachedColumn;
+      const cells = [];
+      for (let r = 1; r <= state.rows; r++){
+        const cell = cellAt(r, state.maxReachedColumn);
+        cell.classList.add('filled');
+        cells.push(cell);
+      }
+      renderCounter();
+      normalFeedback(cells); // §11.5 / §29.4：一括追加でも音・振動は1回
+      if (state.maxReachedColumn >= state.columns){
+        goComplete();
+        break;
+      }
+    }
+  }
+
+  function goComplete(){
+    state.phase = 'COMPLETE_FEEDBACK';
+    state.isComplete = true;
+    state.pointerActive = false;
+    // §21.1 完成フィードバックの厳密な順序
+    setTimeout(() => {
+      completeFeedback();
+      setTimeout(() => {
+        state.phase = 'ANSWER_DISPLAY';
+        showAnswerScreen();
+      }, CONFIG.COMPLETE_TO_ANSWER_DELAY);
+    }, CONFIG.FEEDBACK_TO_COMPLETE_DELAY);
+  }
+
+  function showAnswerScreen(){
+    renderAnswer();
+    const p = currentProblem();
+    if (p.isLastInDan){
+      el.sectionEndText.hidden = false;
+      el.sectionEndText.textContent = `${p.dan}のだん おわり`;
+    }
+    el.nextBtn.hidden = false;
+  }
+
+  /* =========================================================
+   * 10. ポインタイベント処理（Pointer Events / §7, §13, §14, §34.2, §34.3）
+   * ========================================================= */
+  function processPoint(clientX, clientY){
+    const rc = pointerToRowCol(clientX, clientY);
+    if (!rc) return; // グリッド外許容超え：状態保持のまま何もしない
+
+    if (state.phase === 'READY'){
+      tryStartFromReady(rc.row, rc.col);
+    } else if (state.phase === 'VERTICAL'){
+      advanceVertical(rc.row);
+    } else if (state.phase === 'HORIZONTAL'){
+      advanceHorizontal(rc.col);
+    }
+    // COMPLETE_FEEDBACK以降はポインタ操作を受け付けない
+  }
+
+  function handlePointerDownResume(clientX, clientY){
+    const rc = pointerToRowCol(clientX, clientY);
+    if (!rc) return false;
+
+    if (state.phase === 'VERTICAL'){
+      const nearOK = rc.row >= state.maxReachedRow && rc.row <= state.maxReachedRow + CONFIG.RESUME_ROW_TOLERANCE;
+      if (nearOK){ state.pointerActive = true; return true; }
+      return false; // §14.3 無関係な場所→再開しない
+    }
+    if (state.phase === 'HORIZONTAL'){
+      const nearOK = rc.col >= state.maxReachedColumn && rc.col <= state.maxReachedColumn + CONFIG.RESUME_COL_TOLERANCE;
+      if (nearOK){ state.pointerActive = true; return true; }
+      return false;
+    }
+    return false;
+  }
+
+  el.grid.addEventListener('pointerdown', (e) => {
+    ensureAudio();
+    // §34.3 マルチタッチ：既に別の指が操作中なら無視
+    if (state.pointerActive && state.activePointerId !== null && state.activePointerId !== e.pointerId){
+      return;
+    }
+    if (state.phase === 'READY'){
+      state.activePointerId = e.pointerId;
+      state.pointerActive = true;
+      processPoint(e.clientX, e.clientY);
+    } else if (state.phase === 'VERTICAL' || state.phase === 'HORIZONTAL'){
+      if (!state.pointerActive){
+        const resumed = handlePointerDownResume(e.clientX, e.clientY);
+        if (resumed) state.activePointerId = e.pointerId;
+      }
+    }
+    if (state.pointerActive && state.activePointerId === e.pointerId){
+      try { el.grid.setPointerCapture(e.pointerId); } catch(err){}
+    }
+  });
+
+  el.grid.addEventListener('pointermove', (e) => {
+    if (!state.pointerActive || e.pointerId !== state.activePointerId) return;
+    // §34.2 高速移動によるマス飛び越え防止：間引かれた座標も取得
+    if (typeof e.getCoalescedEvents === 'function'){
+      const events = e.getCoalescedEvents();
+      if (events && events.length){
+        events.forEach(ev => processPoint(ev.clientX, ev.clientY));
+        return;
+      }
+    }
+    processPoint(e.clientX, e.clientY);
+  });
+
+  function endPointer(e){
+    if (e.pointerId === state.activePointerId){
+      state.pointerActive = false;
+      state.activePointerId = null;
+      // §14.1 途中状態は保持する（何もクリアしない）
+    }
+  }
+  el.grid.addEventListener('pointerup', endPointer);
+  el.grid.addEventListener('pointercancel', endPointer);
+  el.grid.addEventListener('pointerleave', () => { /* §15: 一時的な外出は保持、pointerupまで無効化しない */ });
+
+  /* =========================================================
+   * 11. 「つぎへ」／段送り（§23, §24, §34.4）
+   * ========================================================= */
+  el.nextBtn.addEventListener('click', () => {
+    const nextIndex = state.problemIndex + 1;
+    if (nextIndex >= PROBLEMS.length){
+      showAllComplete();
+      return;
+    }
+    loadProblem(nextIndex);
+  });
+
+  function showAllComplete(){
+    state.phase = 'ALL_COMPLETE';
+    el.allComplete.classList.add('show');
+  }
+
+  /* =========================================================
+   * 12. やりなおし（§25）
+   * ========================================================= */
+  el.resetBtn.addEventListener('click', () => {
+    el.resetConfirm.hidden = false;
+  });
+  el.resetNo.addEventListener('click', () => {
+    el.resetConfirm.hidden = true;
+  });
+  el.resetYes.addEventListener('click', () => {
+    el.resetConfirm.hidden = true;
+    loadProblem(state.problemIndex); // 問題は変えず、状態のみ初期化
+  });
+
+  /* =========================================================
+   * 13. 初期化
+   * ========================================================= */
+  recalcCellSize();
+  loadProblem(0);
+
+})();
+</script>
+</body>
+</html>
