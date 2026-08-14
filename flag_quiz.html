@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>国旗クイズ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #0f1923;
+  --surface: #1a2635;
+  --surface2:#223040;
+  --accent:  #f5c842;
+  --correct: #4caf7d;
+  --wrong:   #e05555;
+  --text:    #f0f0f0;
+  --muted:   #7a8fa6;
+  --radius:  10px;
+}
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0 40px;
+}
+
+/* ===== HEADER ===== */
+header {
+  width: 100%;
+  background: var(--surface);
+  border-bottom: 2px solid var(--accent);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px;
+  letter-spacing: .08em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* Mode tabs */
+.mode-tabs {
+  display: flex;
+  gap: 6px;
+}
+.mode-tab {
+  background: none;
+  border: 1.5px solid var(--muted);
+  color: var(--muted);
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.mode-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0f1923;
+  font-weight: 700;
+}
+.mode-tab:not(.active):hover {
+  border-color: var(--text);
+  color: var(--text);
+}
+
+/* Score strip */
+.score-strip {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.score-item {
+  text-align: center;
+  line-height: 1;
+}
+.score-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  display: block;
+}
+.score-num.correct-col { color: var(--correct); }
+.score-num.wrong-col   { color: var(--wrong); }
+.score-num.streak-col  { color: var(--accent); }
+.score-label {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: .06em;
+}
+
+/* ===== MAIN ===== */
+main {
+  width: 100%;
+  max-width: 560px;
+  padding: 24px 16px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Category badge */
+.cat-badge {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: .08em;
+  align-self: flex-start;
+  background: var(--surface);
+  padding: 3px 10px;
+  border-radius: 4px;
+  border-left: 3px solid var(--accent);
+}
+
+/* Flag card */
+.flag-card {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  max-height: 280px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  position: relative;
+  perspective: 800px;
+}
+.flag-card-inner {
+  width: 100%; height: 100%;
+  transition: transform .55s cubic-bezier(.4,0,.2,1);
+  transform-style: preserve-3d;
+  position: relative;
+}
+.flag-card-inner.flipped { transform: rotateY(180deg); }
+
+.flag-front, .flag-back {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.flag-front img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.flag-back {
+  transform: rotateY(180deg);
+  font-size: 48px;
+  background: var(--surface2);
+}
+
+/* Result overlay */
+.result-overlay {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 8px;
+  border-radius: var(--radius);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+  z-index: 10;
+}
+.result-overlay.show { opacity: 1; pointer-events: auto; }
+.result-overlay.correct { background: rgba(76,175,125,.88); }
+.result-overlay.wrong   { background: rgba(224,85,85,.88); }
+.result-icon { font-size: 52px; line-height: 1; }
+.result-text { font-size: 20px; font-weight: 700; }
+.result-ans  { font-size: 13px; opacity: .9; text-align: center; padding: 0 16px; }
+
+/* Choices */
+.choices {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.choice-btn {
+  background: var(--surface);
+  border: 1.5px solid var(--surface2);
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 14px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background .15s, border-color .15s, transform .1s;
+  line-height: 1.3;
+  text-align: center;
+}
+.choice-btn:hover:not(:disabled) {
+  background: var(--surface2);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.choice-btn:disabled { cursor: default; }
+.choice-btn.correct {
+  background: var(--correct);
+  border-color: var(--correct);
+  color: #fff;
+}
+.choice-btn.wrong {
+  background: var(--wrong);
+  border-color: var(--wrong);
+  color: #fff;
+  opacity: .7;
+}
+.choice-btn.reveal {
+  border-color: var(--correct);
+  color: var(--correct);
+}
+
+/* Next button */
+.next-btn {
+  display: none;
+  background: var(--accent);
+  color: #0f1923;
+  border: none;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: .1em;
+  padding: 12px 48px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+  box-shadow: 0 4px 16px rgba(245,200,66,.25);
+}
+.next-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(245,200,66,.4);
+}
+.next-btn.show { display: block; }
+
+/* Progress bar */
+.progress-wrap {
+  width: 100%;
+  background: var(--surface);
+  border-radius: 4px;
+  height: 4px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  background: var(--accent);
+  transition: width .4s ease;
+  border-radius: 4px;
+}
+
+/* Stats panel */
+.stats-panel {
+  display: none;
+  width: 100%;
+  max-width: 560px;
+  padding: 16px;
+}
+.stats-panel.show { display: block; }
+.stats-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  color: var(--accent);
+  letter-spacing: .08em;
+  margin-bottom: 12px;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.stat-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.stat-card-label { font-size: 10px; color: var(--muted); }
+.stat-card-value { font-family: 'Bebas Neue', sans-serif; font-size: 28px; }
+.stat-card-value.c { color: var(--correct); }
+.stat-card-value.w { color: var(--wrong); }
+
+.weak-list-title {
+  font-size: 12px; color: var(--muted);
+  margin: 16px 0 8px;
+  letter-spacing: .06em;
+}
+.weak-list {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.weak-tag {
+  background: var(--surface);
+  border: 1px solid var(--wrong);
+  color: var(--wrong);
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.reset-btn {
+  margin-top: 20px;
+  background: none;
+  border: 1.5px solid var(--muted);
+  color: var(--muted);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 12px;
+  padding: 6px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+.reset-btn:hover { border-color: var(--wrong); color: var(--wrong); }
+
+/* No-weak message */
+.no-weak {
+  font-size: 13px; color: var(--correct);
+  padding: 16px 0;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .logo { font-size: 20px; }
+  .choice-btn { font-size: 12px; padding: 12px 6px; }
+  .score-num { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🌍 国旗クイズ</div>
+  <div class="mode-tabs">
+    <button class="mode-tab active" id="tab-normal" onclick="switchMode('normal')">通常</button>
+    <button class="mode-tab" id="tab-weak"   onclick="switchMode('weak')">苦手集中</button>
+    <button class="mode-tab" id="tab-stats"  onclick="switchMode('stats')">記録</button>
+  </div>
+  <div class="score-strip">
+    <div class="score-item">
+      <span class="score-num correct-col" id="hdr-correct">0</span>
+      <span class="score-label">正解</span>
+    </div>
+    <div class="score-item">
+      <span class="score-num wrong-col" id="hdr-wrong">0</span>
+      <span class="score-label">不正解</span>
+    </div>
+    <div class="score-item">
+      <span class="score-num streak-col" id="hdr-streak">0</span>
+      <span class="score-label">連続</span>
+    </div>
+  </div>
+</header>
+
+<!-- Quiz area -->
+<main id="quiz-area">
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+  </div>
+  <div class="cat-badge" id="cat-badge">カテゴリ読み込み中...</div>
+
+  <div class="flag-card">
+    <div class="flag-card-inner" id="flag-inner">
+      <div class="flag-front">
+        <img id="flag-img" src="" alt="国旗">
+      </div>
+      <div class="flag-back">🌐</div>
+    </div>
+    <div class="result-overlay" id="result-overlay">
+      <div class="result-icon" id="result-icon"></div>
+      <div class="result-text" id="result-text"></div>
+      <div class="result-ans"  id="result-ans"></div>
+    </div>
+  </div>
+
+  <div class="choices" id="choices"></div>
+  <button class="next-btn" id="next-btn" onclick="nextQuestion()">次の問題 →</button>
+</main>
+
+<!-- Stats panel -->
+<div class="stats-panel" id="stats-panel">
+  <div class="stats-title">📊 学習記録</div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-card-label">総出題数</span>
+      <span class="stat-card-value" id="stat-total">0</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-card-label">総正解数</span>
+      <span class="stat-card-value c" id="stat-correct">0</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-card-label">総正解率</span>
+      <span class="stat-card-value c" id="stat-rate">—</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-card-label">習得済み国数</span>
+      <span class="stat-card-value" id="stat-mastered">0</span>
+    </div>
+  </div>
+  <div class="weak-list-title">⚠ 苦手国（正解率50%未満・3問以上出題）</div>
+  <div class="weak-list" id="weak-list"></div>
+  <button class="reset-btn" onclick="confirmReset()">記録をリセット</button>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const CATEGORIES = {
+  "1. 縦ストライプのみ": [
+    ["フランス","fr"],["ペルー","pe"],["マルタ","mt"],["ナイジェリア","ng"],
+    ["イタリア","it"],["ベルギー","be"],["コートジボワール","ci"],["マリ","ml"],
+    ["ギニア","gn"],["ルーマニア","ro"],["チャド","td"],["カメルーン","cm"],
+    ["セネガル","sn"],["アイルランド","ie"],
+  ],
+  "2. 縦ストライプ＋図柄": [
+    ["バチカン","va"],["モルドバ","md"],["アンドラ","ad"],["アルジェリア","dz"],
+    ["バルバドス","bb"],["モンゴル","mn"],["ポルトガル","pt"],
+    ["カナダ","ca"],["メキシコ","mx"],["グアテマラ","gt"],["アフガニスタン","af"],
+  ],
+  "3. 横ストライプのみ": [
+    ["ポーランド","pl"],["モナコ","mc"],["インドネシア","id"],["ウクライナ","ua"],["オーストリア","at"],
+    ["ドイツ","de"],["オランダ","nl"],["ルクセンブルク","lu"],["ロシア","ru"],
+    ["ハンガリー","hu"],["ブルガリア","bg"],["エストニア","ee"],["ラトビア","lv"],
+    ["リトアニア","lt"],["スロバキア","sk"],["シエラレオネ","sl"],["コロンビア","co"],
+    ["ベネズエラ","ve"],["アルゼンチン","ar"],["エジプト","eg"],["リビア","ly"],
+    ["スーダン","sd"],["シリア","sy"],["イラク","iq"],["イエメン","ye"],
+    ["クウェート","kw"],["アラブ首長国連邦","ae"],["ヨルダン","jo"],["レバノン","lb"],
+    ["ガボン","ga"],["ニジェール","ne"],["ガーナ","gh"],["ブルキナファソ","bf"],
+    ["タイ","th"],["ミャンマー","mm"],["アルメニア","am"],["ガンビア","gm"],["ベラルーシ","by"],
+  ],
+  "4. 横ストライプ＋図柄": [
+    ["シンガポール","sg"],["サンマリノ","sm"],["オマーン","om"],
+    ["リヒテンシュタイン","li"],["イラン","ir"],["スロベニア","si"],
+    ["スペイン","es"],["ボリビア","bo"],["エクアドル","ec"],["パラグアイ","py"],
+    ["ホンジュラス","hn"],["エルサルバドル","sv"],["ニカラグア","ni"],
+    ["ウズベキスタン","uz"],["タジキスタン","tj"],["アゼルバイジャン","az"],
+    ["エチオピア","et"],["マラウイ","mw"],["レソト","ls"],["アンゴラ","ao"],
+    ["ハイチ","ht"],["アンティグア・バーブーダ","ag"],["ジンバブエ","zw"],
+    ["北朝鮮","kp"],["インド","in"],["ラオス","la"],
+  ],
+  "5. 多色・多数ストライプ": [
+    ["モーリシャス","mu"],["中央アフリカ","cf"],["マレーシア","my"],["ギリシャ","gr"],
+    ["ウルグアイ","uy"],["キューバ","cu"],["バハマ","bs"],["ウガンダ","ug"],
+    ["ケニア","ke"],["トーゴ","tg"],["カーボベルデ","cv"],["コモロ","km"],
+    ["サントメ・プリンシペ","st"],["南スーダン","ss"],["エスワティニ","sz"],
+    ["ギニアビサウ","gw"],["赤道ギニア","gq"],["コスタリカ","cr"],
+    ["スリナム","sr"],["イスラエル","il"],["リベリア","lr"],["セーシェル","sc"],
+  ],
+  "6. 十字・斜め十字": [
+    ["スウェーデン","se"],["フィンランド","fi"],["デンマーク","dk"],["ノルウェー","no"],
+    ["アイスランド","is"],["イギリス","gb"],["スイス","ch"],["ジャマイカ","jm"],
+    ["ブルンジ","bi"],["ジョージア","ge"],["ドミニカ共和国","do"],["トンガ","to"],
+    ["ドミニカ国","dm"],["ミクロネシア","fm"],
+  ],
+  "7. 丸（円・星・月）": [
+    ["日本","jp"],["パラオ","pw"],["バングラデシュ","bd"],["韓国","kr"],
+    ["中国","cn"],["ベトナム","vn"],["トルコ","tr"],["パキスタン","pk"],
+    ["モーリタニア","mr"],["チュニジア","tn"],["モルディブ","mv"],
+    ["北マケドニア","mk"],["キルギス","kg"],["ソマリア","so"],["モロッコ","ma"],
+    ["キリバス","ki"],
+  ],
+  "8. 地帯（カントン）": [
+    ["アメリカ","us"],["オーストラリア","au"],["ニュージーランド","nz"],
+    ["フィジー","fj"],["ツバル","tv"],["サモア","ws"],["台湾","tw"],
+    ["パレスチナ","ps"],["セルビア","rs"],
+  ],
+  "9. 特殊紋章・シンボル": [
+    ["ブータン","bt"],["スリランカ","lk"],["カンボジア","kh"],["アルバニア","al"],
+    ["ベリーズ","bz"],["キプロス","cy"],["サウジアラビア","sa"],["モンテネグロ","me"],
+    ["トルクメニスタン","tm"],["クロアチア","hr"],["セントビンセント・グレナディーン","vc"],
+  ],
+  "10. 幾何学・変形・その他": [
+    ["南アフリカ","za"],["東ティモール","tl"],["ネパール","np"],["チェコ","cz"],
+    ["フィリピン","ph"],["ブルネイ","bn"],["バーレーン","bh"],["カタール","qa"],
+    ["パレスチナ（旗）","ps"],["カザフスタン","kz"],["ジブチ","dj"],["エリトリア","er"],
+    ["タンザニア","tz"],["パプアニューギニア","pg"],["ソロモン諸島","sb"],["バヌアツ","vu"],
+    ["ナウル","nr"],["マーシャル諸島","mh"],["セントクリストファー・ネイビス","kn"],
+    ["セントルシア","lc"],["グレナダ","gd"],["トリニダード・トバゴ","tt"],
+    ["ガイアナ","gy"],["ブラジル","br"],["チリ","cl"],["コンゴ民主共和国","cd"],
+    ["コンゴ共和国","cg"],["ザンビア","zm"],["ベナン","bj"],["コソボ","xk"],
+  ],
+};
+
+// Flatten all flags
+const ALL_FLAGS = [];
+const FLAG_CATEGORY = {};
+Object.entries(CATEGORIES).forEach(([cat, flags]) => {
+  flags.forEach(f => {
+    ALL_FLAGS.push(f);
+    FLAG_CATEGORY[f[1]] = cat; // iso2 → category
+  });
+});
+
+// ============================================================
+// STORAGE
+// ============================================================
+const STORAGE_KEY = 'flagQuizStats_v1';
+
+function loadStats() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+  } catch { return {}; }
+}
+function saveStats(stats) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+}
+function recordResult(iso2, correct) {
+  const stats = loadStats();
+  if (!stats[iso2]) stats[iso2] = { c: 0, t: 0 };
+  stats[iso2].t++;
+  if (correct) stats[iso2].c++;
+  saveStats(stats);
+}
+function getRate(iso2) {
+  const stats = loadStats();
+  const s = stats[iso2];
+  if (!s || s.t === 0) return null;
+  return s.c / s.t;
+}
+
+// ============================================================
+// STATE
+// ============================================================
+let mode = 'normal';      // 'normal' | 'weak'
+let sessionCorrect = 0;
+let sessionWrong   = 0;
+let streak         = 0;
+let currentFlag    = null; // [name, iso2]
+let currentChoices = [];
+let answered       = false;
+
+// ============================================================
+// MODE SWITCH
+// ============================================================
+function switchMode(m) {
+  mode = m;
+  ['normal','weak','stats'].forEach(id => {
+    document.getElementById(`tab-${id}`).classList.toggle('active', id === m);
+  });
+  document.getElementById('quiz-area').style.display  = (m === 'stats') ? 'none' : 'flex';
+  document.getElementById('stats-panel').classList.toggle('show', m === 'stats');
+  if (m === 'stats') {
+    renderStats();
+  } else {
+    nextQuestion();
+  }
+}
+
+// ============================================================
+// QUESTION LOGIC
+// ============================================================
+function pickQuestion() {
+  let pool;
+  if (mode === 'weak') {
+    const stats = loadStats();
+    pool = ALL_FLAGS.filter(([,iso2]) => {
+      const s = stats[iso2];
+      return s && s.t >= 3 && (s.c / s.t) < 0.5;
+    });
+    if (pool.length === 0) {
+      // No weak countries yet
+      return null;
+    }
+  } else {
+    pool = ALL_FLAGS;
+  }
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function pickChoices(correct) {
+  const others = ALL_FLAGS.filter(f => f[1] !== correct[1]);
+  shuffle(others);
+  const wrong3 = others.slice(0, 3);
+  const choices = [correct, ...wrong3];
+  shuffle(choices);
+  return choices;
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+function nextQuestion() {
+  answered = false;
+  document.getElementById('next-btn').classList.remove('show');
+  document.getElementById('result-overlay').classList.remove('show','correct','wrong');
+  document.getElementById('flag-inner').classList.remove('flipped');
+
+  const flag = pickQuestion();
+  if (!flag) {
+    showNoWeak();
+    return;
+  }
+  currentFlag = flag;
+  currentChoices = pickChoices(flag);
+
+  // Category badge
+  const cat = FLAG_CATEGORY[flag[1]] || '';
+  document.getElementById('cat-badge').textContent = cat;
+
+  // Flag image
+  const img = document.getElementById('flag-img');
+  img.src = `https://flagcdn.com/w320/${flag[1]}.png`;
+  img.alt = flag[0];
+
+  // Progress: overall correct rate
+  const stats = loadStats();
+  const s = stats[flag[1]];
+  const pct = s ? Math.round((s.c / s.t) * 100) : 0;
+  document.getElementById('progress-bar').style.width = pct + '%';
+
+  // Choices
+  renderChoices();
+}
+
+function showNoWeak() {
+  document.getElementById('cat-badge').textContent = '苦手国なし';
+  document.getElementById('flag-img').src = '';
+  const choicesEl = document.getElementById('choices');
+  choicesEl.innerHTML = `<div style="grid-column:span 2;text-align:center;color:var(--correct);padding:24px;font-size:14px;">
+    🎉 現在、苦手国（正解率50%未満・3問以上）はありません！<br>
+    <span style="color:var(--muted);font-size:12px;">通常モードで引き続き練習しましょう</span>
+  </div>`;
+  document.getElementById('progress-bar').style.width = '100%';
+}
+
+function renderChoices() {
+  const el = document.getElementById('choices');
+  el.innerHTML = '';
+  currentChoices.forEach(([name, iso2]) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = name;
+    btn.onclick = () => answer(iso2, btn);
+    el.appendChild(btn);
+  });
+}
+
+function answer(iso2, btn) {
+  if (answered) return;
+  answered = true;
+  const correct = (iso2 === currentFlag[1]);
+
+  // Record
+  recordResult(currentFlag[1], correct);
+
+  // Update session counts
+  if (correct) {
+    sessionCorrect++;
+    streak++;
+  } else {
+    sessionWrong++;
+    streak = 0;
+  }
+  updateHeader();
+
+  // Style buttons
+  const btns = document.querySelectorAll('.choice-btn');
+  btns.forEach(b => {
+    b.disabled = true;
+    const bIso = currentChoices.find(([n]) => n === b.textContent)?.[1];
+    if (bIso === currentFlag[1]) b.classList.add(correct && b === btn ? 'correct' : 'reveal');
+    else if (b === btn && !correct) b.classList.add('wrong');
+  });
+
+  // Result overlay
+  const overlay = document.getElementById('result-overlay');
+  overlay.classList.add('show', correct ? 'correct' : 'wrong');
+  document.getElementById('result-icon').textContent = correct ? '⭕' : '❌';
+  document.getElementById('result-text').textContent = correct ? '正解！' : '不正解';
+  document.getElementById('result-ans').textContent  = correct ? '' : `正解：${currentFlag[0]}`;
+
+  // Flip card on wrong
+  if (!correct) {
+    setTimeout(() => document.getElementById('flag-inner').classList.add('flipped'), 300);
+  }
+
+  // Show next button
+  setTimeout(() => document.getElementById('next-btn').classList.add('show'), 600);
+}
+
+function updateHeader() {
+  document.getElementById('hdr-correct').textContent = sessionCorrect;
+  document.getElementById('hdr-wrong').textContent   = sessionWrong;
+  document.getElementById('hdr-streak').textContent  = streak;
+}
+
+// ============================================================
+// STATS
+// ============================================================
+function renderStats() {
+  const stats = loadStats();
+  let totalT = 0, totalC = 0, mastered = 0;
+  Object.entries(stats).forEach(([iso2, s]) => {
+    totalT += s.t;
+    totalC += s.c;
+    if (s.t >= 3 && s.c / s.t >= 0.8) mastered++;
+  });
+  document.getElementById('stat-total').textContent   = totalT;
+  document.getElementById('stat-correct').textContent = totalC;
+  document.getElementById('stat-rate').textContent    = totalT ? Math.round(totalC/totalT*100) + '%' : '—';
+  document.getElementById('stat-mastered').textContent = mastered;
+
+  // Weak countries
+  const weakEl = document.getElementById('weak-list');
+  weakEl.innerHTML = '';
+  const weakFlags = ALL_FLAGS.filter(([,iso2]) => {
+    const s = stats[iso2];
+    return s && s.t >= 3 && s.c / s.t < 0.5;
+  }).sort(([,a],[,b]) => {
+    const ra = stats[a].c/stats[a].t;
+    const rb = stats[b].c/stats[b].t;
+    return ra - rb;
+  });
+
+  if (weakFlags.length === 0) {
+    weakEl.innerHTML = '<div class="no-weak">苦手国はありません 🎉</div>';
+  } else {
+    weakFlags.forEach(([name, iso2]) => {
+      const s = stats[iso2];
+      const rate = Math.round(s.c/s.t*100);
+      const tag = document.createElement('div');
+      tag.className = 'weak-tag';
+      tag.textContent = `${name} ${rate}%`;
+      weakEl.appendChild(tag);
+    });
+  }
+}
+
+function confirmReset() {
+  if (confirm('学習記録をすべてリセットしますか？')) {
+    localStorage.removeItem(STORAGE_KEY);
+    sessionCorrect = sessionWrong = streak = 0;
+    updateHeader();
+    renderStats();
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+nextQuestion();
+</script>
+</body>
+</html>
